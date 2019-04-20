@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Keycloak from 'keycloak-js';
-import utils from './utils';
+import utils from '../utils';
 
 class CourseServiceInfo extends Component {
 
@@ -13,7 +12,8 @@ class CourseServiceInfo extends Component {
     };
 
     async componentDidMount() {
-        fetch(utils.courseServiceUrl + '/users', this.authorizationHeader())
+        const authorizationHeader = this.props.authorizationHeader();
+        fetch(utils.courseServiceUrl + '/users', authorizationHeader)
             .then(response => {
                 if (response.ok)
                     return response.json();
@@ -33,21 +33,12 @@ class CourseServiceInfo extends Component {
             });
 
         try {
-            const response = await fetch(utils.courseServiceUrl + '/users/admin', this.authorizationHeader());
+            const response = await fetch(utils.courseServiceUrl + '/users/admin', authorizationHeader);
             let isAdmin = response.ok;
             this.setState({ isAdmin });
         } catch (e) {
             this.setState({ isAdmin: false });
         }
-    }
-
-    authorizationHeader() {
-        if (!this.props.keycloak) return {};
-        return {
-            headers: {
-                'Authorization': 'Bearer ' + this.props.keycloak.token,
-            },
-        };
     }
 
     render() {
@@ -74,7 +65,7 @@ class CourseServiceInfo extends Component {
 }
 
 CourseServiceInfo.propTypes = {
-    keycloak: PropTypes.instanceOf(Keycloak),
+    authorizationHeader: PropTypes.func.isRequired,
 };
 
 export default CourseServiceInfo;

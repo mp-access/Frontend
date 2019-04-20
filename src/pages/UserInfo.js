@@ -9,18 +9,21 @@ class UserInfo extends Component {
             email: '',
             id: '',
         };
+    }
 
-        this.props.keycloak.loadUserInfo().success(userInfo => {
+    componentDidMount() {
+        this.props.loadUserInfo().success(userInfo => {
             this.setState({ name: userInfo.name, email: userInfo.email, id: userInfo.sub });
         });
     }
 
     render() {
+        const { id, name, email } = this.state;
         return (
-            <div className="UserInfo">
-                <p>Name: {this.state.name}</p>
-                <p>Email: {this.state.email}</p>
-                <p>ID: {this.state.id}</p>
+            <div>
+                <p>Name: {name}</p>
+                <p>Email: {email}</p>
+                <p>ID: {id}</p>
             </div>
         );
     }
