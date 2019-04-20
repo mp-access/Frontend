@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
-import Welcome from './Welcome';
-import Secured from './Secured';
+import Welcome from './pages/Welcome';
+import Secured from './pages/Secured';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from './auth/AuthProvider';

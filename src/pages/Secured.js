@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { withAuth } from './auth/AuthProvider';
-import UserInfo from './UserInfo';
-import Logout from './Logout';
-import CourseServiceInfo from './CourseServiceInfo';
+import { withAuth } from '../auth/AuthProvider';
+import UserInfo from '../UserInfo';
+import CourseServiceInfo from '../CourseServiceInfo';
 
 class Secured extends Component {
 
@@ -17,7 +16,7 @@ class Secured extends Component {
 
                     <UserInfo keycloak={keycloak}/>
 
-                    <Logout keycloak={keycloak}/>
+
                     <button onClick={() => keycloak.accountManagement()}>Account management</button>
 
                     <CourseServiceInfo keycloak={keycloak}/>
