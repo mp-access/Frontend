@@ -1,25 +1,13 @@
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withAuth } from '../auth/AuthProvider';
+import { Link } from 'react-router-dom';
+import { withAuthAndRouter } from '../auth/AuthProvider';
 
-const Header = ({ context, history }) => {
-    const { isAuthenticated, login, logout } = context;
-
+const Header = () => {
     return (
         <header style={{ background: 'lightblue' }}>
             <h1>Welcome</h1>
 
-            {isAuthenticated &&
-            <button onClick={() => onLogout(logout, history)}>
-                Logout
-            </button>
-            }
-
-            {!isAuthenticated &&
-            <button onClick={login}>
-                Login
-            </button>
-            }
+            <LoginOrLogoutBtn/>
 
             <ul>
                 <li><Link to="/">public component</Link></li>
@@ -29,9 +17,29 @@ const Header = ({ context, history }) => {
     );
 };
 
-const onLogout = (logout, history) => {
-    logout();
-    history.push('/');
-};
+const LoginOrLogoutBtn = withAuthAndRouter(({ context, history }) => {
+    const { isAuthenticated, login, logout } = context;
+    if (!isAuthenticated) {
+        return <LoginBtn onLoginClick={login}/>;
+    }
 
-export default withAuth(withRouter(Header));
+    return <LogoutBtn onLogoutClick={logout} history={history}/>;
+});
+
+const LoginBtn = ({ onLoginClick }) => (
+    <button onClick={onLoginClick}>
+        Login
+    </button>
+);
+
+const LogoutBtn = ({ onLogoutClick, history }) => (
+    <button onClick={() => {
+        history.push('/');
+        onLogoutClick();
+    }
+    }>
+        Logout
+    </button>
+);
+
+export default Header;

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import './App.css';
-import Welcome from './pages/Welcome';
-import Secured from './pages/Secured';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { AuthProvider } from './auth/AuthProvider';
+import AppNavigation from './Navigation/AppNavigation';
 
 
 class App extends Component {
@@ -16,10 +15,7 @@ class App extends Component {
                 <AuthProvider>
                     <div className="container">
                         <Header/>
-
-                        <Route exact path="/" component={Welcome}/>
-                        <Route path="/secured" component={Secured}/>
-
+                        <AppNavigation/>
                         <Footer/>
                     </div>
                 </AuthProvider>

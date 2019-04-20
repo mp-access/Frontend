@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
+import { withRouter } from 'react-router-dom';
 
 const AuthContext = React.createContext({
     isAuthenticated: false,
@@ -12,7 +13,6 @@ class AuthProvider extends Component {
         super(props);
 
         this.state = {
-            isInitialized: false,
             keycloak: null,
             isAuthenticated: false,
         };
@@ -21,7 +21,6 @@ class AuthProvider extends Component {
         keycloak.init({ onLoad: 'check-sso' })
             .success(authenticated => {
                 this.setState({
-                    isInitialized: true,
                     isAuthenticated: authenticated,
                     keycloak: keycloak,
                 });
@@ -46,6 +45,7 @@ class AuthProvider extends Component {
                 {
                     keycloak,
                     isAuthenticated,
+                    isInitialized: !!keycloak,
                     login: this.login,
                     logout: this.logout,
                 }
@@ -64,4 +64,6 @@ const withAuth = Component => {
     );
 };
 
-export { withAuth, AuthProvider };
+const withAuthAndRouter = Component => withAuth(withRouter(Component));
+
+export { withAuth, withAuthAndRouter, AuthProvider };
