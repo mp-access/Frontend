@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Keycloak from 'keycloak-js';
+import utils from './utils';
 
 class CourseServiceInfo extends Component {
 
@@ -8,10 +9,11 @@ class CourseServiceInfo extends Component {
         response: '',
         authorities: [],
         resourceIds: [],
+        isAdmin: false,
     };
 
-    componentDidMount() {
-        fetch('http://localhost:8080/api/users', this.authorizationHeader())
+    async componentDidMount() {
+        fetch(utils.courseServiceUrl + '/users', this.authorizationHeader())
             .then(response => {
                 if (response.ok)
                     return response.json();
@@ -29,6 +31,14 @@ class CourseServiceInfo extends Component {
             .catch(err => {
                 this.setState((state, props) => ({ response: err.toString() }));
             });
+
+        try {
+            const response = await fetch(utils.courseServiceUrl + '/users/admin', this.authorizationHeader());
+            let isAdmin = response.ok;
+            this.setState({ isAdmin });
+        } catch (e) {
+            this.setState({ isAdmin: false });
+        }
     }
 
     authorizationHeader() {
@@ -41,10 +51,13 @@ class CourseServiceInfo extends Component {
     }
 
     render() {
-        const { authorities, resourceIds } = this.state;
+        const { authorities, resourceIds, isAdmin } = this.state;
         return (
             <div className="course-service">
                 <p>This is the backend response</p>
+
+                {isAdmin && <p>Yay, admin!</p>}
+                {!isAdmin && <p>Sorry, you are not an admin</p>}
 
                 <p>Roles</p>
                 <ul>

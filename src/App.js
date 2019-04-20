@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Link, Route } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
 import Welcome from './Welcome';
 import Secured from './Secured';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import { AuthProvider } from './auth/AuthProvider';
 
 
 class App extends Component {
@@ -11,14 +14,16 @@ class App extends Component {
         return (
 
             <BrowserRouter>
-                <div className="container">
-                    <ul>
-                        <li><Link to="/">public component</Link></li>
-                        <li><Link to="/secured">secured component</Link></li>
-                    </ul>
-                    <Route exact path="/" component={Welcome}/>
-                    <Route path="/secured" component={Secured}/>
-                </div>
+                <AuthProvider>
+                    <div className="container">
+                        <Header/>
+
+                        <Route exact path="/" component={Welcome}/>
+                        <Route path="/secured" component={Secured}/>
+
+                        <Footer/>
+                    </div>
+                </AuthProvider>
             </BrowserRouter>
         );
     }
