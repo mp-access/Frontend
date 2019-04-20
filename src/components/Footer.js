@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 const Footer = () => (
-    <footer>
+    <footer style={{ background: 'lightgrey' }}>
         Copyright blablabla...
     </footer>
 );

@@ -10,7 +10,6 @@ import { AuthProvider } from './auth/AuthProvider';
 
 class App extends Component {
     render() {
-        console.log(process.env);
         return (
 
             <BrowserRouter>

@@ -1,13 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { withAuth } from '../auth/AuthProvider';
 
-const Header = () => (
-    <header>
-        <ul>
-            <li><Link to="/">public component</Link></li>
-            <li><Link to="/secured">secured component</Link></li>
-        </ul>
-    </header>
-);
+const Header = ({ context }) => {
+    const { isAuthenticated, login, logout } = context;
+    return (
+        <header style={{background: 'lightblue'}}>
+            <h1>Welcome</h1>
 
-export default Header;
+            {isAuthenticated &&
+            <button onClick={logout}>Logout</button>
+            }
+
+            {!isAuthenticated &&
+            <button onClick={login}>Login</button>
+            }
+
+            <ul>
+                <li><Link to="/">public component</Link></li>
+                <li><Link to="/secured">secured component</Link></li>
+            </ul>
+        </header>
+    );
+};
+
+export default withAuth(Header);
