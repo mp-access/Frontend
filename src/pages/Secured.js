@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withAuth } from '../auth/AuthProvider';
-import UserInfo from './UserInfo';
-import CourseServiceInfo from './CourseServiceInfo';
+import UserInfo from '../components/UserInfo';
+import CourseServiceInfo from '../components/CourseServiceInfo';
 
 class Secured extends Component {
 
@@ -14,9 +14,10 @@ class Secured extends Component {
                     <p>This is a Keycloak-secured component of your application. You shouldn't be able
                         to see this unless you've authenticated with Keycloak.</p>
 
-                    <UserInfo loadUserInfo={context.loadUserInfo}/>
+                    <UserInfo loadUserInfo={context.loadUserInfo} accessToken={context.accessToken}
+                              accountManagement={context.accountManagement}/>
 
-                    <button onClick={() => context.accountManagement()}>Account management</button>
+                    <hr/>
 
                     <CourseServiceInfo authorizationHeader={context.authorizationHeader}/>
                 </div>

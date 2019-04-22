@@ -13,11 +13,11 @@ class App extends Component {
 
             <BrowserRouter>
                 <AuthProvider>
-                    <div className="container">
+                    <main className="container">
                         <Header/>
                         <AppNavigation/>
                         <Footer/>
-                    </div>
+                    </main>
                 </AuthProvider>
             </BrowserRouter>
         );

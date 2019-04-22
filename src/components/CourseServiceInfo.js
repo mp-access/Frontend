@@ -9,10 +9,22 @@ class CourseServiceInfo extends Component {
         authorities: [],
         resourceIds: [],
         isAdmin: false,
+        users: [],
     };
 
     async componentDidMount() {
         const authorizationHeader = this.props.authorizationHeader();
+
+        try {
+            const response = await fetch(utils.courseServiceUrl + '/users/demo', authorizationHeader);
+            if (response.ok) {
+                const body = await response.json();
+                this.setState({ users: body });
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
         fetch(utils.courseServiceUrl + '/users', authorizationHeader)
             .then(response => {
                 if (response.ok)
@@ -39,13 +51,18 @@ class CourseServiceInfo extends Component {
         } catch (e) {
             this.setState({ isAdmin: false });
         }
+
     }
 
     render() {
-        const { authorities, resourceIds, isAdmin } = this.state;
+        const { users, authorities, resourceIds, isAdmin } = this.state;
         return (
             <div className="course-service">
-                <p>This is the backend response</p>
+                <h2>Some demo responses from the backend</h2>
+
+                <ul>
+                    {users.map(user => <li key={user}>{user}</li>)}
+                </ul>
 
                 {isAdmin && <p>Yay, admin!</p>}
                 {!isAdmin && <p>Sorry, you are not an admin</p>}

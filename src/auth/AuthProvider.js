@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 import { withRouter } from 'react-router-dom';
-import { canBypassLogin } from '../utils';
+import utils from '../utils';
 
 const AuthContext = React.createContext({
     isAuthenticated: false,
@@ -17,16 +17,22 @@ class AuthProvider extends Component {
             keycloak: null,
             isAuthenticated: false,
         };
+    }
 
-        const keycloak = Keycloak('/keycloak.json');
-        keycloak.init({ onLoad: 'check-sso' })
-            .success(authenticated => {
-                this.setState({
-                    isAuthenticated: authenticated,
-                    keycloak: keycloak,
-                });
-            })
-            .error(err => console.log(err));
+    componentDidMount() {
+        if (!utils.canBypassLogin) {
+            const keycloak = Keycloak('/keycloak.json');
+            keycloak.init({ onLoad: 'check-sso' })
+                .success(authenticated => {
+                    this.setState({
+                        isAuthenticated: authenticated,
+                        keycloak: keycloak,
+                    });
+                })
+                .error(err => console.log(err));
+        } else {
+            this.setState({ isAuthenticated: true, keycloak: {} });
+        }
     }
 
     login = () => {
@@ -39,8 +45,20 @@ class AuthProvider extends Component {
 
     accountManagement = () => this.state.keycloak.accountManagement();
 
-    loadUserInfo = () => {
-        return this.state.keycloak.loadUserInfo();
+    loadUserInfo = async () => {
+        if (utils.canBypassLogin) {
+            return new Promise((resolve, reject) => {
+                resolve({
+                    name: 'Thor',
+                    email: 'thor@asgard.galaxy',
+                    sub: '12345678',
+                });
+            });
+        } else {
+            return new Promise((resolve, reject) => {
+                this.state.keycloak.loadUserInfo().success(userInfo => resolve(userInfo));
+            });
+        }
     };
 
     authorizationHeader = () => {
@@ -56,6 +74,14 @@ class AuthProvider extends Component {
         };
     };
 
+    accessToken = () => {
+        const { keycloak } = this.state;
+        if (!keycloak) {
+            return '';
+        }
+        return keycloak.token;
+    };
+
 
     render() {
         const { keycloak, isAuthenticated } = this.state;
@@ -66,6 +92,7 @@ class AuthProvider extends Component {
                 {
                     isInitialized: !!keycloak,
                     isAuthenticated: isAuthenticated,
+                    accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,
                     accountManagement: this.accountManagement,

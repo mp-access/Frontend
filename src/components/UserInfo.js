@@ -12,18 +12,25 @@ class UserInfo extends Component {
     }
 
     componentDidMount() {
-        this.props.loadUserInfo().success(userInfo => {
+        this.props.loadUserInfo().then(userInfo => {
+            console.log(userInfo);
             this.setState({ name: userInfo.name, email: userInfo.email, id: userInfo.sub });
         });
     }
 
     render() {
         const { id, name, email } = this.state;
+        const { accessToken, accountManagement } = this.props;
+
         return (
             <div>
+                <h2>User info fetched from Keycloak</h2>
                 <p>Name: {name}</p>
                 <p>Email: {email}</p>
                 <p>ID: {id}</p>
+                <p>Access token: {accessToken()}</p>
+
+                <button onClick={accountManagement}>Account management</button>
             </div>
         );
     }
