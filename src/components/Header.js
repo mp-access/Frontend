@@ -13,6 +13,7 @@ const Header = () => {
                 <li><Link to="/">public component</Link></li>
                 <li><Link to="/code">Code editor</Link></li>
                 <li><Link to="/secured">secured component</Link></li>
+                <li><Link to="/courses">Dummy Courses</Link></li>
             </ul>
         </header>
     );

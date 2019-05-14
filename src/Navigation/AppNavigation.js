@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code, Secured, Welcome } from '../pages/';
+import { Code, Secured, Welcome, DummyCourses } from '../pages/';
 import { Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
 
@@ -9,6 +9,7 @@ const AppNavigation = () => {
         <>
             <Route exact path="/" component={Welcome}/>
             <Route exact path="/code" component={Code}/>
+            <Route exact path="/courses" component={DummyCourses}/>
             <PrivateRoute path="/secured" component={Secured}/>
         </>
     );
