@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MonacoEditor from 'react-monaco-editor';
+import utils from "../utils";
 
 
 class Code extends Component {
@@ -16,11 +17,31 @@ class Code extends Component {
                 code: '// type your code...',
             },
         ],
+        publicFiles: [],
+        content : [],
+        isLoading: false,
+    };
+
+    componentDidMount() {
+        this.setState({ isLoading: true });
+
+        this.fetchMyExercise()
+            .then(() => this.setState({ isLoading: false }));
+    }
+
+    fetchMyExercise = async () => {
+        const response = await fetch(utils.courseServiceUrl + '/courses/9ba7b66f-b19b-4778-a483-a880886086c5/assignments/5385e8ee-67da-4ff1-adec-c48421380e30/exercises/4ea5bdea-a56d-4a8b-bd88-33b48554cc45');
+        if (response.ok) {
+            const content = await response.json();
+            this.setState({ content });
+            console.log(content);
+            this.state.publicFiles = content.public_files;
+            this.state.languages[0].code = content.public_files[0].content;
+        }
     };
 
     editorDidMount = (editor, monaco) => {
         console.log('editorDidMount', editor);
-        //monaco.editor.setTheme('vs-dark');
         editor.focus();
         console.log(monaco);
     };
@@ -42,11 +63,9 @@ class Code extends Component {
 
         return (
             <div className="Welcome" style={{ width: '100%' }}>
-                <p>This is your public-facing component.</p>
 
-                <button onClick={this.setPython}>Python</button>
+                <button onClick={this.setPython}>script.py</button>
                 <button onClick={this.setJs}>Javascript</button>
-
 
                 <MonacoEditor
                     width="100%"
