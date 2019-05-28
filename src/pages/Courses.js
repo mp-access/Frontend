@@ -38,9 +38,7 @@ class Courses extends Component {
         return (
             <div className="dddd">
                 <div>
-                    <p>
-                        My Courses:
-                    </p>
+                    <h2>My Courses</h2>
                     <div className="row">
                         {listItems}
                     </div>
