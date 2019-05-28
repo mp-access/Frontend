@@ -9,20 +9,26 @@ class Courses extends Component {
         super(props);
         this.state = {
             courses: [],
-            selected: undefined
         };
-
-        this.courseService = new CourseDataService();
     }
 
     componentDidMount() {
-        this.courseService.getCourses().then(courses => {
-                this.setState({courses: courses});
-            }
-        );
+
+        (async () => {
+            CourseDataService.getCourses()
+                .then(res => res.json())
+                .then(
+                    result => this.setState({courses: result})
+                )
+                .catch(err => {
+                    console.debug("Error:", err.toString())
+                });
+        })();
+
     }
 
     render() {
+        console.debug("render", this.state.courses);
         const listItems = this.state.courses.map((c) =>
             <li>
                 <Link to={`/courses/${c.id}`}>{c.title} - {c.description}</Link>

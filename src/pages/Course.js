@@ -7,6 +7,7 @@ class Course extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            courses: [],
             course: undefined
         }
         this.courseService = new CourseDataService();
@@ -14,14 +15,16 @@ class Course extends Component {
 
     componentDidMount() {
         const courseId = this.props.match.params.courseId;
-        this.lookupCurrentCourse(courseId);
-    }
-
-    lookupCurrentCourse(id) {
-        this.courseService.getCourse(id).then(c => {
-                this.setState({course: c});
-            }
-        );
+        (async () => {
+            CourseDataService.getCourses()
+                .then(res => res.json())
+                .then(
+                    result => this.setState({course: result.filter( c => c.id === courseId)[0]})
+                )
+                .catch(err => {
+                    console.debug("Error:", err.toString())
+                });
+        })();
     }
 
     render() {

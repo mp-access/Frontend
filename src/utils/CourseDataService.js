@@ -1,57 +1,48 @@
+import utils from '../utils';
+
 class CourseDataService {
 
     constructor() {
-        this.courses = new Map([['31ee2054', {
-            "id": "31ee2054",
-            "title": "Informatics 1",
-            "description": "Algodat",
-            "owner": "dr.prof@uzh.ch",
-            "startDate": "2019-09-22T00:00:00.000+0000",
-            "endDate": "2020-01-01T00:00:00.000+0000",
-            "assignments": [
-                {
-                    "id": "c33cd07e",
-                    "title": "assignment1",
-                    "description": "string manipulation lab",
-                    "publishDate": "2001-12-15T00:00:00.000+0000",
-                    "dueDate": "2001-05-11T00:00:00.000+0000",
-                    "exercises": [
-                        {
-                            "id": "a4097b1f",
-                            "type": "code",
-                            "language": "python"
-                        }
-                    ]
-                }
-            ]
-        }], ['98140cb46cb9', {
-            "id": "98140cb46cb9",
-            "title": "Informatics 2",
-            "description": "Modelling",
-            "owner": "dr.prof@uzh.ch",
-            "startDate": "2019-09-22T00:00:00.000+0000",
-            "endDate": "2020-01-01T00:00:00.000+0000",
-            "assignments": [
-                {
-                    "id": "981bcb2a7055",
-                    "title": "assignment1",
-                    "description": "string manipulation lab",
-                    "publishDate": "2001-12-15T00:00:00.000+0000",
-                    "dueDate": "2001-05-11T00:00:00.000+0000",
-                    "exercises": [
-                        {
-                            "id": "8efacc61f4ea",
-                            "type": "code",
-                            "language": "python"
-                        }
-                    ]
-                }
-            ]
-        }]]);
+        this.courses = new Map();
+        //this.fetchCourses();
+    }
+
+    async fetchCourses() {
+        fetch(utils.courseServiceUrl + '/courses')
+            .then(res => res.json())
+            .then((result) => {
+                console.debug("fetch:");
+                console.debug(result);
+                this.courses = result.courses;
+            })
+            .catch(err => {
+                console.warn("Error:", err.errstatus, " - Message:", err.toString());
+            })
     }
 
     async getCourses() {
-        return Promise.resolve(Array.from(this.courses.values()));
+        // console.debug("get courses:");
+        // return Promise.resolve(Array.from(this.courses.values()));
+
+        // fetch(utils.courseServiceUrl + '/courses')
+        //         //     .then(res => res.json())
+        //         //     .then((result) => {
+        //         //         console.debug("fetch:");
+        //         //         console.debug(result);
+        //         //         return result.courses;
+        //         //     })
+        //         //     .catch(err => {
+        //         //         console.warn("Error:", err.errstatus, " - Message:", err.toString());
+        //         //         return [];
+        //         //     })
+
+        console.debug( fetch(utils.courseServiceUrl + '/courses'));
+
+        return fetch(utils.courseServiceUrl + '/courses');
+    }
+
+    static async getCourses() {
+        return fetch(utils.courseServiceUrl + '/courses');
     }
 
     async getCourse(id) {
