@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withAuth} from '../auth/AuthProvider';
-import {Link} from "react-router-dom";
+import CourseBanner from "../components/CourseBanner";
 import CourseDataService from "../utils/CourseDataService";
 
 class Courses extends Component {
@@ -30,9 +30,9 @@ class Courses extends Component {
     render() {
         console.debug("render", this.state.courses);
         const listItems = this.state.courses.map((c) =>
-            <li>
-                <Link to={`/courses/${c.id}`}>{c.title} - {c.description}</Link>
-            </li>
+            <div className="col-sm-3">
+                <CourseBanner course={c}/>
+            </div>
         );
 
         return (
@@ -41,9 +41,9 @@ class Courses extends Component {
                     <p>
                         My Courses:
                     </p>
-                    <ul>
+                    <div className="row">
                         {listItems}
-                    </ul>
+                    </div>
                 </div>
             </div>
         );
