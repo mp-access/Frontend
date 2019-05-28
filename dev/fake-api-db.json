@@ -9,7 +9,7 @@
       "endDate": "2020-01-01T00:00:00.000+0000",
       "assignments": [
         {
-          "id": "c33cd07e",
+          "id": "1",
           "title": "assignment1",
           "description": "string manipulation lab",
           "publishDate": "2001-12-15T00:00:00.000+0000",
@@ -17,6 +17,20 @@
           "exercises": [
             {
               "id": "a4097b1f",
+              "type": "code",
+              "language": "python"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "title": "assignment2",
+          "description": "string manipulation lab2",
+          "publishDate": "2001-12-15T00:00:00.000+0000",
+          "dueDate": "2001-05-11T00:00:00.000+0000",
+          "exercises": [
+            {
+              "id": "8efacc61f4ea",
               "type": "code",
               "language": "python"
             }
@@ -33,7 +47,7 @@
       "endDate": "2020-01-01T00:00:00.000+0000",
       "assignments": [
         {
-          "id": "981bcb2a7055",
+          "id": "3",
           "title": "assignment1",
           "description": "string manipulation lab",
           "publishDate": "2001-12-15T00:00:00.000+0000",
@@ -45,6 +59,50 @@
               "language": "python"
             }
           ]
+        }
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "1",
+      "title": "assignment1",
+      "description": "string manipulation lab",
+      "publishDate": "2001-12-15T00:00:00.000+0000",
+      "dueDate": "2001-05-11T00:00:00.000+0000",
+      "exercises": [
+        {
+          "id": "a4097b1f",
+          "type": "code",
+          "language": "python"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "assignment2",
+      "description": "string manipulation lab2",
+      "publishDate": "2001-12-15T00:00:00.000+0000",
+      "dueDate": "2001-05-11T00:00:00.000+0000",
+      "exercises": [
+        {
+          "id": "8efacc61f4ea",
+          "type": "code",
+          "language": "python"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "assignment1",
+      "description": "string manipulation lab",
+      "publishDate": "2001-12-15T00:00:00.000+0000",
+      "dueDate": "2001-05-11T00:00:00.000+0000",
+      "exercises": [
+        {
+          "id": "8efacc61f4ea",
+          "type": "code",
+          "language": "python"
         }
       ]
     }
