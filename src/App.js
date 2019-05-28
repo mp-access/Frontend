@@ -15,7 +15,9 @@ class App extends Component {
                     <AuthProvider>
                         <main className="container-fluid">
                             <Header/>
+                            <br/>
                             <AppNavigation/>
+                            <br/>
                             <Footer/>
                         </main>
                     </AuthProvider>
