@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {withAuth} from "../auth/AuthProvider";
 import CourseDataService from "../utils/CourseDataService";
+import AssignmentList from "../components/AssignmentList";
 
 class Course extends Component {
 
@@ -19,7 +20,7 @@ class Course extends Component {
             CourseDataService.getCourses()
                 .then(res => res.json())
                 .then(
-                    result => this.setState({course: result.filter( c => c.id === courseId)[0]})
+                    result => this.setState({course: result.filter(c => c.id === courseId)[0]})
                 )
                 .catch(err => {
                     console.debug("Error:", err.toString())
@@ -34,9 +35,16 @@ class Course extends Component {
 
         return (
             <div>
-                <h2>{this.state.course.name}</h2>
-                <p>id: {this.state.course.id}</p>
-                <p>name: {this.state.course.name}</p>
+                <h2>{this.state.course.title}</h2>
+
+                <div>
+                    <p>description: {this.state.course.description}</p>
+                    <p>from: {this.state.course.startDate} - to: {this.state.course.endDate}</p>
+                </div>
+
+                <div>
+                    <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments} />
+                </div>
             </div>
         );
     }
