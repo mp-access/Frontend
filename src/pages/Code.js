@@ -6,10 +6,10 @@ import utils from "../utils";
 class Code extends Component {
 
     state = {
-        language: 'javascript',
-        code: '#type your code... ',
+        language: 'none',
+        code: 'Choose code file above',
         isLoading: false,
-        files : [],
+        files: [],
     };
 
     componentDidMount() {
@@ -25,15 +25,13 @@ class Code extends Component {
         if (response.ok) {
             const content = await response.json();
 
-            //extract public files
             const files = [];
 
             //iterate public files to fill array
-            for (var i = 0; i < content.public_files.length; i++) {
+            for (let i = 0; i < content.public_files.length; i++) {
                 files.push(content.public_files[i]);
             }
 
-            //set state
             this.setState({files: files});
         }
     };
@@ -52,8 +50,17 @@ class Code extends Component {
     //setting code editor language within tabs
     setPython = () => this.setState({language: 'python'});
     setJs = () => this.setState({language: 'javascript'});
-    
-    setCode = (code) => this.setState({code : code});
+
+    setCode = (code) => this.setState({code: code});
+
+    setTab = (extension, code) => {
+        if (extension === 'py') {
+            this.setPython();
+        } else if (extension === 'js') {
+            this.setJs();
+        }
+        this.setCode(code);
+    };
 
     render() {
 
@@ -62,7 +69,8 @@ class Code extends Component {
         };
 
         const tabItems = this.state.files.map((c) =>
-            <button key={c.name} onClick={() => this.setCode(c.content)}>{c.name + '.' + c.extension}</button>
+            <button key={c.name}
+                    onClick={() => this.setTab(c.extension, c.content)}>{c.name + '.' + c.extension}</button>
         );
 
         return (
