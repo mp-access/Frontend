@@ -66,3 +66,21 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+# Json-Server
+
+https://github.com/typicode/json-server
+
+install with `npm install -g json-server`
+
+adjust package.json 
+
+```
+  "scripts": {
+    "mock:api": "json-server --watch dev/fake-api-db.json --port 4000"
+   }
+```
+
+save data as json in `dev/fake-api-db.json`
+
+start server with `npm run mock:api`
