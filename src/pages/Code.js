@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import utils from "../utils";
+import utils from '../utils';
+import { withAuth } from '../auth/AuthProvider';
 
 
 class Code extends Component {
@@ -13,26 +14,23 @@ class Code extends Component {
     };
 
     componentDidMount() {
-        this.setState({isLoading: true});
+        this.setState({ isLoading: true });
 
         this.fetchMyExercise()
-            .then(() => this.setState({isLoading: false}));
+            .then(() => this.setState({ isLoading: false }));
     }
 
     //refactor query to not be hardcoded to exercise but to receive input argument
     fetchMyExercise = async () => {
-        const response = await fetch(utils.courseServiceUrl + '/courses/0/assignments/1/exercises/3/');
+        const { context } = this.props;
+        const response = await fetch(utils.courseServiceUrl + '/courses/0/assignments/1/exercises/3/', context.authorizationHeader());
+
         if (response.ok) {
             const content = await response.json();
 
-            const files = [];
+            const files = content.public_files;
 
-            //iterate public files to fill array
-            for (let i = 0; i < content.public_files.length; i++) {
-                files.push(content.public_files[i]);
-            }
-
-            this.setState({files: files});
+            this.setState({ files: files });
         }
     };
 
@@ -48,10 +46,10 @@ class Code extends Component {
     };
 
     //setting code editor language within tabs
-    setPython = () => this.setState({language: 'python'});
-    setJs = () => this.setState({language: 'javascript'});
+    setPython = () => this.setState({ language: 'python' });
+    setJs = () => this.setState({ language: 'javascript' });
 
-    setCode = (code) => this.setState({code: code});
+    setCode = (code) => this.setState({ code: code });
 
     setTab = (extension, code) => {
         if (extension === 'py') {
@@ -70,11 +68,11 @@ class Code extends Component {
 
         const tabItems = this.state.files.map((c) =>
             <button key={c.name}
-                    onClick={() => this.setTab(c.extension, c.content)}>{c.name + '.' + c.extension}</button>
+                    onClick={() => this.setTab(c.extension, c.content)}>{c.name + '.' + c.extension}</button>,
         );
 
         return (
-            <div className="CodeEditor" style={{width: '100%'}}>
+            <div className="CodeEditor" style={{ width: '100%' }}>
 
                 {/* render files as tabs */}
                 {tabItems}
@@ -98,4 +96,5 @@ class Code extends Component {
     }
 }
 
-export default Code;
+
+export default withAuth(Code);
