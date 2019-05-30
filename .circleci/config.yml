@@ -48,7 +48,7 @@ jobs:
 
       - run:
           name: Build Docker image
-          command: docker build -t hoal/$FRONTEND_IMAGE_NAME-IMAGE:latest .
+          command: docker build -t hoal/$FRONTEND_IMAGE_NAME:latest .
 
       - add_ssh_keys:
           fingerprints:
