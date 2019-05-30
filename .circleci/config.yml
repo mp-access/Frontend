@@ -56,7 +56,7 @@ jobs:
       - run:
           name: Deploy app to Digital Ocean Server via Docker
           command: |
-            ssh -o StrictHostKeyChecking=no $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST "sh /root/access/infrastructure/scripts/restart-containers.sh"
+            ssh -o StrictHostKeyChecking=no $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST "cd /root/access/infrastructure && sh ./scripts/restart-containers.sh"
 
 workflows:
   version: 2
