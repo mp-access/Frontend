@@ -21,7 +21,8 @@ class AuthProvider extends Component {
 
     componentDidMount() {
         if (!utils.canBypassLogin) {
-            const keycloak = Keycloak('/keycloak.json');
+            const keycloakJson = utils.isDevelopment ? '/keycloak.json' : '/keycloak-prod.json';
+            const keycloak = Keycloak(keycloakJson);
             keycloak.init({ onLoad: 'check-sso' })
                 .success(authenticated => {
                     this.setState({
