@@ -1,26 +1,42 @@
 import React, { Component } from 'react';
 import MonacoEditor from 'react-monaco-editor';
+import utils from '../utils';
+import { withAuth } from '../auth/AuthProvider';
 
 
 class Code extends Component {
 
     state = {
-        activeLanguage: 0,
-        languages: [
-            {
-                language: 'python',
-                code: '# type your code...',
-            },
-            {
-                language: 'javascript',
-                code: '// type your code...',
-            },
-        ],
+        language: 'none',
+        code: 'Choose code file above',
+        isLoading: false,
+        files: [],
     };
 
+    componentDidMount() {
+        this.setState({ isLoading: true });
+
+        this.fetchMyExercise()
+            .then(() => this.setState({ isLoading: false }));
+    }
+
+    //refactor query to not be hardcoded to exercise but to receive input argument
+    fetchMyExercise = async () => {
+        const { context } = this.props;
+        const response = await fetch(utils.courseServiceUrl + '/courses/0/assignments/1/exercises/3/', context.authorizationHeader());
+
+        if (response.ok) {
+            const content = await response.json();
+
+            const files = content.public_files;
+
+            this.setState({ files: files });
+        }
+    };
+
+    //monaco editor
     editorDidMount = (editor, monaco) => {
         console.log('editorDidMount', editor);
-        //monaco.editor.setTheme('vs-dark');
         editor.focus();
         console.log(monaco);
     };
@@ -29,31 +45,44 @@ class Code extends Component {
         console.log('onChange', newValue, e);
     };
 
-    setPython = () => this.setState({ activeLanguage: 0 });
+    //setting code editor language within tabs
+    setPython = () => this.setState({ language: 'python' });
+    setJs = () => this.setState({ language: 'javascript' });
 
-    setJs = () => this.setState({ activeLanguage: 1 });
+    setCode = (code) => this.setState({ code: code });
+
+    setTab = (extension, code) => {
+        if (extension === 'py') {
+            this.setPython();
+        } else if (extension === 'js') {
+            this.setJs();
+        }
+        this.setCode(code);
+    };
 
     render() {
-        const { languages, activeLanguage } = this.state;
-        const { code, language } = languages[activeLanguage];
+
         const options = {
             selectOnLineNumbers: true,
         };
 
+        const tabItems = this.state.files.map((c) =>
+            <button key={c.name}
+                    onClick={() => this.setTab(c.extension, c.content)}>{c.name + '.' + c.extension}</button>,
+        );
+
         return (
-            <div className="Welcome" style={{ width: '100%' }}>
-                <p>This is your public-facing component.</p>
+            <div className="CodeEditor" style={{ width: '100%' }}>
 
-                <button onClick={this.setPython}>Python</button>
-                <button onClick={this.setJs}>Javascript</button>
-
+                {/* render files as tabs */}
+                {tabItems}
 
                 <MonacoEditor
                     width="100%"
                     height="1000px"
-                    language={language}
+                    language={this.state.language}
                     theme="vs-dark"
-                    value={code}
+                    value={this.state.code}
                     automaticLayout={true}
                     options={options}
                     quickSuggestions={true}
@@ -67,4 +96,5 @@ class Code extends Component {
     }
 }
 
-export default Code;
+
+export default withAuth(Code);
