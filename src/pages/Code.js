@@ -3,6 +3,8 @@ import MonacoEditor from 'react-monaco-editor';
 import utils from '../utils';
 import { withAuth } from '../auth/AuthProvider';
 
+const ReactMarkdown = require('react-markdown');
+
 
 class Code extends Component {
 
@@ -11,6 +13,7 @@ class Code extends Component {
         code: 'Choose code file above',
         isLoading: false,
         files: [],
+        question: 'Is Loading ... ',
     };
 
     componentDidMount() {
@@ -30,7 +33,7 @@ class Code extends Component {
 
             const files = content.public_files;
 
-            this.setState({ files: files });
+            this.setState({ files, question: content.question });
         }
     };
 
@@ -72,7 +75,10 @@ class Code extends Component {
         );
 
         return (
+
             <div className="CodeEditor" style={{ width: '100%' }}>
+
+                <ReactMarkdown source={this.state.question}/>
 
                 {/* render files as tabs */}
                 {tabItems}
