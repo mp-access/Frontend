@@ -33,9 +33,7 @@ class Code extends Component {
 
             const files = content.public_files;
 
-            this.setState({ files: files });
-
-            this.setState({ question: content.question });
+            this.setState({ files, question: content.question });
         }
     };
 
