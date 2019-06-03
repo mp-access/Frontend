@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import utils from '../utils';
+import Course from '../models/Course';
 
 class MyCourses extends Component {
 
     state = {
+        /**
+         * {@type Array<Course>}
+         */
         courses: [],
         isLoading: false,
     };
@@ -21,7 +25,7 @@ class MyCourses extends Component {
         const response = await fetch(utils.courseServiceUrl + '/users/courses', authorizationHeader);
         if (response.ok) {
             const courses = await response.json();
-            this.setState({ courses });
+            this.setState({ courses: courses.map(c => new Course(c)), isLoading: false });
         }
     };
 
@@ -33,7 +37,8 @@ class MyCourses extends Component {
                     My courses
                 </h2>
                 <ul>
-                    {courses.map((course) => <li key={course}>{course}</li>)}
+                    {courses.map((c) => <li key={c.course}>{c.course}: Student({c.student.toString()}) /
+                        Author({c.author.toString()})</li>)}
                 </ul>
             </div>
         );
