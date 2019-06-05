@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.3.1",
     "customize-cra": "^0.2.12",
     "keycloak-js": "^6.0.0",
     "monaco-editor-webpack-plugin": "^1.7.0",
@@ -19,7 +20,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "mock:api": "json-server --watch dev/fake-api-db.json --routes dev/fake-api-routes.json --port 4000"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -29,5 +31,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "json-server": "^0.15.0"
+  }
 }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withAuth } from '../auth/AuthProvider';
-import MyCourses from '../components/MyCourses';
 
 class Welcome extends Component {
     render() {
@@ -8,16 +7,13 @@ class Welcome extends Component {
         return (
             <div className="Welcome">
                 <p>
-                    This is your public-facing component.
+                  Hello Welcome to Access
                 </p>
 
                 {!context.isAuthenticated &&
                 <p>Login to view your courses.</p>
                 }
 
-                {context.isAuthenticated &&
-                <MyCourses authorizationHeader={context.authorizationHeader()}/>
-                }
             </div>
         );
     }
