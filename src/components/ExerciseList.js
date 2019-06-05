@@ -3,10 +3,6 @@ import {Link} from 'react-router-dom';
 
 class ExerciseList extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const {exercises} = this.props;
 
