@@ -10,8 +10,8 @@ class CourseDataService {
         return fetch(utils.courseServiceUrl + "/courses/"+ courseId +"/assignments/"+assignmentId);
     }
 
-    static async getExercise(excerciseId) {
-        return fetch(utils.courseServiceUrl + "/exercises/"+ excerciseId );
+    static async getExercise(excerciseId, authHeader) {
+        return fetch(utils.courseServiceUrl + "/exercises/"+ excerciseId, authHeader);
     }
 
 }
