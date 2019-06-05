@@ -4,17 +4,17 @@ import { withAuthAndRouter } from '../auth/AuthProvider';
 
 const Header = () => {
     return (
-        <header style={{background: 'lightblue'}}>
+        <header style={{ background: 'lightblue' }}>
 
             <nav className="navbar navbar-expand-lg bg-white">
                 <Link className="navbar-brand" to="/">
-                    <img src="/uzh_logo_d_pos_web_main.jpg"  alt="some text" className="d-inline-block align-top"/>
+                    <img src="/uzh_logo_d_pos_web_main.jpg" alt="some text" className="d-inline-block align-top"/>
                 </Link>
 
                 <button className="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
                         aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
+                    <span className="navbar-toggler-icon"/>
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
@@ -41,8 +41,8 @@ const Header = () => {
     );
 };
 
-const LoginOrLogoutBtn = withAuthAndRouter(({context, history}) => {
-    const {isAuthenticated, login, logout} = context;
+const LoginOrLogoutBtn = withAuthAndRouter(({ context, history }) => {
+    const { isAuthenticated, login, logout } = context;
     if (!isAuthenticated) {
         return <LoginBtn onLoginClick={login}/>;
     }
@@ -50,14 +50,18 @@ const LoginOrLogoutBtn = withAuthAndRouter(({context, history}) => {
     return <LogoutBtn onLogoutClick={logout} history={history}/>;
 });
 
-const LoginBtn = ({onLoginClick}) => (
-    <button onClick={onLoginClick}>
+const LoginBtn = ({ onLoginClick }) => (
+    <button onClick={(e) => {
+        e.preventDefault();
+        onLoginClick();
+    }}>
         Login
     </button>
 );
 
-const LogoutBtn = ({onLogoutClick, history}) => (
-    <button onClick={() => {
+const LogoutBtn = ({ onLogoutClick, history }) => (
+    <button onClick={(e) => {
+        e.preventDefault();
         history.push('/');
         onLogoutClick();
     }
