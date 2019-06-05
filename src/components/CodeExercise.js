@@ -41,7 +41,7 @@ class CodeExercise extends Component {
 
         return (
             <div>
-                <div className="border border-primary rounded">
+                <div className="border border-secondary rounded">
                     <ReactMarkdown source={this.props.exercise.question}/>
                 </div>
 
