@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {withAuth} from "../auth/AuthProvider";
 import CourseDataService from "../utils/CourseDataService";
 import MonacoEditor from "react-monaco-editor";
-import utils from "../utils";
 
 const ReactMarkdown = require('react-markdown');
 
@@ -28,7 +27,6 @@ class Exercise extends Component {
     fetchMyExercise = async () => {
         const exerciseId = this.props.match.params.exerciseId;
 
-        const { context } = this.props;
         const response = await CourseDataService.getExercise(exerciseId);
 
         if (response.ok) {
