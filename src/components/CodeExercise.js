@@ -4,56 +4,65 @@ import ReactMarkdown from "react-markdown";
 
 class CodeExercise extends Component {
 
-    //monaco editor
-    editorDidMount = (editor, monaco) => {
-        console.log('editorDidMount', editor);
-        editor.focus();
-        console.log(monaco);
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedFile: undefined,
+            workspace: [],
+        };
+    }
 
-    onChange = (newValue, e) => {
-        console.log('onChange', newValue, e);
-    };
+    componentDidMount() {
+        console.debug(this.props.exercise);
 
-    //setting code editor language within tabs
-    setPython = () => this.setState({language: 'python'});
-    setJs = () => this.setState({language: 'javascript'});
+        this.setState({
+            selectedFile: this.props.exercise.public_files[0],
+            workspace: this.props.exercise.public_files
+        });
+    }
 
-    setCode = (code) => this.setState({code: code});
-
-    setTab = (extension, code) => {
-        if (extension === 'py') {
-            this.setPython();
-        } else if (extension === 'js') {
-            this.setJs();
-        }
-        this.setCode(code);
-    };
-
+    select(file) {
+        console.debug("select", file);
+        this.setState({selectedFile: file});
+    }
 
     render() {
-        const exercise = this.props.exercise;
+        if (!this.state.selectedFile) {
+            return null;
+        }
+
         const options = {selectOnLineNumbers: true,};
 
-        console.debug(exercise);
+        let files = this.state.workspace.map((f) =>
+            <button key={f.id} className="btn btn-light" onClick={() => this.select(f)}>
+                {f.name + '.' + f.extension}
+            </button>
+        );
 
         return (
             <div>
-
-                <ReactMarkdown source={exercise.question}/>
-
-                <div className="border">
-                    <MonacoEditor
-                        height="450px"
-                        language="python"
-                        value={exercise.content}
-                        automaticLayout={true}
-                        options={options}
-                        quickSuggestions={true}
-                        snippetSuggestions={true}
-                        wordBasedSuggestions={true}
-                    />
+                <div className="border border-primary rounded">
+                    <ReactMarkdown source={this.props.exercise.question}/>
                 </div>
+
+                <div className="border border-secondary rounded">
+                    <div className="btn-group btn-group-sm" role="group" aria-label="files">
+                        {files}
+                    </div>
+                    <div className="border">
+                        <MonacoEditor
+                            height="450px"
+                            language={this.props.exercise.language}
+                            value={this.state.selectedFile.content}
+                            automaticLayout={true}
+                            options={options}
+                            quickSuggestions={true}
+                            snippetSuggestions={true}
+                            wordBasedSuggestions={true}
+                        />
+                    </div>
+                </div>
+
             </div>
         );
     }

@@ -121,6 +121,14 @@
           "extension": "py",
           "content": "This is definitely a pythoon file",
           "mediaType": false
+        },
+        {
+          "id": "6123e9d03344",
+          "path": "\\main.py",
+          "name": "main",
+          "extension": "py",
+          "content": "another python file",
+          "mediaType": false
         }
       ],
       "resource_files": []
