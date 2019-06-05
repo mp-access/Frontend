@@ -15,8 +15,10 @@ class Assignment extends Component {
     componentDidMount() {
         const courseId = this.props.match.params.courseId;
         const assignmentId = this.props.match.params.assignmentId;
+        const { context } = this.props;
+
         (async () => {
-            CourseDataService.getAssignment(courseId, assignmentId)
+            CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
 
                 .then(res => res.json())
                 .then(

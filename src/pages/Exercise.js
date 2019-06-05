@@ -26,8 +26,9 @@ class Exercise extends Component {
     //refactor query to not be hardcoded to exercise but to receive input argument
     fetchMyExercise = async () => {
         const exerciseId = this.props.match.params.exerciseId;
+        const { context } = this.props;
 
-        const response = await CourseDataService.getExercise(exerciseId);
+        const response = await CourseDataService.getExercise(exerciseId, context.authorizationHeader);
 
         if (response.ok) {
             const content = await response.json();
