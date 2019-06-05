@@ -1,6 +1,6 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {withAuthAndRouter} from '../auth/AuthProvider';
+import { Link } from 'react-router-dom';
+import { withAuthAndRouter } from '../auth/AuthProvider';
 
 const Header = () => {
     return (
@@ -8,7 +8,7 @@ const Header = () => {
 
             <nav className="navbar navbar-expand-lg bg-white">
                 <Link className="navbar-brand" to="/">
-                    <img src="/uzh_logo_d_pos_web_main.jpg"  alt="some text" class="d-inline-block align-top"/>
+                    <img src="/uzh_logo_d_pos_web_main.jpg"  alt="some text" className="d-inline-block align-top"/>
                 </Link>
 
                 <button className="navbar-toggler" type="button" data-toggle="collapse"
