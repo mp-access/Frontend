@@ -3,10 +3,6 @@ import {Link} from 'react-router-dom';
 
 class CourseBanner extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const {course} = this.props;
         return (
