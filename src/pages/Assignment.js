@@ -18,7 +18,7 @@ class Assignment extends Component {
         const { context } = this.props;
 
         (async () => {
-            CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
+            CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader())
 
                 .then(res => res.json())
                 .then(

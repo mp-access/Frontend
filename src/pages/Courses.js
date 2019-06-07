@@ -15,7 +15,7 @@ class Courses extends Component {
     componentDidMount() {
         const { context } = this.props;
         (async () => {
-            CourseDataService.getCourses(context.authorizationHeader)
+            CourseDataService.getCourses(context.authorizationHeader())
                 .then(res => res.json())
                 .then(
                     result => this.setState({courses: result})

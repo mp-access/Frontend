@@ -28,7 +28,7 @@ class Exercise extends Component {
         const exerciseId = this.props.match.params.exerciseId;
         const { context } = this.props;
 
-        const response = await CourseDataService.getExercise(exerciseId, context.authorizationHeader);
+        const response = await CourseDataService.getExercise(exerciseId, context.authorizationHeader());
 
         if (response.ok) {
             const content = await response.json();

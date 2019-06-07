@@ -18,7 +18,7 @@ class Course extends Component {
         const courseId = this.props.match.params.courseId;
         const { context } = this.props;
         (async () => {
-            CourseDataService.getCourses(context.authorizationHeader)
+            CourseDataService.getCourses(context.authorizationHeader())
                 .then(res => res.json())
                 .then(
                     result => this.setState({course: result.filter(c => c.id === courseId)[0]})
