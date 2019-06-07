@@ -2,12 +2,12 @@ import utils from '../utils';
 
 class CourseDataService {
 
-    static async getCourses() {
-        return fetch(utils.courseServiceUrl + '/courses');
+    static async getCourses(authHeader) {
+        return fetch(utils.courseServiceUrl + '/courses', authHeader);
     }
 
-    static async getAssignment(courseId, assignmentId) {
-        return fetch(utils.courseServiceUrl + "/courses/"+ courseId +"/assignments/"+assignmentId);
+    static async getAssignment(courseId, assignmentId, authHeader) {
+        return fetch(utils.courseServiceUrl + "/courses/"+ courseId +"/assignments/"+assignmentId, authHeader);
     }
 
     static async getExercise(excerciseId, authHeader) {
