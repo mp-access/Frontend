@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {withAuth} from "../auth/AuthProvider";
-import CourseDataService from "../utils/CourseDataService";
-import CodeExercise from "../components/CodeExercise";
+import React, { Component } from 'react';
+import { withAuth } from '../auth/AuthProvider';
+import CourseDataService from '../utils/CourseDataService';
+import CodeExercise from '../components/CodeExercise';
 
 class Exercise extends Component {
 
@@ -17,13 +17,13 @@ class Exercise extends Component {
         const authContext = this.props.context;
 
         (async () => {
-            CourseDataService.getExercise(exerciseId, authContext.authorizationHeader)
+            CourseDataService.getExercise(exerciseId, authContext.authorizationHeader())
                 .then(res => res.json())
                 .then(
-                    result => this.setState({exercise: result})
+                    result => this.setState({ exercise: result }),
                 )
                 .catch(err => {
-                    console.debug("Error:", err.toString())
+                    console.debug('Error:', err.toString());
                 });
         })();
     }
@@ -34,10 +34,10 @@ class Exercise extends Component {
         }
 
         let ex = this.state.exercise;
-        let content = <p>unknown exercise type</p>
+        let content = <p>unknown exercise type</p>;
 
-        if(ex.type === "code"){
-            content = <CodeExercise exercise={ex} />
+        if (ex.type === 'code') {
+            content = <CodeExercise exercise={ex}/>;
         }
 
         return (
