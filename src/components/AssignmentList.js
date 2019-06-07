@@ -3,10 +3,6 @@ import {Link} from 'react-router-dom';
 
 class AssignmentList extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const {courseId} = this.props;
         const {assignments} = this.props;

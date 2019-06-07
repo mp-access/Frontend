@@ -106,5 +106,41 @@
         }
       ]
     }
+  ],
+  "exercises": [
+    {
+      "id": "a4097b1f",
+      "type": "code",
+      "language": "python",
+      "question": "What is 1+1",
+      "public_files": [
+        {
+          "id": "1a5b3035-cb31-493a-969f-6123e9d03344",
+          "path": "\\testSuite.py",
+          "name": "testSuite",
+          "extension": "py",
+          "content": "This is definitely a pythoon file",
+          "mediaType": false
+        }
+      ],
+      "resource_files": []
+    },
+    {
+      "id": "8efacc61f4ea",
+      "type": "code",
+      "language": "python",
+      "question": "What is 1+1",
+      "public_files": [
+        {
+          "id": "1a5b3035-cb31-493a-969f-6123e9d03344",
+          "path": "\\testSuite.py",
+          "name": "testSuite",
+          "extension": "py",
+          "content": "This is definitely a pythoon file",
+          "mediaType": false
+        }
+      ],
+      "resource_files": []
+    }
   ]
 }

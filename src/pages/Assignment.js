@@ -1,27 +1,28 @@
 import React, {Component} from 'react';
 import {withAuth} from "../auth/AuthProvider";
 import CourseDataService from "../utils/CourseDataService";
-import AssignmentList from "../components/AssignmentList";
+import ExerciseList from "../components/ExerciseList";
 
-class Course extends Component {
+class Assignment extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            courses: [],
-            course: undefined
+            assignment: undefined
         }
-        this.courseService = new CourseDataService();
     }
 
     componentDidMount() {
         const courseId = this.props.match.params.courseId;
+        const assignmentId = this.props.match.params.assignmentId;
         const { context } = this.props;
+
         (async () => {
-            CourseDataService.getCourses(context.authorizationHeader())
+            CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader())
+
                 .then(res => res.json())
                 .then(
-                    result => this.setState({course: result.filter(c => c.id === courseId)[0]})
+                    result => this.setState({assignment: result})
                 )
                 .catch(err => {
                     console.debug("Error:", err.toString())
@@ -30,25 +31,25 @@ class Course extends Component {
     }
 
     render() {
-        if (!this.state.course) {
+        if (!this.state.assignment) {
             return null;
         }
 
         return (
             <div>
-                <h2>{this.state.course.title}</h2>
+                <h2>{this.state.assignment.title}</h2>
 
                 <div>
-                    <p>description: {this.state.course.description}</p>
-                    <p>from: {this.state.course.startDate} - to: {this.state.course.endDate}</p>
+                    <p>description: {this.state.assignment.description}</p>
+                    <p>from: {this.state.assignment.publishDate} - to: {this.state.assignment.dueDate}</p>
                 </div>
 
                 <div>
-                    <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments} />
+                    <ExerciseList exercises={this.state.assignment.exercises} />
                 </div>
             </div>
         );
     }
 }
 
-export default withAuth(Course);
+export default withAuth(Assignment);

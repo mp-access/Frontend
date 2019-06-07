@@ -1,5 +1,5 @@
 import React from 'react';
-import { Courses, Course, Profile, Welcome, Code } from '../pages/';
+import { Assignment, Code, Courses, Course, Exercise, Profile, Welcome } from '../pages/';
 import { Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
 
@@ -10,6 +10,8 @@ const AppNavigation = () => {
             <Route exact path="/" component={Welcome}/>
             <PrivateRoute exact path="/courses" component={Courses}/>
             <PrivateRoute exact path="/courses/:courseId" component={Course}/>
+            <PrivateRoute exact path="/courses/:courseId/assignments/:assignmentId" component={Assignment}/>
+            <PrivateRoute exact path="/exercises/:exerciseId" component={Exercise}/>
             <PrivateRoute exact path="/code" component={Code}/>
             <PrivateRoute exact path="/profile" component={Profile}/>
         </>

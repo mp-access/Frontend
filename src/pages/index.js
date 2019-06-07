@@ -4,5 +4,7 @@ import Code from '../pages/Code';
 import Courses from '../pages/Courses';
 import Course from '../pages/Course';
 import Profile from '../pages/Profile';
+import Assignment from '../pages/Assignment';
+import Exercise from '../pages/Exercise';
 
-export {Welcome, Secured, Code, Courses, Course, Profile};
+export {Welcome, Secured, Code, Courses, Course, Profile, Assignment, Exercise};
