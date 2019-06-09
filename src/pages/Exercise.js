@@ -47,7 +47,7 @@ class Exercise extends Component {
                     <div className="col">
                         Exercise list
                     </div>
-                    <div className="col-8">
+                    <div className="col-9">
                         {content}
                     </div>
                     <div className="col">
