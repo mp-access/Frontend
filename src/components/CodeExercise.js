@@ -14,9 +14,6 @@ class CodeExercise extends Component {
     }
 
     componentDidMount() {
-        console.debug(this.props.exercise);
-        console.log(this.props.exercise);
-
         this.setState({
             selectedFile: this.props.exercise.public_files[0],
             workspace: this.props.exercise.public_files,
@@ -24,7 +21,6 @@ class CodeExercise extends Component {
     }
 
     select(file) {
-        console.debug('select', file);
         this.setState({ selectedFile: file });
     }
 
@@ -37,11 +33,12 @@ class CodeExercise extends Component {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                ...this.props.authorizationHeader,
             },
             body: JSON.stringify({
                 'type': 'code',
                 'details': {
-                    'graded': 'true',
+                    'graded': 'false',
                     'publicFiles': workspace,
                 },
             }),
@@ -67,7 +64,6 @@ class CodeExercise extends Component {
         file = { ...file, content: newValue };
         workspace[index] = file;
         this.setState(({ workspace, selectedFile: file }));
-        console.log(this.state.workspace);
     };
 
     render() {
@@ -111,7 +107,6 @@ class CodeExercise extends Component {
                         </button>
                     </div>
                 </div>
-
             </div>
         );
     }
