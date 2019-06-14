@@ -27,13 +27,14 @@ class CodeExercise extends Component {
     submitButtonClick = () => {
         console.log('Submit Button pressed');
         let workspace = this.state.workspace;
+        const {headers} = this.props.authorizationHeader;
 
         fetch(utils.courseServiceUrl + '/submissions/' + this.props.exercise.id, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                ...this.props.authorizationHeader,
+                ...headers,
             },
             body: JSON.stringify({
                 'type': 'code',

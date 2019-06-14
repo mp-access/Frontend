@@ -37,7 +37,8 @@ class Exercise extends Component {
         let content = <p>unknown exercise type</p>;
 
         if (ex.type === 'code') {
-            content = <CodeExercise exercise={ex}/>;
+            const authorizationHeader = this.props.context.authorizationHeader();
+            content = <CodeExercise exercise={ex} authorizationHeader={authorizationHeader}/>;
         }
 
         return (
