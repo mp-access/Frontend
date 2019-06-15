@@ -6,6 +6,7 @@ import 'file-icons-js/css/style.css';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import FileIcons from 'file-icons-js';
 import SortableTree from 'react-sortable-tree';
+import './CodeExercise.css';
 
 class CodeExercise extends Component {
 
@@ -15,7 +16,7 @@ class CodeExercise extends Component {
             selectedFile: undefined,
             workspace: [],
 
-            treeData: files,
+            treeData: demoFiles,
             activeFile: '',
         };
     }
@@ -84,6 +85,11 @@ class CodeExercise extends Component {
                     ...n,
                     expanded: !n.expanded,
                 };
+            } else if (n.id === node.id) {
+                return {
+                    ...n,
+                    active: true,
+                };
             }
             return n;
         });
@@ -93,16 +99,23 @@ class CodeExercise extends Component {
     };
 
     render() {
-        if (!this.state.selectedFile) {
+        const { selectedFile } = this.state;
+        if (!selectedFile) {
             return null;
         }
 
         const options = { selectOnLineNumbers: true };
 
-        let files = this.state.workspace.map((f) =>
-            <button key={f.id} className="btn btn-light" onClick={() => this.select(f)}>
-                {f.name + '.' + f.extension}
-            </button>,
+        let files = this.state.workspace.map((f) => {
+                const isSelected = f.id === selectedFile.id;
+                return (
+                    <button key={f.id}
+                            className={`btn ${isSelected ? 'code-editor-workspace-tab-active' : 'code-editor-workspace-tab'}`}
+                            onClick={() => this.select(f)}>
+                        {f.name + '.' + f.extension}
+                    </button>
+                );
+            },
         );
 
 
@@ -119,9 +132,18 @@ class CodeExercise extends Component {
                     </div>
                 </div>
 
-                <div className="row  border border-secondary rounded">
+                <div className="row border border-secondary rounded code-editor-workspace">
                     <div className="col-2">
+                        <div className={'row'}>
+                            <div className={'col'}>
+                                <small className="explorer-label">
+                                    EXPLORER
+                                </small>
+                            </div>
+                        </div>
+
                         <SortableTree
+                            className="file-explorer"
                             style={{ outline: 'none' }}
                             treeData={treeData}
                             onChange={treeData => this.setState({ treeData })}
@@ -148,15 +170,8 @@ class CodeExercise extends Component {
                                         />,
                                     ]
                                     : [
-                                        <div
-                                            style={{
-                                                fontSize: 8,
-                                                textAlign: 'center',
-                                                marginRight: 10,
-                                                width: 12,
-                                                height: 16,
-                                            }}
-                                            onClick={() => this.nodeClicked(rowInfo.node, rowInfo.path, rowInfo.treeIndex)}
+                                        <div className="file-explorer-icon"
+                                             onClick={() => this.nodeClicked(rowInfo.node, rowInfo.path, rowInfo.treeIndex)}
                                         >
                                             <i className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
                                         </div>,
@@ -164,7 +179,15 @@ class CodeExercise extends Component {
                                 title: ({ node, path, treeIndex }) => {
                                     return (
                                         <span
-                                            onClick={() => this.nodeClicked(node, path, treeIndex)}> {node.title}</span>
+                                            onClick={() => this.nodeClicked(node, path, treeIndex)}>
+                                            {node.id === selectedFile.id ?
+                                                <i>
+                                                    {node.title}
+                                                </i>
+                                                :
+                                                (node.title)
+                                            }
+                                        </span>
                                     );
                                 },
                             })}
@@ -172,10 +195,13 @@ class CodeExercise extends Component {
                     </div>
 
                     <div className="col-10">
-                        <div className="btn-group btn-group-sm" role="group" aria-label="files">
-                            {files}
+                        <div className={'row'}>
+                            <div className="btn-group btn-group-sm" role="group" aria-label="files">
+                                {files}
+                            </div>
                         </div>
-                        <div className="border">
+
+                        <div className="row">
                             <MonacoEditor
                                 height="800px"
                                 language={language}
@@ -222,9 +248,11 @@ const mapVirtualFilesToTreeStructure = (virtualFiles) => {
 
 /**
  * Should have this structure to map it to the component
+ *
+ * This is for demo.
  * @type {*[]}
  */
-const files = [
+const demoFiles = [
     { id: 1, title: '.gitignore' },
     { id: 2, title: 'package.json' },
     {
@@ -244,7 +272,7 @@ const files = [
         id: 9,
         title: 'build',
         isDirectory: true,
-        children: [{ title: 'react-sortable-tree.js' }],
+        children: [{ id: 12, title: 'react-sortable-tree.js' }],
     },
     {
         id: 10,
