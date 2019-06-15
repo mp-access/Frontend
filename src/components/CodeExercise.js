@@ -21,9 +21,12 @@ class CodeExercise extends Component {
     }
 
     componentDidMount() {
+        const treeData = mapVirtualFilesToTreeStructure(this.props.exercise.public_files);
+
         this.setState({
             selectedFile: this.props.exercise.public_files[0],
             workspace: this.props.exercise.public_files,
+            treeData,
         });
     }
 
@@ -75,7 +78,6 @@ class CodeExercise extends Component {
     };
 
     nodeClicked = (node, path, treeIndex) => {
-        console.log(node, path, treeIndex);
         const treeData = this.state.treeData.map(n => {
             if (n.id === node.id && n.isDirectory) {
                 return {
@@ -86,10 +88,8 @@ class CodeExercise extends Component {
             return n;
         });
 
-        this.setState({ treeData });
-
-        // const activeFile = this.state.exercise.public_files.find(f => f.id === node.id);
-        // this.setState({ activeFile });
+        const selectedFile = this.state.workspace.find(f => f.id === node.id);
+        this.setState({ selectedFile, treeData });
     };
 
     render() {
@@ -177,7 +177,7 @@ class CodeExercise extends Component {
                         </div>
                         <div className="border">
                             <MonacoEditor
-                                height="450px"
+                                height="800px"
                                 language={language}
                                 value={content}
                                 automaticLayout={true}
@@ -204,6 +204,20 @@ const extensionLanguageMap = {
     'js': 'javascript',
     'css': 'css',
     'json': 'json',
+};
+
+/**
+ * Maps backend virtual files to frontend tree structure.
+ *
+ * Note: this should be adapted to account for folder structures in future
+ * @param virtualFiles
+ * @returns {*}
+ */
+const mapVirtualFilesToTreeStructure = (virtualFiles) => {
+    return virtualFiles.map(file => ({
+        ...file,
+        title: `${file.name}.${file.extension}`,
+    }));
 };
 
 /**
