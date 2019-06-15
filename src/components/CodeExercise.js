@@ -15,7 +15,6 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             workspace: [],
-
             treeData: demoFiles,
             activeFile: '',
         };
