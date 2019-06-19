@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.16-jessie-browsers-legacy
+      - image: circleci/node:lts-jessie-browsers-legacy
 
     working_directory: ~/repo
 

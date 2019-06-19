@@ -1,4 +1,4 @@
-FROM node:10.15.3-alpine as build
+FROM node:lts as build
 WORKDIR /app
 COPY ./package*.json ./
 RUN yarn
