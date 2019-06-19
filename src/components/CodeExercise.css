@@ -1,0 +1,24 @@
+.explorer-label {
+    color: #797979;
+}
+
+.code-editor-workspace {
+    background: #f3f3f3;
+}
+
+.code-editor-workspace-tab.active {
+    background-color: white;
+    outline: none;
+}
+
+.code-editor-footer {
+    background: #006fc5;
+}
+
+.file-explorer-icon {
+    margin-right: 10px;
+}
+
+.ReactVirtualized__Grid {
+    outline: 0;
+}
