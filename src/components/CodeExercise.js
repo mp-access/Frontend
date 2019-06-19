@@ -109,7 +109,7 @@ class CodeExercise extends Component {
                 const isSelected = f.id === selectedFile.id;
                 return (
                     <button key={f.id}
-                            className={`btn ${isSelected ? 'code-editor-workspace-tab-active' : 'code-editor-workspace-tab'}`}
+                            className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
                             onClick={() => this.select(f)}>
                         {f.name + '.' + f.extension}
                     </button>
