@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import ReactMarkdown from 'react-markdown';
-import utils from '../utils';
 import 'file-icons-js/css/style.css';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import FileIcons from 'file-icons-js';
 import SortableTree from 'react-sortable-tree';
 import './CodeExercise.css';
+import Workspace from '../models/Workspace';
+import SubmissionService from '../utils/SubmissionService';
 
 class CodeExercise extends Component {
 
@@ -14,71 +15,65 @@ class CodeExercise extends Component {
         super(props);
         this.state = {
             selectedFile: undefined,
-            workspace: [],
-            treeData: demoFiles,
-            activeFile: '',
+            fileExplorerData: demoFiles,
+            workspace: undefined,
         };
     }
 
-    componentDidMount() {
-        const treeData = mapVirtualFilesToTreeStructure(this.props.exercise.public_files);
+    componentDidMount = async () => {
+        const { authorizationHeader, exercise } = this.props;
+        const fileExplorerData = mapVirtualFilesToTreeStructure(exercise['public_files']);
+
+        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        const workspace = new Workspace(exercise, submission);
 
         this.setState({
-            selectedFile: this.props.exercise.public_files[0],
-            workspace: this.props.exercise.public_files,
-            treeData,
+            fileExplorerData,
+            workspace,
+            selectedFile: workspace.publicFiles[0],
         });
-    }
 
-    select(file) {
+    };
+
+    fetchLastSubmission = (exerciseId, authHeader) => {
+        return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    onFileSelected(file) {
         this.setState({ selectedFile: file });
     }
 
     submitButtonClick = () => {
         console.log('Submit Button pressed');
-        let workspace = this.state.workspace;
+        let { workspace } = this.state;
         const { headers } = this.props.authorizationHeader;
 
-        fetch(utils.courseServiceUrl + '/submissions/' + this.props.exercise.id, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-            body: JSON.stringify({
-                'type': 'code',
-                'details': {
-                    'graded': 'false',
-                    'publicFiles': workspace,
-                },
-            }),
-        }).then(response => {
-            if (response.status === 202) {
-                console.log('202 - Submission Successful');
-                return response.json();
-            } else {
-                throw new Error('Something went wrong on api server!');
-            }
-        }).then(response => {
-            console.debug(response);
-        }).catch(error => {
-            console.error(error);
-        });
+        SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
+            .catch(err => console.error(err));
     };
 
-    //update workspace if code gets edited by user
+    /**
+     * Update workspace if code gets edited by user
+     */
     onChange = (newValue) => {
-        let workspace = this.state.workspace.slice();
-        let index = workspace.indexOf(this.state.selectedFile);
-        let file = workspace[index];
+        const { workspace } = this.state;
+        let files = workspace.publicFiles.slice();
+        let index = files.indexOf(this.state.selectedFile);
+        let file = files[index];
         file = { ...file, content: newValue };
-        workspace[index] = file;
-        this.setState(({ workspace, selectedFile: file }));
+        files[index] = file;
+        const updatedWorkspace = Object.assign(new Workspace(), workspace);
+        updatedWorkspace.publicFiles = files;
+        this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
     };
 
-    nodeClicked = (node, path, treeIndex) => {
-        const treeData = this.state.treeData.map(n => {
+    onFileExplorerChange = (data) => {
+        this.setState({ fileExplorerData: data });
+    };
+
+    nodeClicked = (node) => {
+        const fileExplorerData = this.state.fileExplorerData.map(n => {
             if (n.id === node.id && n.isDirectory) {
                 return {
                     ...n,
@@ -93,41 +88,38 @@ class CodeExercise extends Component {
             return n;
         });
 
-        const selectedFile = this.state.workspace.find(f => f.id === node.id);
-        this.setState({ selectedFile, treeData });
+        const selectedFile = this.state.workspace.findFile(node.id);
+        this.setState({ selectedFile, fileExplorerData });
     };
 
     render() {
-        const { selectedFile } = this.state;
-        if (!selectedFile) {
+        const { selectedFile, workspace, fileExplorerData } = this.state;
+
+        if (!selectedFile || !workspace) {
             return null;
         }
 
-        const options = { selectOnLineNumbers: true };
-
-        let files = this.state.workspace.map((f) => {
+        let files = workspace.publicFiles.map((f) => {
                 const isSelected = f.id === selectedFile.id;
                 return (
                     <button key={f.id}
                             className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
-                            onClick={() => this.select(f)}>
+                            onClick={() => this.onFileSelected(f)}>
                         {f.name + '.' + f.extension}
                     </button>
                 );
             },
         );
 
-
-        const { content } = this.state.selectedFile;
-        const language = extensionLanguageMap[this.state.selectedFile.extension];
-
-        const { treeData } = this.state;
+        const { content, extension } = selectedFile;
+        const language = extensionLanguageMap[extension];
+        const options = { selectOnLineNumbers: true };
 
         return (
             <>
                 <div className="row">
                     <div className="border border-secondary rounded">
-                        <ReactMarkdown source={this.props.exercise.question}/>
+                        <ReactMarkdown source={workspace.question}/>
                     </div>
                 </div>
 
@@ -141,56 +133,10 @@ class CodeExercise extends Component {
                             </div>
                         </div>
 
-                        <SortableTree
-                            className="file-explorer"
-                            style={{ outline: 'none' }}
-                            treeData={treeData}
-                            onChange={treeData => this.setState({ treeData })}
-                            theme={FileExplorerTheme}
-                            canDrag={() => false}
-                            canDrop={() => false}
-                            generateNodeProps={rowInfo => ({
-                                icons: rowInfo.node.isDirectory
-                                    ? [
-                                        <div
-                                            style={{
-                                                borderLeft: 'solid 8px gray',
-                                                borderBottom: 'solid 10px gray',
-                                                marginRight: 10,
-                                                boxSizing: 'border-box',
-                                                width: 16,
-                                                height: 12,
-                                                filter: rowInfo.node.expanded
-                                                    ? 'drop-shadow(1px 0 0 gray) drop-shadow(0 1px 0 gray) drop-shadow(0 -1px 0 gray) drop-shadow(-1px 0 0 gray)'
-                                                    : 'none',
-                                                borderColor: rowInfo.node.expanded ? 'white' : 'gray',
-                                            }}
-                                            onClick={() => this.nodeClicked(rowInfo.node, rowInfo.path, rowInfo.treeIndex)}
-                                        />,
-                                    ]
-                                    : [
-                                        <div className="file-explorer-icon"
-                                             onClick={() => this.nodeClicked(rowInfo.node, rowInfo.path, rowInfo.treeIndex)}
-                                        >
-                                            <i className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
-                                        </div>,
-                                    ],
-                                title: ({ node, path, treeIndex }) => {
-                                    return (
-                                        <span
-                                            onClick={() => this.nodeClicked(node, path, treeIndex)}>
-                                            {node.id === selectedFile.id ?
-                                                <i>
-                                                    {node.title}
-                                                </i>
-                                                :
-                                                (node.title)
-                                            }
-                                        </span>
-                                    );
-                                },
-                            })}
-                        />
+                        <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
+                                      onChange={this.onFileExplorerChange}
+                                      nodeClicked={this.nodeClicked}/>
+
                     </div>
 
                     <div className="col-10">
@@ -284,5 +230,58 @@ const demoFiles = [
         isDirectory: true,
     },
 ];
+
+const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
+    <SortableTree
+        className="file-explorer"
+        style={{ outline: 'none' }}
+        treeData={data}
+        onChange={onChange}
+        theme={FileExplorerTheme}
+        canDrag={() => false}
+        canDrop={() => false}
+        generateNodeProps={rowInfo => ({
+            icons: rowInfo.node.isDirectory
+                ? [
+                    <div
+                        style={{
+                            borderLeft: 'solid 8px gray',
+                            borderBottom: 'solid 10px gray',
+                            marginRight: 10,
+                            boxSizing: 'border-box',
+                            width: 16,
+                            height: 12,
+                            filter: rowInfo.node.expanded
+                                ? 'drop-shadow(1px 0 0 gray) drop-shadow(0 1px 0 gray) drop-shadow(0 -1px 0 gray) drop-shadow(-1px 0 0 gray)'
+                                : 'none',
+                            borderColor: rowInfo.node.expanded ? 'white' : 'gray',
+                        }}
+                        onClick={() => nodeClicked(rowInfo.node)}
+                    />,
+                ]
+                : [
+                    <div className="file-explorer-icon"
+                         onClick={() => nodeClicked(rowInfo.node)}
+                    >
+                        <i className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
+                    </div>,
+                ],
+            title: ({ node }) => {
+                return (
+                    <span
+                        onClick={() => nodeClicked(node)}>
+                                            {node.id === selectedFile.id ?
+                                                <i>
+                                                    {node.title}
+                                                </i>
+                                                :
+                                                (node.title)
+                                            }
+                                        </span>
+                );
+            },
+        })}
+    />
+);
 
 export default CodeExercise;

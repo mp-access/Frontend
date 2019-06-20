@@ -12,33 +12,27 @@ class Exercise extends Component {
         };
     }
 
-    componentDidMount() {
+    componentDidMount = async () => {
         const exerciseId = this.props.match.params.exerciseId;
-        const authContext = this.props.context;
+        const authorizationHeader = this.props.context.authorizationHeader();
 
-        (async () => {
-            CourseDataService.getExercise(exerciseId, authContext.authorizationHeader())
-                .then(res => res.json())
-                .then(
-                    result => this.setState({ exercise: result }),
-                )
-                .catch(err => {
-                    console.debug('Error:', err.toString());
-                });
-        })();
-    }
+        const exercise = await CourseDataService.getExercise(exerciseId, authorizationHeader);
+        this.setState({ exercise });
+    };
 
     render() {
-        if (!this.state.exercise) {
+        const { exercise } = this.state;
+
+        if (!exercise) {
             return null;
         }
 
-        let ex = this.state.exercise;
         let content = <p>unknown exercise type</p>;
 
-        if (ex.type === 'code') {
+        if (exercise.type === 'code') {
             const authorizationHeader = this.props.context.authorizationHeader();
-            content = <CodeExercise exercise={ex} authorizationHeader={authorizationHeader}/>;
+            content =
+                <CodeExercise exercise={exercise} authorizationHeader={authorizationHeader}/>;
         }
 
         return (
