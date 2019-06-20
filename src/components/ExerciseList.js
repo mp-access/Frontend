@@ -7,7 +7,7 @@ class ExerciseList extends Component {
         const {exercises} = this.props;
 
         const listItems = exercises.map((e) =>
-            <Link to={`/exercises/${e.id}`}>
+            <Link to={`/exercises/${e.id}`} key={e.id}>
                 <li className="list-group-item"> <p className="h6">{e.id} - {e.type} / {e.language} </p></li>
             </Link>
         );

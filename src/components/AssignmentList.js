@@ -8,7 +8,7 @@ class AssignmentList extends Component {
         const {assignments} = this.props;
 
         const listItems = assignments.map((a) =>
-            <Link to={`/courses/${courseId}/assignments/${a.id}`}>
+            <Link to={`/courses/${courseId}/assignments/${a.id}`} key={a.id}>
                 <li className="list-group-item"> <p className="h6">{a.title} - {a.description}     [ {a.dueDate} ] </p></li>
             </Link>
         );
