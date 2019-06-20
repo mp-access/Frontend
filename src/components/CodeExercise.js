@@ -113,7 +113,19 @@ class CodeExercise extends Component {
 
         const { content, extension } = selectedFile;
         const language = extensionLanguageMap[extension];
-        const options = { selectOnLineNumbers: true };
+
+        const editorOptions = {
+            selectOnLineNumbers: true,
+            wordWrap: true,
+            quickSuggestions: true,
+            snippetSuggestions: true,
+            wordBasedSuggestions: true,
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            minimap: {
+                enabled: false,
+            },
+        };
 
         return (
             <>
@@ -148,14 +160,10 @@ class CodeExercise extends Component {
 
                         <div className="row">
                             <MonacoEditor
-                                height="800px"
+                                height="600px"
                                 language={language}
                                 value={content}
-                                automaticLayout={true}
-                                options={options}
-                                quickSuggestions={true}
-                                snippetSuggestions={true}
-                                wordBasedSuggestions={true}
+                                options={editorOptions}
                                 onChange={this.onChange}
                             />
 
@@ -170,11 +178,17 @@ class CodeExercise extends Component {
     }
 }
 
+/**
+ * For a full list see:
+ * https://github.com/microsoft/monaco-languages
+ * @type {{css: string, md: string, py: string, js: string, json: string}}
+ */
 const extensionLanguageMap = {
     'py': 'python',
     'js': 'javascript',
     'css': 'css',
     'json': 'json',
+    'md': 'markdown',
 };
 
 /**
