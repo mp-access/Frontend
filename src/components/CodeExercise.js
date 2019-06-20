@@ -22,7 +22,13 @@ class CodeExercise extends Component {
 
     componentDidMount = async () => {
         const { authorizationHeader, exercise } = this.props;
-        const fileExplorerData = mapVirtualFilesToTreeStructure(exercise['public_files']);
+        const fileExplorerData = mapVirtualFilesToTreeStructure([{
+            id: 'question',
+            name: 'question',
+            content: exercise.question,
+            extension: 'md',
+            readOnly: true,
+        }].concat(exercise['public_files']));
 
         const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
@@ -57,15 +63,18 @@ class CodeExercise extends Component {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
+        const { selectedFile } = this.state;
+
         const { workspace } = this.state;
         let files = workspace.publicFiles.slice();
-        let index = files.indexOf(this.state.selectedFile);
+        let index = files.indexOf(selectedFile);
         let file = files[index];
         file = { ...file, content: newValue };
         files[index] = file;
         const updatedWorkspace = Object.assign(new Workspace(), workspace);
         updatedWorkspace.publicFiles = files;
         this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
+
     };
 
     onFileExplorerChange = (data) => {
@@ -88,7 +97,7 @@ class CodeExercise extends Component {
             return n;
         });
 
-        const selectedFile = this.state.workspace.findFile(node.id);
+        const selectedFile = node.id === 'question' ? this.state.fileExplorerData[0] : this.state.workspace.findFile(node.id);
         this.setState({ selectedFile, fileExplorerData });
     };
 
@@ -99,7 +108,7 @@ class CodeExercise extends Component {
             return null;
         }
 
-        let files = workspace.publicFiles.map((f) => {
+        let fileTabs = workspace.publicFiles.map((f) => {
                 const isSelected = f.id === selectedFile.id;
                 return (
                     <button key={f.id}
@@ -115,6 +124,7 @@ class CodeExercise extends Component {
         const language = extensionLanguageMap[extension];
 
         const editorOptions = {
+            readOnly: selectedFile.readOnly,
             selectOnLineNumbers: true,
             wordWrap: true,
             quickSuggestions: true,
@@ -152,10 +162,12 @@ class CodeExercise extends Component {
                     </div>
 
                     <div className="col-10">
-                        <div className={'row'}>
+                        <div className={'row d-flex justify-content-between'}>
+
                             <div className="btn-group btn-group-sm" role="group" aria-label="files">
-                                {files}
+                                {fileTabs}
                             </div>
+
                         </div>
 
                         <div className="row">
