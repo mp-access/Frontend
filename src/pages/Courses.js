@@ -28,9 +28,8 @@ class Courses extends Component {
     }
 
     render() {
-        console.debug("render", this.state.courses);
         const listItems = this.state.courses.map((c) =>
-            <div className="col-sm-3">
+            <div className="col-sm-3" key={c.id}>
                 <CourseBanner course={c}/>
             </div>
         );

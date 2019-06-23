@@ -7,11 +7,16 @@ class CourseDataService {
     }
 
     static async getAssignment(courseId, assignmentId, authHeader) {
-        return fetch(utils.courseServiceUrl + "/courses/"+ courseId +"/assignments/"+assignmentId, authHeader);
+        return fetch(utils.courseServiceUrl + '/courses/' + courseId + '/assignments/' + assignmentId, authHeader);
     }
 
-    static async getExercise(excerciseId, authHeader) {
-        return fetch(utils.courseServiceUrl + "/exercises/"+ excerciseId, authHeader);
+    static async getExercise(exerciseId, authHeader) {
+        return fetch(`${utils.courseServiceUrl}/exercises/${exerciseId}`, authHeader)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+            });
     }
 
 }
