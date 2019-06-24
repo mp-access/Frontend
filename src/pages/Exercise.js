@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/CodeExercise';
+import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
 
 class Exercise extends Component {
 
@@ -29,10 +30,11 @@ class Exercise extends Component {
 
         let content = <p>unknown exercise type</p>;
 
+        const authorizationHeader = this.props.context.authorizationHeader();
         if (exercise.type === 'code') {
-            const authorizationHeader = this.props.context.authorizationHeader();
-            content =
-                <CodeExercise exercise={exercise} authorizationHeader={authorizationHeader}/>;
+            content = <CodeExercise exercise={exercise} authorizationHeader={authorizationHeader}/>;
+        } else if (exercise.type === 'codeSnippet') {
+            content = <CodeSnippetExercise exercise={exercise} authorizationHeader={authorizationHeader}/>;
         }
 
         return (
