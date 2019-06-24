@@ -1,32 +1,27 @@
-import React, {Component} from 'react';
-import {withAuth} from "../auth/AuthProvider";
-import CourseDataService from "../utils/CourseDataService";
-import AssignmentList from "../components/AssignmentList";
+import React, { Component } from 'react';
+import { withAuth } from '../auth/AuthProvider';
+import CourseDataService from '../utils/CourseDataService';
+import AssignmentList from '../components/AssignmentList';
 
 class Course extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            courses: [],
-            course: undefined
-        }
-        this.courseService = new CourseDataService();
+            course: undefined,
+        };
     }
 
     componentDidMount() {
         const courseId = this.props.match.params.courseId;
         const { context } = this.props;
-        (async () => {
-            CourseDataService.getCourses(context.authorizationHeader())
-                .then(res => res.json())
-                .then(
-                    result => this.setState({course: result.filter(c => c.id === courseId)[0]})
-                )
-                .catch(err => {
-                    console.debug("Error:", err.toString())
-                });
-        })();
+
+        CourseDataService.getCourses(context.authorizationHeader())
+            .then(result => this.setState({ course: result.find(c => c.id === courseId) }))
+            .catch(err => {
+                console.debug('Error:', err.toString());
+            });
+
     }
 
     render() {
@@ -44,7 +39,7 @@ class Course extends Component {
                 </div>
 
                 <div>
-                    <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments} />
+                    <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments}/>
                 </div>
             </div>
         );
