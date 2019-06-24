@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
-import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
-import FileIcons from 'file-icons-js';
-import SortableTree from 'react-sortable-tree';
 import './CodeExercise.css';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
+import FileExplorer from './FileExplorer';
+import CodeEditor from './exercise/CodeEditor';
 
 class CodeExercise extends Component {
 
@@ -145,7 +143,6 @@ class CodeExercise extends Component {
             index = Math.min(index, this.state.workspace.publicFiles.length + 1);
             const selectedFile = this.state.workspace.publicFiles[index - 2];
             this.setState({ selectedFile });
-            debugger;
         }
     };
 
@@ -155,6 +152,13 @@ class CodeExercise extends Component {
         if (!selectedFile || !workspace) {
             return null;
         }
+
+        const { content, extension } = selectedFile;
+        const language = extensionLanguageMap[extension];
+
+        const editorOptions = this.editorOptions(selectedFile.readOnly);
+
+        const showQuestion = selectedFile.title === 'question.md';
 
         let fileTabs = fileExplorerData.map((f) => {
                 const isSelected = f.id === selectedFile.id;
@@ -168,12 +172,6 @@ class CodeExercise extends Component {
             },
         );
 
-        const { content, extension } = selectedFile;
-        const language = extensionLanguageMap[extension];
-
-        const editorOptions = this.editorOptions(selectedFile.readOnly);
-
-        const showQuestion = selectedFile.title === 'question.md';
         return (
             <>
                 <div className="row border border-secondary rounded code-editor-workspace">
@@ -199,18 +197,10 @@ class CodeExercise extends Component {
                             <ReactMarkdown source={workspace.question}/>
                             }
                             {!showQuestion &&
-                            <MonacoEditor
-                                height="600px"
-                                language={language}
-                                value={content}
-                                options={editorOptions}
-                                onChange={this.onChange}
-                            />
+                            <CodeEditor content={content} language={language} options={editorOptions}
+                                        onChange={this.onChange} onRun={this.submitButtonClick}/>
                             }
 
-                            <button onClick={this.submitButtonClick}>
-                                Testrun
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -285,67 +275,5 @@ const demoFiles = [
         isDirectory: true,
     },
 ];
-
-const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
-    <>
-        <div className={'row'}>
-            <div className={'col'}>
-                <small className="explorer-label">
-                    EXPLORER
-                </small>
-            </div>
-        </div>
-        <SortableTree
-            className="file-explorer"
-            style={{ outline: 'none' }}
-            treeData={data}
-            onChange={onChange}
-            theme={FileExplorerTheme}
-            canDrag={() => false}
-            canDrop={() => false}
-            generateNodeProps={rowInfo => ({
-                icons: rowInfo.node.isDirectory
-                    ? [
-                        <div
-                            style={{
-                                borderLeft: 'solid 8px gray',
-                                borderBottom: 'solid 10px gray',
-                                marginRight: 10,
-                                boxSizing: 'border-box',
-                                width: 16,
-                                height: 12,
-                                filter: rowInfo.node.expanded
-                                    ? 'drop-shadow(1px 0 0 gray) drop-shadow(0 1px 0 gray) drop-shadow(0 -1px 0 gray) drop-shadow(-1px 0 0 gray)'
-                                    : 'none',
-                                borderColor: rowInfo.node.expanded ? 'white' : 'gray',
-                            }}
-                            onClick={() => nodeClicked(rowInfo.node)}
-                        />,
-                    ]
-                    : [
-                        <div className="file-explorer-icon"
-                             onClick={() => nodeClicked(rowInfo.node)}
-                        >
-                            <i className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
-                        </div>,
-                    ],
-                title: ({ node }) => {
-                    return (
-                        <span
-                            onClick={() => nodeClicked(node)}>
-                                            {node.id === selectedFile.id ?
-                                                <i>
-                                                    {node.title}
-                                                </i>
-                                                :
-                                                (node.title)
-                                            }
-                                        </span>
-                    );
-                },
-            })}
-        />
-    </>
-);
 
 export default CodeExercise;
