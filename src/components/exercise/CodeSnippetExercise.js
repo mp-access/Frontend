@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
-import '../CodeExercise.css';
+import './CodeExercise.css';
 import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';

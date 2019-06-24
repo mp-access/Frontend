@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
-import Workspace from '../models/Workspace';
-import SubmissionService from '../utils/SubmissionService';
+import Workspace from '../../models/Workspace';
+import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
-import CodeEditor from './exercise/CodeEditor';
+import CodeEditor from './CodeEditor';
 
 class CodeExercise extends Component {
 

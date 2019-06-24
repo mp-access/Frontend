@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
-import CodeExercise from '../components/CodeExercise';
+import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
 
 class Exercise extends Component {
