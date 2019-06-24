@@ -18,9 +18,13 @@ class CodeExercise extends Component {
             fileExplorerData: demoFiles,
             workspace: undefined,
         };
+
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     componentDidMount = async () => {
+        document.addEventListener('keydown', this.handleKeyDown);
+
         const { authorizationHeader, exercise } = this.props;
 
         const questionFile = {
@@ -43,6 +47,10 @@ class CodeExercise extends Component {
             selectedFile: questionFile,
         });
 
+    };
+
+    componentWillUnmount = () => {
+        document.removeEventListener('keydown', this.handleKeyDown);
     };
 
     fetchLastSubmission = (exerciseId, authHeader) => {
@@ -119,6 +127,26 @@ class CodeExercise extends Component {
                 enabled: false,
             },
         };
+    };
+
+    handleKeyDown(e) {
+        // Any key ctrl + [0, 9] || cmd + [0, 9]
+        if ((e.ctrlKey || e.metaKey) && e.which >= 48 && e.which <= 57) {
+            e.preventDefault();
+            let index = e.which - 48;
+            this.selectFileByIndex(index);
+        }
+    };
+
+    selectFileByIndex = (index) => {
+        if (index === 1 || index === 0) {
+            this.setState({ selectedFile: this.state.fileExplorerData[0] });
+        } else {
+            index = Math.min(index, this.state.workspace.publicFiles.length + 1);
+            const selectedFile = this.state.workspace.publicFiles[index - 2];
+            this.setState({ selectedFile });
+            debugger;
+        }
     };
 
     render() {
