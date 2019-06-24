@@ -56,8 +56,10 @@ class CodeExercise extends Component {
             .catch(err => console.error(err));
     };
 
-    onFileSelected(file) {
-        this.setState({ selectedFile: file });
+    onFileSelected(fileId) {
+        const { fileExplorerData, workspace } = this.state;
+        const selectedFile = fileId === 'question' ? fileExplorerData[0] : workspace.findFile(fileId);
+        this.setState({ selectedFile });
     }
 
     submitButtonClick = () => {
@@ -165,7 +167,7 @@ class CodeExercise extends Component {
                 return (
                     <button key={f.id}
                             className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
-                            onClick={() => this.onFileSelected(f)}>
+                            onClick={() => this.onFileSelected(f.id)}>
                         {f.name + '.' + f.extension}
                     </button>
                 );
