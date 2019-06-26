@@ -3,6 +3,7 @@ import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
+import VersionList from "../components/exercise/VersionList";
 
 class Exercise extends Component {
 
@@ -37,17 +38,20 @@ class Exercise extends Component {
             content = <CodeSnippetExercise exercise={exercise} authorizationHeader={authorizationHeader}/>;
         }
 
+        const versionlist = <VersionList exerciseId={exercise.id} authorizationHeader={authorizationHeader} />;
+
         return (
             <div className="container-fluid">
                 <div className="row">
                     <div className="col">
-                        Exercise list
+                        <h3>Exercise list</h3>
                     </div>
                     <div className="col-9">
                         {content}
                     </div>
                     <div className="col">
-                        Versions
+                        <h3>Versions</h3>
+                        {versionlist}
                     </div>
                 </div>
             </div>

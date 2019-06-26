@@ -38,6 +38,15 @@ class SubmissionService {
         }
     }
 
+    static async getSubmissionList(exerciseId, authHeader) {
+        const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
+        const response = await fetch(url, authHeader);
+        if (response.ok) {
+            return await response.json();
+        }
+        console.debug(response.toString());
+    }
+
 }
 
 export default SubmissionService;
