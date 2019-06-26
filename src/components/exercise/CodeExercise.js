@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
@@ -6,6 +6,7 @@ import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
+import utils from "../../utils";
 
 class CodeExercise extends Component {
 
@@ -15,6 +16,7 @@ class CodeExercise extends Component {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
             workspace: undefined,
+
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -23,7 +25,7 @@ class CodeExercise extends Component {
     componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
 
-        const { authorizationHeader, exercise } = this.props;
+        const {authorizationHeader, exercise} = this.props;
 
         const questionFile = {
             id: 'question',
@@ -57,40 +59,63 @@ class CodeExercise extends Component {
     };
 
     onFileSelected(fileId) {
-        const { fileExplorerData, workspace } = this.state;
+        const {fileExplorerData, workspace} = this.state;
         const selectedFile = fileId === 'question' ? fileExplorerData[0] : workspace.findFile(fileId);
-        this.setState({ selectedFile });
+        this.setState({selectedFile});
     }
 
     submitButtonClick = () => {
         console.log('Submit Button pressed');
-        let { workspace } = this.state;
-        const { headers } = this.props.authorizationHeader;
+        let {workspace} = this.state;
+        const {headers} = this.props.authorizationHeader;
 
-        SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
-            .catch(err => console.error(err));
+        (async () => {
+            let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers);
+            console.debug(codeResponse.evalId);
+            let submissionId = "";
+            let polling = true;
+            while (polling) {
+                console.debug("poll");
+                await this.sleep(2000);
+                let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
+                if ("ok" === evalResponse.status) {
+                    submissionId = evalResponse.submission;
+                    console.debug(submissionId);
+                    polling = false;
+                }
+            }
+
+            let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
+            console.debug(submissionResponse);
+            this.setState({console: submissionResponse.console.stderr});
+
+        })();
     };
+
+    sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile } = this.state;
+        const {selectedFile} = this.state;
 
-        const { workspace } = this.state;
+        const {workspace} = this.state;
         let files = workspace.publicFiles.slice();
         let index = files.indexOf(selectedFile);
         let file = files[index];
-        file = { ...file, content: newValue };
+        file = {...file, content: newValue};
         files[index] = file;
         const updatedWorkspace = Object.assign(new Workspace(), workspace);
         updatedWorkspace.publicFiles = files;
-        this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
+        this.setState(({workspace: updatedWorkspace, selectedFile: file}));
 
     };
 
     onFileExplorerChange = (data) => {
-        this.setState({ fileExplorerData: data });
+        this.setState({fileExplorerData: data});
     };
 
     nodeClicked = (node) => {
@@ -110,7 +135,7 @@ class CodeExercise extends Component {
         });
 
         const selectedFile = node.id === 'question' ? this.state.fileExplorerData[0] : this.state.workspace.findFile(node.id);
-        this.setState({ selectedFile, fileExplorerData });
+        this.setState({selectedFile, fileExplorerData});
     };
 
     editorOptions = (readOnly) => {
@@ -140,22 +165,22 @@ class CodeExercise extends Component {
 
     selectFileByIndex = (index) => {
         if (index === 1 || index === 0) {
-            this.setState({ selectedFile: this.state.fileExplorerData[0] });
+            this.setState({selectedFile: this.state.fileExplorerData[0]});
         } else {
             index = Math.min(index, this.state.workspace.publicFiles.length + 1);
             const selectedFile = this.state.workspace.publicFiles[index - 2];
-            this.setState({ selectedFile });
+            this.setState({selectedFile});
         }
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData } = this.state;
+        const {selectedFile, workspace, fileExplorerData, console} = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
         }
 
-        const { content, extension } = selectedFile;
+        const {content, extension} = selectedFile;
         const language = extensionLanguageMap[extension];
 
         const editorOptions = this.editorOptions(selectedFile.readOnly);
@@ -173,6 +198,9 @@ class CodeExercise extends Component {
                 );
             },
         );
+
+        let consoleLog = <div id="console" class="border">${console ? console : ''}></div>
+
 
         return (
             <>
@@ -193,6 +221,7 @@ class CodeExercise extends Component {
 
                         </div>
 
+
                         <div className="row">
 
                             {showQuestion &&
@@ -203,6 +232,10 @@ class CodeExercise extends Component {
                                         onChange={this.onChange} onRun={this.submitButtonClick}/>
                             }
 
+                        </div>
+
+                        <div className="row">
+                            {consoleLog}
                         </div>
                     </div>
                 </div>
@@ -245,26 +278,26 @@ const mapVirtualFilesToTreeStructure = (virtualFiles) => {
  * @type {*[]}
  */
 const demoFiles = [
-    { id: 1, title: '.gitignore' },
-    { id: 2, title: 'package.json' },
+    {id: 1, title: '.gitignore'},
+    {id: 2, title: 'package.json'},
     {
         id: 3,
         title: 'src',
         isDirectory: true,
         expanded: true,
         children: [
-            { id: 4, title: 'styles.css' },
-            { id: 5, title: 'index.js' },
-            { id: 6, title: 'reducers.js' },
-            { id: 7, title: 'actions.js' },
-            { id: 8, title: 'utils.js' },
+            {id: 4, title: 'styles.css'},
+            {id: 5, title: 'index.js'},
+            {id: 6, title: 'reducers.js'},
+            {id: 7, title: 'actions.js'},
+            {id: 8, title: 'utils.js'},
         ],
     },
     {
         id: 9,
         title: 'build',
         isDirectory: true,
-        children: [{ id: 12, title: 'react-sortable-tree.js' }],
+        children: [{id: 12, title: 'react-sortable-tree.js'}],
     },
     {
         id: 10,
