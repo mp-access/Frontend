@@ -12,11 +12,11 @@ class App extends Component {
         return (
                 <BrowserRouter>
                     <AuthProvider>
-                        <main className="container-fluid">
+                        <main>
                             <Header/>
-                            <br/>
-                            <AppNavigation/>
-                            <br/>
+                            <div id="content" className="container-fluid">
+                                <AppNavigation/>
+                            </div>
                             <Footer/>
                         </main>
                     </AuthProvider>

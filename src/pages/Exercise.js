@@ -41,17 +41,21 @@ class Exercise extends Component {
         const versionlist = <VersionList exerciseId={exercise.id} authorizationHeader={authorizationHeader} />;
 
         return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col">
-                        <h3>Exercise list</h3>
+            <div className="row">
+                <div className="col-sm-2">
+                    <div className={"panel"}>
+                        <h4>Exercise list</h4>
                     </div>
-                    <div className="col-9">
-                        {content}
+                </div>
+                <div className="col-sm-8">
+                    <div className={"panel no-pad"}>
+                    {content}
                     </div>
-                    <div className="col">
-                        <h3>Versions</h3>
-                        {versionlist}
+                </div>
+                <div className="col-sm-2">
+                    <div className={"panel"}>
+                    <h4>Versions</h4>
+                    {versionlist}
                     </div>
                 </div>
             </div>

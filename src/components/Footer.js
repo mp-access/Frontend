@@ -1,8 +1,10 @@
 import React from 'react';
 
 const Footer = () => (
-    <footer style={{ background: 'lightgrey' }}>
-        Copyright blablabla...
+    <footer id={"footer"}>
+        <div className={"container-fluid"}>
+            Copyright 2019 CourseService
+        </div>
     </footer>
 );
 

@@ -4,7 +4,7 @@ import { withAuthAndRouter } from '../auth/AuthProvider';
 
 const Header = () => {
     return (
-        <header style={{ background: 'lightblue' }}>
+        <header id={"header"}>
 
             <nav className="navbar navbar-expand-lg bg-white">
                 <Link className="navbar-brand" to="/">
