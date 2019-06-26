@@ -39,7 +39,9 @@ class SubmissionService {
 
     static async checkEvaluation(evalId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/evals/${evalId}`;
-        return await fetch(url, authHeader)
+        return await fetch(url, {
+            headers: { ...authHeader },
+        })
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -50,9 +52,11 @@ class SubmissionService {
     }
 
     static async getSubmission(submissionId, authHeader) {
-        console.debug("get submission", submissionId);
+        console.debug('get submission', submissionId);
         const url = `${utils.courseServiceUrl}/submissions/${submissionId}`;
-        return await fetch(url, authHeader)
+        return await fetch(url, {
+            headers: { ...authHeader },
+        })
             .then(response => {
                 if (response.ok) {
                     return response.json();
