@@ -176,7 +176,7 @@ class CodeExercise extends Component {
 
         return (
             <>
-                <div className="row border border-secondary rounded code-editor-workspace">
+                <div className="row border rounded code-editor-workspace">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
                                       onChange={this.onFileExplorerChange}
