@@ -83,7 +83,7 @@ class CodeExercise extends Component {
                 console.debug(submissionResponse);
                 this.setState({ console: submissionResponse.console.stderr });
             }
-        }, 200);
+        }, 100);
     };
 
     sleep(milliseconds) {
@@ -193,8 +193,8 @@ class CodeExercise extends Component {
             },
         );
 
-        let consoleLog = <div id="console" className="border">${console ? console : ''}></div>;
-
+        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p
+            key={s}>{s}</p>) : ''}></div>;
 
         return (
             <>

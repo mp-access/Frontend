@@ -12,6 +12,7 @@ class CodeSnippetExercise extends Component {
         this.state = {
             selectedFile: undefined,
             workspace: undefined,
+            console: '',
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -44,13 +45,26 @@ class CodeSnippetExercise extends Component {
         this.setState({ selectedFile: file });
     }
 
-    submitButtonClick = () => {
+    submitButtonClick = async () => {
         console.log('Submit Button pressed');
         let { workspace } = this.state;
         const { headers } = this.props.authorizationHeader;
 
-        SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
+        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
             .catch(err => console.error(err));
+
+        const intervalId = setInterval(async () => {
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
+            if ('ok' === evalResponse.status) {
+                const submissionId = evalResponse.submission;
+                console.debug(submissionId);
+                clearInterval(intervalId);
+
+                let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
+                console.debug(submissionResponse);
+                this.setState({ console: submissionResponse.console.stderr });
+            }
+        }, 100);
     };
 
     /**
@@ -107,7 +121,7 @@ class CodeSnippetExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace } = this.state;
+        const { selectedFile, workspace, console } = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -129,6 +143,8 @@ class CodeSnippetExercise extends Component {
                 );
             },
         );
+
+        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p key={s}>{s}</p>) : ''}></div>;
 
         return (
             <>
@@ -152,6 +168,10 @@ class CodeSnippetExercise extends Component {
                         <div className="row">
                             <CodeEditor content={content} language={language} options={editorOptions}
                                         onChange={this.onChange} onRun={this.submitButtonClick}/>
+                        </div>
+
+                        <div className="row">
+                            {consoleLog}
                         </div>
                     </div>
                 </div>
