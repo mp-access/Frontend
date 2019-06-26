@@ -6,6 +6,7 @@ import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
+import utils from '../../utils';
 
 class CodeExercise extends Component {
 
@@ -15,6 +16,7 @@ class CodeExercise extends Component {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
             workspace: undefined,
+
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -62,14 +64,31 @@ class CodeExercise extends Component {
         this.setState({ selectedFile });
     }
 
-    submitButtonClick = () => {
+    submitButtonClick = async () => {
         console.log('Submit Button pressed');
         let { workspace } = this.state;
         const { headers } = this.props.authorizationHeader;
 
-        SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
-            .catch(err => console.error(err));
+        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers);
+        let submissionId = '';
+
+        const intervalId = setInterval(async () => {
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
+            if ('ok' === evalResponse.status) {
+                submissionId = evalResponse.submission;
+                console.debug(submissionId);
+                clearInterval(intervalId);
+
+                let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
+                console.debug(submissionResponse);
+                this.setState({ console: submissionResponse.console.stderr });
+            }
+        }, 100);
     };
+
+    sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
 
     /**
      * Update workspace if code gets edited by user
@@ -149,7 +168,7 @@ class CodeExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData } = this.state;
+        const { selectedFile, workspace, fileExplorerData, console } = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -174,6 +193,9 @@ class CodeExercise extends Component {
             },
         );
 
+        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p
+            key={s}>{s}</p>) : ''}></div>;
+
         return (
             <>
                 <div className="row border border-secondary rounded code-editor-workspace">
@@ -193,6 +215,7 @@ class CodeExercise extends Component {
 
                         </div>
 
+
                         <div className="row">
 
                             {showQuestion &&
@@ -203,6 +226,10 @@ class CodeExercise extends Component {
                                         onChange={this.onChange} onRun={this.submitButtonClick}/>
                             }
 
+                        </div>
+
+                        <div className="row">
+                            {consoleLog}
                         </div>
                     </div>
                 </div>
