@@ -4,6 +4,7 @@ import './CodeExercise.css';
 import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
+import equal from 'fast-deep-equal'
 
 class CodeSnippetExercise extends Component {
 
@@ -32,12 +33,43 @@ class CodeSnippetExercise extends Component {
         });
     };
 
+    componentDidUpdate = async (prevProps) => {
+        if(!equal(this.props.submissionId, prevProps.submissionId))
+        {
+            const { authorizationHeader, exercise, submissionId } = this.props;
+
+            if(submissionId === -1){
+                const workspace = new Workspace(exercise);
+
+                this.setState({
+                    workspace,
+                    selectedFile: workspace.publicFiles[0]
+                });                
+            }
+            else
+            {
+                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                const workspace = new Workspace(exercise, submission);
+    
+                this.setState({
+                    workspace,
+                    selectedFile: workspace.publicFiles[0]
+                });
+            }
+        }
+    } 
+
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
     fetchLastSubmission = (exerciseId, authHeader) => {
         return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchSubmissionById = (submissionId, authHeader) => {
+        return SubmissionService.getSubmission(submissionId, authHeader)
             .catch(err => console.error(err));
     };
 

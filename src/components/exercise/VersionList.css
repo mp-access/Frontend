@@ -2,3 +2,10 @@
     list-style-type: none;
     padding: 0;
 }
+#version-wrapper ul li{
+    margin-bottom: 5px;
+}
+#version-wrapper ul li small{
+    font-size: 0.7em;
+    color: gray;
+}

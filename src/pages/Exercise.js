@@ -13,6 +13,7 @@ class Exercise extends Component {
         this.state = {
             exercise: undefined,
             exercises: [],
+            submissionId: undefined
         };
     }
 
@@ -37,32 +38,41 @@ class Exercise extends Component {
         this.setState({ exercise, exercises: assignment.exercises });
     };
 
-    renderMainExerciseArea(exercise, authorizationHeader) {
+    setSubmissionId = (submissionId) => {
+        this.setState({submissionId: submissionId});
+    }
+
+    renderMainExerciseArea(exercise, authorizationHeader, submissionId) {
         let content = <p>unknown exercise type</p>;
         if (exercise.type === 'code') {
             content = <CodeExercise
                 key={exercise.id}
-                exercise={exercise} authorizationHeader={authorizationHeader}/>;
+                exercise={exercise}
+                authorizationHeader={authorizationHeader}
+                submissionId={submissionId}
+            />;
         } else if (exercise.type === 'codeSnippet') {
             content =
                 <CodeSnippetExercise
                     key={exercise.id}
-                    exercise={exercise} authorizationHeader={authorizationHeader}/>;
+                    exercise={exercise}
+                    authorizationHeader={authorizationHeader}
+                    submissionId={submissionId}
+                />;
         }
-
         return content;
     }
 
     render() {
-        const { exercise, exercises } = this.state;
+        const { exercise, exercises, submissionId } = this.state;
 
         if (!exercise) {
             return null;
         }
 
         const authorizationHeader = this.props.context.authorizationHeader();
-        const content = this.renderMainExerciseArea(exercise, authorizationHeader);
-        const versionList = <VersionList exerciseId={exercise.id} authorizationHeader={authorizationHeader}/>;
+        const content = this.renderMainExerciseArea(exercise, authorizationHeader, submissionId);
+        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} changeSubmissionId={this.setSubmissionId}/>;
 
         return (
             <div className="row">
