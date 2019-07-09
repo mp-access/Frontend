@@ -35,7 +35,7 @@ class Course extends Component {
                 <h2>{this.state.course.title}</h2>
 
                 <div>
-                    <p>description: {this.state.course.description}</p>
+                    <p>{this.state.course.description}</p>
                     <small>Open from: <strong>{Util.timeFormatter(this.state.course.startDate)}</strong> - to: <strong>{Util.timeFormatter(this.state.course.endDate)}</strong></small>
                     <br/><br/>
                 </div>

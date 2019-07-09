@@ -57,8 +57,7 @@ class CodeExercise extends Component {
     };
 
     componentDidUpdate = async (prevProps) => {
-        if(!equal(this.props.submissionId, prevProps.submissionId))
-        {
+        if(!equal(this.props.submissionId, prevProps.submissionId)){
             const { authorizationHeader, exercise, submissionId } = this.props;
 
             if(submissionId === -1){

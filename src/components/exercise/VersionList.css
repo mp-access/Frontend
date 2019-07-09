@@ -18,12 +18,14 @@
 #version-wrapper ul li .submission-item.active small{
     background: #f5f5f5;
     color: #2196f3;
-    opacity: 1 !important;
 }
 #version-wrapper ul li .submission-item.outdated,
 #version-wrapper ul li .submission-item.outdated small{
     opacity: 0.6;
     color: #f44336;
+}
+#version-wrapper ul li .submission-item.active{
+    opacity: 1;
 }
 #version-wrapper ul li .submission-item small{
     font-size: 0.7em;
