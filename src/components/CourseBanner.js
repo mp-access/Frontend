@@ -6,8 +6,7 @@ class CourseBanner extends Component {
     render() {
         const {course} = this.props;
         return (
-            <div className="card">
-                <div className="card-header">Institut für Informatik</div>
+            <div className="panel">
                 <div className="card-body">
                     <h5 className="card-title">{course.title}</h5>
                     <p className="card-text">{course.description}</p>

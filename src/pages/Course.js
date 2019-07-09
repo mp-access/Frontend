@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import AssignmentList from '../components/AssignmentList';
+import Util from '../utils/Util';
 
 class Course extends Component {
 
@@ -30,12 +31,13 @@ class Course extends Component {
         }
 
         return (
-            <div>
+            <div className="container">
                 <h2>{this.state.course.title}</h2>
 
                 <div>
-                    <p>description: {this.state.course.description}</p>
-                    <p>from: {this.state.course.startDate} - to: {this.state.course.endDate}</p>
+                    <p>{this.state.course.description}</p>
+                    <small>Open from: <strong>{Util.timeFormatter(this.state.course.startDate)}</strong> - to: <strong>{Util.timeFormatter(this.state.course.endDate)}</strong></small>
+                    <br/><br/>
                 </div>
 
                 <div>

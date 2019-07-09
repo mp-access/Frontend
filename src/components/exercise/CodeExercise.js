@@ -6,7 +6,8 @@ import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
-import utils from '../../utils';
+import equal from 'fast-deep-equal'
+import Logger from './Logger';
 
 class CodeExercise extends Component {
 
@@ -15,14 +16,13 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
-            workspace: undefined,
-
+            workspace: undefined
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
-    componentDidMount = async () => {
+    componentDidMount = async () => {        
         document.addEventListener('keydown', this.handleKeyDown);
 
         const { authorizationHeader, exercise } = this.props;
@@ -36,18 +36,49 @@ class CodeExercise extends Component {
             readOnly: true,
         };
 
-        const fileExplorerData = mapVirtualFilesToTreeStructure([questionFile].concat(exercise['public_files']));
+        const files = [questionFile]
+            .concat(exercise['public_files'])
+            .concat(exercise['resource_files']);
+        
+        if(exercise['solution_files'])
+            files.concat(exercise['solution_files']);
+        if(exercise['private_files'])
+            files.concat(exercise['private_files']);
 
+        const fileExplorerData = mapVirtualFilesToTreeStructure(files);
         const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
         this.setState({
             fileExplorerData,
             workspace,
-            selectedFile: questionFile,
+            selectedFile: questionFile
         });
-
     };
+
+    componentDidUpdate = async (prevProps) => {
+        if(!equal(this.props.submissionId, prevProps.submissionId)){
+            const { authorizationHeader, exercise, submissionId } = this.props;
+
+            if(submissionId === -1){
+                const workspace = new Workspace(exercise);
+                this.setState({
+                    workspace
+                });                
+            }
+            else
+            {
+                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                const workspace = new Workspace(exercise, submission);
+    
+                this.setState({
+                    workspace
+                });
+            }
+
+            this.onFileSelected(this.state.selectedFile.id);
+        }
+    } 
 
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
@@ -55,6 +86,11 @@ class CodeExercise extends Component {
 
     fetchLastSubmission = (exerciseId, authHeader) => {
         return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchSubmissionById = (submissionId, authHeader) => {
+        return SubmissionService.getSubmission(submissionId, authHeader)
             .catch(err => console.error(err));
     };
 
@@ -168,13 +204,14 @@ class CodeExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData, console } = this.state;
+        const { selectedFile, workspace, fileExplorerData, outputConsole } = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
         }
 
         const { content, extension } = selectedFile;
+
         const language = extensionLanguageMap[extension];
 
         const editorOptions = this.editorOptions(selectedFile.readOnly);
@@ -193,8 +230,7 @@ class CodeExercise extends Component {
             },
         );
 
-        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p
-            key={s}>{s}</p>) : ''}></div>;
+        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
 
         return (
             <>

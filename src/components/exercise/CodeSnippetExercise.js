@@ -4,6 +4,8 @@ import './CodeExercise.css';
 import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
+import equal from 'fast-deep-equal'
+import Logger from './Logger.js';
 
 class CodeSnippetExercise extends Component {
 
@@ -32,12 +34,43 @@ class CodeSnippetExercise extends Component {
         });
     };
 
+    componentDidUpdate = async (prevProps) => {
+        if(!equal(this.props.submissionId, prevProps.submissionId))
+        {
+            const { authorizationHeader, exercise, submissionId } = this.props;
+
+            if(submissionId === -1){
+                const workspace = new Workspace(exercise);
+
+                this.setState({
+                    workspace,
+                    selectedFile: workspace.publicFiles[0]
+                });                
+            }
+            else
+            {
+                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                const workspace = new Workspace(exercise, submission);
+    
+                this.setState({
+                    workspace,
+                    selectedFile: workspace.publicFiles[0]
+                });
+            }
+        }
+    } 
+
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
     fetchLastSubmission = (exerciseId, authHeader) => {
         return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchSubmissionById = (submissionId, authHeader) => {
+        return SubmissionService.getSubmission(submissionId, authHeader)
             .catch(err => console.error(err));
     };
 
@@ -121,7 +154,7 @@ class CodeSnippetExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, console } = this.state;
+        const { selectedFile, workspace, outputConsole } = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -144,8 +177,8 @@ class CodeSnippetExercise extends Component {
             },
         );
 
-        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p key={s}>{s}</p>) : ''}></div>;
-
+        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
+        
         return (
             <>
                 <div className="row border border-secondary rounded">

@@ -6,9 +6,13 @@ class ExerciseList extends Component {
     render() {
         const {exercises} = this.props;
 
-        const listItems = exercises.map((e) =>
+        const listItems = exercises.map((e, index) =>
             <Link to={`/exercises/${e.id}`} key={e.id}>
-                <li className="list-group-item"> <p className="h6">{e.id} - {e.type} / {e.language} </p></li>
+                <li className="list-group-item"> 
+                    <p className="h6">Exercise {index + 1}
+                    <br />
+                    <small>{e.type} {(e.type === 'code' || e.type === 'codeSnippet' ) ? '(' + e.language + ')' : '' }</small>
+                </p></li>
             </Link>
         );
 
