@@ -5,6 +5,7 @@ import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
 import equal from 'fast-deep-equal'
+import Logger from './Logger.js';
 
 class CodeSnippetExercise extends Component {
 
@@ -153,7 +154,7 @@ class CodeSnippetExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, console } = this.state;
+        const { selectedFile, workspace, outputConsole } = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -176,8 +177,8 @@ class CodeSnippetExercise extends Component {
             },
         );
 
-        let consoleLog = <div id="console" className="border">${console ? console.split('\n').map(s => <p key={s}>{s}</p>) : ''}></div>;
-
+        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
+        
         return (
             <>
                 <div className="row border border-secondary rounded">

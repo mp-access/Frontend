@@ -7,6 +7,7 @@ import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
 import equal from 'fast-deep-equal'
+import Logger from './Logger';
 
 class CodeExercise extends Component {
 
@@ -230,8 +231,7 @@ class CodeExercise extends Component {
             },
         );
 
-        let consoleLog = <div id="console" className="border">${outputConsole ? outputConsole.split('\n').map(s => <p
-            key={s}>{s}</p>) : ''}></div>;
+        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
 
         return (
             <>

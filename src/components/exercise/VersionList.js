@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 
 import "./VersionList.css"
 import equal from 'fast-deep-equal'
+import Util from '../../utils/Util';
 
 class VersionList extends Component {
 
@@ -25,23 +26,21 @@ class VersionList extends Component {
         }
     }
 
-    timeFormatter(time){
-        return time.split(".")[0].replace("T", " ");
-    }
-
     render() {
         const items = this.state.items || [];
-
         return (
             <div id={"version-wrapper"}>
                 <ul>
                     <li><button onClick={this.props.changeSubmissionId.bind(this, -1)}>⭯</button> Revert Template</li>
                     <li><hr/></li>
                     {items.map(item => <li key={item.id}>
-                        <div>
-                            <button onClick={this.props.changeSubmissionId.bind(this, item.id)}>⭯</button> Version {item.version + 1}
+                        <div className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.submissionId ? 'active' : '')}>
+                            <button onClick={this.props.changeSubmissionId.bind(this, item.id)}>⭯</button>
+                            <button>ⓘ</button> Version {item.version + 1} {/*item.commitHash !== this.props.exercise.gitHash ? '⛔ ' : ''*/}
                             <br />
-                            <small>{ this.timeFormatter(item.timestamp) }</small>
+                            <small>
+                                { Util.timeFormatter(item.timestamp) }
+                            </small>
                         </div>
                     </li>)}
                 </ul>

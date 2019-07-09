@@ -30,7 +30,7 @@ class Courses extends Component {
         );
 
         return (
-            <div>
+            <div className="container">
                 <h2>My Courses</h2>
                 <div className="row">
                     {listItems}

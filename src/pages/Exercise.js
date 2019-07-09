@@ -72,7 +72,7 @@ class Exercise extends Component {
 
         const authorizationHeader = this.props.context.authorizationHeader();
         const content = this.renderMainExerciseArea(exercise, authorizationHeader, submissionId);
-        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} changeSubmissionId={this.setSubmissionId}/>;
+        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} submissionId={submissionId} changeSubmissionId={this.setSubmissionId}/>;
 
         return (
             <div className="row">
