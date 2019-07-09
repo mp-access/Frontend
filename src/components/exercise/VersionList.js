@@ -37,15 +37,18 @@ class VersionList extends Component {
 
     render() {
         const items = this.state.items || [];
+        console.log(items);
+
         return (
             <div id={"version-wrapper"}>
                 <ul>
                     <li><button onClick={this.props.changeSubmissionId.bind(this, -1)}>⭯</button> Revert Template</li>
                     <li><hr/></li>
+                    {/* <li><button onClick={this.props.submit.bind(this)}>Submit</button></li> */}
                     {items.map(item => <li key={item.id}>                        
-                        <div className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.submissionId ? 'active' : '')}>
+                        <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.submissionId ? 'active' : '')}>
                             <button onClick={this.props.changeSubmissionId.bind(this, item.id)}>⭯</button>
-                            <OverlayTrigger trigger="focus" placement="top" overlay={this.createPopover("Version " + item.version + 1, "This should be a score!")}>
+                            <OverlayTrigger trigger="focus" placement="top" overlay={this.createPopover("Version " + (item.version + 1), "Score: 5/7" + (item.commitHash !== this.props.exercise.gitHash ? ' (This Submission is outdated)' : '' ))}>
                                 <button>ⓘ</button>
                             </OverlayTrigger> Version {item.version + 1} 
                             <br />

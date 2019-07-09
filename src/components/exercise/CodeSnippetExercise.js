@@ -18,10 +18,12 @@ class CodeSnippetExercise extends Component {
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.submitButtonClick = this.submitButtonClick.bind(this);
     }
 
     componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
+        this.props.submit(this.submitButtonClick);
 
         const { authorizationHeader, exercise } = this.props;
 
@@ -32,6 +34,7 @@ class CodeSnippetExercise extends Component {
             workspace,
             selectedFile: workspace.publicFiles[0],
         });
+
     };
 
     componentDidUpdate = async (prevProps) => {
@@ -166,42 +169,25 @@ class CodeSnippetExercise extends Component {
 
         const editorOptions = this.editorOptions(selectedFile.readOnly);
 
-        let fileTabs = workspace.publicFiles.map((f) => {
-                const isSelected = f.id === selectedFile.id;
-                return (
-                    <button key={f.id}
-                            className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
-                            onClick={() => this.onFileSelected(f)}>
-                        {f.name + '.' + f.extension}
-                    </button>
-                );
-            },
-        );
-
         let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
         
         return (
             <>
-                <div className="row border border-secondary rounded">
+                <div className="row">
                     <div className="col-12">
-                        <ReactMarkdown source={workspace.question}/>
+                        <div className="border-secondary">
+                            <ReactMarkdown source={workspace.question}/>
+                        </div>
                     </div>
                 </div>
 
-                <div className="row border border-secondary rounded code-editor-workspace">
-
+                <div className="row">
                     <div className="col-12">
-                        <div className={'row d-flex justify-content-between'}>
-
-                            <div className="btn-group btn-group-sm" role="group" aria-label="files">
-                                {fileTabs}
-                            </div>
-
-                        </div>
-
                         <div className="row">
-                            <CodeEditor content={content} language={language} options={editorOptions}
+                            <div className="col-12">
+                                <CodeEditor content={content} language={language} options={editorOptions}
                                         onChange={this.onChange} onRun={this.submitButtonClick}/>
+                            </div>
                         </div>
 
                         <div className="row">

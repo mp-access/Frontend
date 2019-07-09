@@ -49,6 +49,10 @@ code {
   padding: 0;
 }
 
+.pad{
+  padding: 20px 25px;
+}
+
 button{
   background: white;
   outline: none;
@@ -64,4 +68,7 @@ button:focus{
 button:hover{
   border: 1px solid white;
   box-shadow: 0px 2px 4px rgba(126,142,177,0.2);
+}
+button:active{
+  box-shadow: 0px 0px 1px rgba(126,142,177,0.3);
 }

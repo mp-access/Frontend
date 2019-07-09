@@ -20,6 +20,7 @@ class CodeExercise extends Component {
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.submitButtonClick = this.submitButtonClick.bind(this);
     }
 
     componentDidMount = async () => {        
@@ -29,23 +30,58 @@ class CodeExercise extends Component {
 
         const questionFile = {
             id: 'question',
-            name: 'question',
-            title: 'question.md',
+            name: 'Question',
+            title: 'Question.md',
             content: exercise.question,
             extension: 'md',
             readOnly: true,
         };
 
-        const files = [questionFile]
-            .concat(exercise['public_files'])
-            .concat(exercise['resource_files']);
-        
-        if(exercise['solution_files'])
-            files.concat(exercise['solution_files']);
-        if(exercise['private_files'])
-            files.concat(exercise['private_files']);
+        // folders
+        const pub_dir = {
+            id: 'public_files',
+            title: 'Public Files',
+            isDirectory: true,
+            expanded: true,
+            children: []
+        }
+        const priv_dir = {
+            id: 'private_files',
+            title: 'Private Files',
+            isDirectory: true,
+            children: []
+        }
+        const sol_dir = {
+            id: 'solution_files',
+            title: 'Solution Files',
+            isDirectory: true,
+            children: []
+        }
+        const res_dir = {
+            id: 'resource_files',
+            title: 'Resource Files',
+            isDirectory: true,
+            children: []
+        }
 
-        const fileExplorerData = mapVirtualFilesToTreeStructure(files);
+
+        pub_dir.children = mapVirtualFilesToTreeStructure(exercise['public_files']);
+        res_dir.children = mapVirtualFilesToTreeStructure(exercise['resource_files']);
+
+        const files = [questionFile]
+            .concat(pub_dir)
+            .concat(res_dir);
+
+        if(exercise['solution_files']){
+            sol_dir.children = mapVirtualFilesToTreeStructure(exercise['solution_files']);
+            files.concat(sol_dir);
+        }
+        if(exercise['private_files']){
+            priv_dir.children = mapVirtualFilesToTreeStructure(exercise['private_files']);
+            files.concat(priv_dir);
+        }
+
+        const fileExplorerData = files; // mapVirtualFilesToTreeStructure(files);
         const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
@@ -54,6 +90,8 @@ class CodeExercise extends Component {
             workspace,
             selectedFile: questionFile
         });
+
+        this.props.submit(this.submitButtonClick);
     };
 
     componentDidUpdate = async (prevProps) => {
@@ -119,7 +157,7 @@ class CodeExercise extends Component {
                 console.debug(submissionResponse);
                 this.setState({ console: submissionResponse.console.stderr });
             }
-        }, 100);
+        }, 300);
     };
 
     sleep(milliseconds) {
@@ -149,6 +187,7 @@ class CodeExercise extends Component {
     };
 
     nodeClicked = (node) => {
+        if(node.isDirectory) return;
         const fileExplorerData = this.state.fileExplorerData.map(n => {
             if (n.id === node.id && n.isDirectory) {
                 return {
@@ -217,8 +256,9 @@ class CodeExercise extends Component {
 
         const editorOptions = this.editorOptions(selectedFile.readOnly);
 
-        const showQuestion = selectedFile.title === 'question.md';
+        const showQuestion = selectedFile.title === 'Question.md';
 
+        /*
         let fileTabs = fileExplorerData.map((f) => {
                 const isSelected = f.id === selectedFile.id;
                 return (
@@ -230,12 +270,13 @@ class CodeExercise extends Component {
                 );
             },
         );
+        */
 
         let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
 
         return (
             <>
-                <div className="row border rounded code-editor-workspace">
+                <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
                                       onChange={this.onFileExplorerChange}
@@ -244,6 +285,7 @@ class CodeExercise extends Component {
                     </div>
 
                     <div className="col-10">
+                        {/*
                         <div className={'row d-flex justify-content-between'}>
 
                             <div className="btn-group btn-group-sm" role="group" aria-label="files">
@@ -251,9 +293,9 @@ class CodeExercise extends Component {
                             </div>
 
                         </div>
+                        */}
 
-
-                        <div className="row">
+                        <div>
 
                             {showQuestion &&
                             <ReactMarkdown source={workspace.question}/>
@@ -264,10 +306,12 @@ class CodeExercise extends Component {
                             }
 
                         </div>
-
-                        <div className="row">
-                            {consoleLog}
-                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-12">
+                        <h4>Output</h4>
+                        {consoleLog}
                     </div>
                 </div>
             </>

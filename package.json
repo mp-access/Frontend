@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
-    "customize-cra": "^0.2.12",
-    "file-icons-js": "websemantics/file-icons-js",
-    "keycloak-js": "^6.0.0",
+    "customize-cra": "^0.2.14",
+    "file-icons-js": "github:websemantics/file-icons-js",
+    "keycloak-js": "^6.0.1",
     "monaco-editor-webpack-plugin": "^1.7.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -15,7 +15,7 @@
     "react-dom": "^16.8.6",
     "react-markdown": "^4.0.8",
     "react-monaco-editor": "^0.25.1",
-    "react-router-dom": "^5.0.0",
+    "react-router-dom": "^5.0.1",
     "react-scripts": "2.1.8",
     "react-sortable-tree": "^2.6.2",
     "react-sortable-tree-theme-file-explorer": "^2.0.0"

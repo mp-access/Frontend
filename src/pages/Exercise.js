@@ -42,6 +42,11 @@ class Exercise extends Component {
         this.setState({submissionId: submissionId});
     }
 
+    
+    submit = async () => {
+        console.log('Top Submit clicked');
+    }
+
     renderMainExerciseArea(exercise, authorizationHeader, submissionId) {
         let content = <p>unknown exercise type</p>;
         if (exercise.type === 'code') {
@@ -50,6 +55,7 @@ class Exercise extends Component {
                 exercise={exercise}
                 authorizationHeader={authorizationHeader}
                 submissionId={submissionId}
+                submit={sub => this.submit = sub}
             />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -58,6 +64,7 @@ class Exercise extends Component {
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
                     submissionId={submissionId}
+                    submit={sub => this.submit = sub}
                 />;
         }
         return content;
@@ -72,7 +79,7 @@ class Exercise extends Component {
 
         const authorizationHeader = this.props.context.authorizationHeader();
         const content = this.renderMainExerciseArea(exercise, authorizationHeader, submissionId);
-        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} submissionId={submissionId} changeSubmissionId={this.setSubmissionId}/>;
+        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} submit={this.submit} submissionId={submissionId} changeSubmissionId={this.setSubmissionId}/>;
 
         return (
             <div className="row">
@@ -83,7 +90,7 @@ class Exercise extends Component {
                     </div>
                 </div>
                 <div className="col-sm-8">
-                    <div className={'panel no-pad'}>
+                    <div className={'panel'}>
                         {content}
                     </div>
                 </div>

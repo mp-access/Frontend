@@ -5,7 +5,7 @@ class Logger extends Component {
     render(){
         return(
             <div id="logger">
-                {this.props.log}
+                $ {this.props.log}
             </div>
         );
     }

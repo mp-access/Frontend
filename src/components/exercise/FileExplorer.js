@@ -2,7 +2,7 @@ import React from 'react';
 import SortableTree from 'react-sortable-tree';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import FileIcons from 'file-icons-js';
-
+import './FileExplorer.css';
 
 const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
     <>
