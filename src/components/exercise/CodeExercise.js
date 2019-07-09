@@ -204,7 +204,8 @@ class CodeExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData, outputConsole } = this.state;
+        const { selectedFile, workspace, fileExplorerData } = this.state;
+        const outputConsole = this.state.console;
 
         if (!selectedFile || !workspace) {
             return null;

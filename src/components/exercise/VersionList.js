@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import "./VersionList.css"
 import equal from 'fast-deep-equal'
 import Util from '../../utils/Util';
+import {OverlayTrigger, Popover} from 'react-bootstrap'
 
 class VersionList extends Component {
 
@@ -26,6 +27,14 @@ class VersionList extends Component {
         }
     }
 
+    createPopover(title, content){
+        return(
+            <Popover id="popover-basic" title={title}>
+                {content}
+            </Popover>
+        );
+    }
+
     render() {
         const items = this.state.items || [];
         return (
@@ -33,10 +42,12 @@ class VersionList extends Component {
                 <ul>
                     <li><button onClick={this.props.changeSubmissionId.bind(this, -1)}>⭯</button> Revert Template</li>
                     <li><hr/></li>
-                    {items.map(item => <li key={item.id}>
+                    {items.map(item => <li key={item.id}>                        
                         <div className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.submissionId ? 'active' : '')}>
                             <button onClick={this.props.changeSubmissionId.bind(this, item.id)}>⭯</button>
-                            <button>ⓘ</button> Version {item.version + 1} {/*item.commitHash !== this.props.exercise.gitHash ? '⛔ ' : ''*/}
+                            <OverlayTrigger trigger="focus" placement="top" overlay={this.createPopover("Version " + item.version + 1, "This should be a score!")}>
+                                <button>ⓘ</button>
+                            </OverlayTrigger> Version {item.version + 1} 
                             <br />
                             <small>
                                 { Util.timeFormatter(item.timestamp) }

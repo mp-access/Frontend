@@ -154,7 +154,8 @@ class CodeSnippetExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, outputConsole } = this.state;
+        const { selectedFile, workspace } = this.state;
+        const outputConsole = this.state.console;
 
         if (!selectedFile || !workspace) {
             return null;
