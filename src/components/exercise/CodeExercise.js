@@ -262,7 +262,7 @@ class CodeExercise extends Component {
 
         let outputConsole;
         if(workspace.submission)
-            outputConsole = !workspace.submission.console;
+            outputConsole = workspace.submission.console;
 
         const { content, extension } = selectedFile;
 
