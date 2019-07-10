@@ -73,7 +73,6 @@ class Exercise extends Component {
                 <TextExercise
                     exercise={exercise}
                     />
-        }
         } else if (exercise.type === 'multipleChoice') {
             content = <ChoiceExercise
                 exercise={exercise}
