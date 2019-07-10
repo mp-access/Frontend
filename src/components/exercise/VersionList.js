@@ -37,7 +37,6 @@ class VersionList extends Component {
 
     render() {
         const items = this.state.items || [];
-        console.log(items);
 
         return (
             <div id={"version-wrapper"}>

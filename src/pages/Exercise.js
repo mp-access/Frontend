@@ -6,6 +6,7 @@ import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
 import VersionList from '../components/exercise/VersionList';
 import ExerciseList from '../components/ExerciseList';
 import TextExercise from '../components/text/TextExercise';
+import ChoiceExercise from '../components/choice/ChoiceExercise';
 
 class Exercise extends Component {
 
@@ -14,7 +15,7 @@ class Exercise extends Component {
         this.state = {
             exercise: undefined,
             exercises: [],
-            submissionId: undefined
+            submissionId: undefined,
         };
     }
 
@@ -40,13 +41,13 @@ class Exercise extends Component {
     };
 
     setSubmissionId = (submissionId) => {
-        this.setState({submissionId: submissionId});
-    }
+        this.setState({ submissionId: submissionId });
+    };
 
-    
+
     submit = async () => {
         console.log('Top Submit clicked');
-    }
+    };
 
     renderMainExerciseArea(exercise, authorizationHeader, submissionId) {
         let content = <p>unknown exercise type</p>;
@@ -73,6 +74,12 @@ class Exercise extends Component {
                     exercise={exercise}
                     />
         }
+        } else if (exercise.type === 'multipleChoice') {
+            content = <ChoiceExercise
+                exercise={exercise}
+                authorizationHeader={authorizationHeader}
+            />;
+        }
         return content;
     }
 
@@ -85,7 +92,9 @@ class Exercise extends Component {
 
         const authorizationHeader = this.props.context.authorizationHeader();
         const content = this.renderMainExerciseArea(exercise, authorizationHeader, submissionId);
-        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader} submit={this.submit} submissionId={submissionId} changeSubmissionId={this.setSubmissionId}/>;
+        const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
+                                         submit={this.submit} submissionId={submissionId}
+                                         changeSubmissionId={this.setSubmissionId}/>;
 
         return (
             <div className="row">

@@ -96,9 +96,22 @@ class CodeSnippetExercise extends Component {
                 console.debug(submissionId);
                 clearInterval(intervalId);
 
+                /*
                 let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
                 console.debug(submissionResponse);
                 this.setState({ console: submissionResponse.console.stderr });
+
+                */
+                const myheaders = {
+                    headers: {...headers},
+                }
+                const submission = await this.fetchSubmissionById(submissionId, myheaders);
+                const workspace = new Workspace(this.state.workspace.exercise, submission);
+    
+
+                this.setState({
+                    workspace
+                });
             }
         }, 100);
     };
@@ -158,18 +171,24 @@ class CodeSnippetExercise extends Component {
 
     render() {
         const { selectedFile, workspace } = this.state;
-        const outputConsole = this.state.console;
 
         if (!selectedFile || !workspace) {
             return null;
         }
+
+        let outputConsole;
+        if(workspace.submission)
+            outputConsole = workspace.submission.console;
 
         const { content, extension } = selectedFile;
         const language = extensionLanguageMap[extension];
 
         const editorOptions = this.editorOptions(selectedFile.readOnly);
 
-        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
+        let consoleLog = <Logger 
+                                log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
+                                err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
+                                />;
         
         return (
             <>
