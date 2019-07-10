@@ -6,6 +6,5 @@ import Course from '../pages/Course';
 import Profile from '../pages/Profile';
 import Assignment from '../pages/Assignment';
 import Exercise from '../pages/Exercise';
-import Choice from '../pages/Choice';
 
-export {Welcome, Secured, Code, Courses, Course, Profile, Assignment, Exercise, Choice};
+export {Welcome, Secured, Code, Courses, Course, Profile, Assignment, Exercise};
