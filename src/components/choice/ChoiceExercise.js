@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-//import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 // import './CodeExercise.css';
 // import Workspace from '../../models/Workspace';
@@ -11,88 +11,89 @@ import Logger from '../exercise/Logger.js';
 
 class ChoiceExercise extends Component {
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         selectedFile: undefined,
-    //         fileExplorerData: demoFiles,
-    //         workspace: undefined
-    //     };
+    constructor(props) {
+        super(props);
+        this.state = {
+            question: undefined
+             // selectedFile: undefined,
+             // fileExplorerData: demoFiles,
+             // workspace: undefined
+         };
+
+         // this.handleKeyDown = this.handleKeyDown.bind(this);
+         // this.submitButtonClick = this.submitButtonClick.bind(this);
+     }
     //
-    //     this.handleKeyDown = this.handleKeyDown.bind(this);
-    //     this.submitButtonClick = this.submitButtonClick.bind(this);
-    // }
-    //
-    // componentDidMount = async () => {
-    //     document.addEventListener('keydown', this.handleKeyDown);
-    //
-    //     const { authorizationHeader, exercise } = this.props;
-    //
-    //     const questionFile = {
-    //         id: 'question',
-    //         name: 'Question',
-    //         title: 'Question.md',
-    //         content: exercise.question,
-    //         extension: 'md',
-    //         readOnly: true,
-    //     };
-    //
-    //     // folders
-    //     const pub_dir = {
-    //         id: 'public_files',
-    //         title: 'Public Files',
-    //         isDirectory: true,
-    //         expanded: true,
-    //         children: []
-    //     }
-    //     const priv_dir = {
-    //         id: 'private_files',
-    //         title: 'Private Files',
-    //         isDirectory: true,
-    //         children: []
-    //     }
-    //     const sol_dir = {
-    //         id: 'solution_files',
-    //         title: 'Solution Files',
-    //         isDirectory: true,
-    //         children: []
-    //     }
-    //     const res_dir = {
-    //         id: 'resource_files',
-    //         title: 'Resource Files',
-    //         isDirectory: true,
-    //         children: []
-    //     }
-    //
-    //
-    //     pub_dir.children = mapVirtualFilesToTreeStructure(exercise['public_files']);
-    //     res_dir.children = mapVirtualFilesToTreeStructure(exercise['resource_files']);
-    //
-    //     const files = [questionFile]
-    //         .concat(pub_dir)
-    //         .concat(res_dir);
-    //
-    //     if(exercise['solution_files']){
-    //         sol_dir.children = mapVirtualFilesToTreeStructure(exercise['solution_files']);
-    //         files.concat(sol_dir);
-    //     }
-    //     if(exercise['private_files']){
-    //         priv_dir.children = mapVirtualFilesToTreeStructure(exercise['private_files']);
-    //         files.concat(priv_dir);
-    //     }
-    //
-    //     const fileExplorerData = files; // mapVirtualFilesToTreeStructure(files);
-    //     const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
-    //     const workspace = new Workspace(exercise, submission);
-    //
-    //     this.setState({
-    //         fileExplorerData,
-    //         workspace,
-    //         selectedFile: questionFile
-    //     });
-    //
-    //     this.props.submit(this.submitButtonClick);
-    // };
+    componentDidMount = async () => {
+        // document.addEventListener('keydown', this.handleKeyDown);
+
+                const { authorizationHeader, exercise } = this.props;
+
+                // const questionFile = {
+                //     id: 'question',
+                //     name: 'Question',
+                //     title: 'Question.md',
+                //     content: exercise.question,
+                //     extension: 'md',
+                //     readOnly: true,
+                // };
+
+                // folders
+                // const pub_dir = {
+                //     id: 'public_files',
+                //     title: 'Public Files',
+                //     isDirectory: true,
+                //     expanded: true,
+                //     children: []
+                // }
+                // const priv_dir = {
+                //     id: 'private_files',
+                //     title: 'Private Files',
+                //     isDirectory: true,
+                //     children: []
+                // }
+                // const sol_dir = {
+                //     id: 'solution_files',
+                //     title: 'Solution Files',
+                //     isDirectory: true,
+                //     children: []
+                // }
+                // const res_dir = {
+                //     id: 'resource_files',
+                //     title: 'Resource Files',
+                //     isDirectory: true,
+                //     children: []
+                // }
+
+
+                // pub_dir.children = mapVirtualFilesToTreeStructure(exercise['public_files']);
+                // res_dir.children = mapVirtualFilesToTreeStructure(exercise['resource_files']);
+                //
+                // const files = [questionFile]
+                //     .concat(pub_dir)
+                //     .concat(res_dir);
+                //
+                // if(exercise['solution_files']){
+                //     sol_dir.children = mapVirtualFilesToTreeStructure(exercise['solution_files']);
+                //     files.concat(sol_dir);
+                // }
+                // if(exercise['private_files']){
+                //     priv_dir.children = mapVirtualFilesToTreeStructure(exercise['private_files']);
+                //     files.concat(priv_dir);
+                // }
+                //
+                // const fileExplorerData = files; // mapVirtualFilesToTreeStructure(files);
+                // const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+                // const workspace = new Workspace(exercise, submission);
+
+                this.setState({
+                    // fileExplorerData,
+                    // workspace,
+                    question: exercise.question
+                });
+
+                // this.props.submit(this.submitButtonClick);
+            };
 
     // componentDidUpdate = async (prevProps) => {
     //     if(!equal(this.props.submissionId, prevProps.submissionId)){
@@ -264,8 +265,9 @@ class ChoiceExercise extends Component {
             <>
                 <div className="row">
                     <div className="col-12">
-                        <p>Multiple Choice Question From Component</p>
+                        <ReactMarkdown source={this.state.question}/>
                     </div>
+
                     {/*
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
