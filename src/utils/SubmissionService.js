@@ -65,12 +65,15 @@ class SubmissionService {
 
     static async getSubmissionList(exerciseId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
-        const response = await fetch(url, authHeader);
-        if (response.ok) {
-            return await response.json();
+        return await fetch(url, authHeader)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Something went wrong on api server!');
+                }
+            });
         }
-        console.debug(response.toString());
-    }
 
 }
 

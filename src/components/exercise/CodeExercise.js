@@ -153,9 +153,16 @@ class CodeExercise extends Component {
                 console.debug(submissionId);
                 clearInterval(intervalId);
 
-                let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
-                console.debug(submissionResponse);
-                this.setState({ console: submissionResponse.console.stderr });
+                //let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
+                //console.debug(submissionResponse);
+                //this.setState({ console: submissionResponse.console.stderr });
+
+                const submission = await this.fetchSubmissionById(submissionId, headers);
+                const workspace = new Workspace(this.state.workspace.exercise, submission);
+    
+                this.setState({
+                    workspace
+                });
             }
         }, 300);
     };
@@ -244,11 +251,11 @@ class CodeExercise extends Component {
 
     render() {
         const { selectedFile, workspace, fileExplorerData } = this.state;
-        const outputConsole = this.state.console;
-
+        
         if (!selectedFile || !workspace) {
             return null;
         }
+        const outputConsole = workspace.console;
 
         const { content, extension } = selectedFile;
 
@@ -272,7 +279,7 @@ class CodeExercise extends Component {
         );
         */
 
-        let consoleLog = <Logger log={outputConsole ? outputConsole.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
+        let consoleLog = <Logger log={outputConsole ? outputConsole.stderr.split('\n').map(s => <p key={s}>{s}</p>) : ''} />;
 
         return (
             <>
