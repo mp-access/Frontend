@@ -5,6 +5,7 @@ import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
 import VersionList from '../components/exercise/VersionList';
 import ExerciseList from '../components/ExerciseList';
+import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 
 class Exercise extends Component {
@@ -67,6 +68,12 @@ class Exercise extends Component {
                     submissionId={submissionId}
                     submit={sub => this.submit = sub}
                 />;
+        } else if (exercise.type === 'text'){
+            content =
+                <TextExercise
+                    exercise={exercise}
+                    />
+        }
         } else if (exercise.type === 'multipleChoice') {
             content = <ChoiceExercise
                 exercise={exercise}
