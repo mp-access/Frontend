@@ -1,7 +1,3 @@
-/* based on CodeExercise.js */
-//TODO how is an answer represented/stored/submitted
-//TODO get choices through regex extraction from question and display them
-
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 
