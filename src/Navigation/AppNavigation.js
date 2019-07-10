@@ -2,7 +2,6 @@ import React from 'react';
 import { Assignment, Code, Courses, Course, Exercise, Profile, Welcome } from '../pages/';
 import { Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
-import Choice from '../pages/Choice';
 
 const AppNavigation = () => {
 
@@ -15,7 +14,6 @@ const AppNavigation = () => {
             <PrivateRoute exact path="/exercises/:exerciseId" component={Exercise}/>
             <PrivateRoute exact path="/code" component={Code}/>
             <PrivateRoute exact path="/profile" component={Profile}/>
-            <PrivateRoute exact path="/choice" component={Choice}/>
         </>
     );
 };
