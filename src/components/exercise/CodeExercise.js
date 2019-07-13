@@ -3,10 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import Workspace from '../../models/Workspace';
-import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
-import equal from 'fast-deep-equal'
 import Logger from './Logger';
 
 class CodeExercise extends Component {
@@ -16,7 +14,6 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
-            workspace: undefined
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -26,7 +23,7 @@ class CodeExercise extends Component {
     componentDidMount = async () => {        
         document.addEventListener('keydown', this.handleKeyDown);
 
-        const { authorizationHeader, exercise } = this.props;
+        const exercise = this.props.exercise;
 
         const questionFile = {
             id: 'question',
@@ -81,55 +78,18 @@ class CodeExercise extends Component {
             files.concat(priv_dir);
         }
 
-        const fileExplorerData = files; // mapVirtualFilesToTreeStructure(files);
-        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
+        const fileExplorerData = files;
 
         this.setState({
             fileExplorerData,
-            workspace,
             selectedFile: questionFile
         });
 
-        this.props.submit(this.submitButtonClick);
+        //this.props.submit(this.submitButtonClick);
     };
-
-    componentDidUpdate = async (prevProps) => {
-        if(!equal(this.props.submissionId, prevProps.submissionId)){
-            const { authorizationHeader, exercise, submissionId } = this.props;
-
-            if(submissionId === -1){
-                const workspace = new Workspace(exercise);
-                this.setState({
-                    workspace
-                });                
-            }
-            else
-            {
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-                const workspace = new Workspace(exercise, submission);
-    
-                this.setState({
-                    workspace
-                });
-            }
-
-            this.onFileSelected(this.state.selectedFile.id);
-        }
-    } 
 
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
-    };
-
-    fetchLastSubmission = (exerciseId, authHeader) => {
-        return SubmissionService.getLastSubmission(exerciseId, authHeader)
-            .catch(err => console.error(err));
-    };
-
-    fetchSubmissionById = (submissionId, authHeader) => {
-        return SubmissionService.getSubmission(submissionId, authHeader)
-            .catch(err => console.error(err));
     };
 
     onFileSelected(fileId) {
@@ -139,6 +99,7 @@ class CodeExercise extends Component {
     }
 
     submitButtonClick = async () => {
+        /*
         console.log('Submit Button pressed');
         let { workspace } = this.state;
         const { headers } = this.props.authorizationHeader;
@@ -169,6 +130,7 @@ class CodeExercise extends Component {
                 });
             }
         }, 300);
+        */
     };
 
     sleep(milliseconds) {
@@ -254,7 +216,8 @@ class CodeExercise extends Component {
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData } = this.state;
+        const workspace = this.props.workspace;
+        const { selectedFile, fileExplorerData } = this.state;
         
         if (!selectedFile || !workspace) {
             return null;

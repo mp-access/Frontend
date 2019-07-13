@@ -7,6 +7,8 @@ import VersionList from '../components/exercise/VersionList';
 import ExerciseList from '../components/ExerciseList';
 import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
+import Workspace from '../models/Workspace';
+import SubmissionService from '../utils/SubmissionService';
 
 class Exercise extends Component {
 
@@ -15,33 +17,77 @@ class Exercise extends Component {
         this.state = {
             exercise: undefined,
             exercises: [],
-            submissionId: undefined,
+            workspace: Workspace,
+            //submissionId: undefined,
         };
     }
 
-    componentDidMount = () => {
-        this.fetchExerciseAndExerciseList()
-            .catch(err => console.error(err));
-    };
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
-            this.fetchExerciseAndExerciseList()
-                .catch(err => console.error(err));
-        }
-    }
-
-    fetchExerciseAndExerciseList = async () => {
+    componentDidMount = async () => {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader();
 
-        const exercise = await CourseDataService.getExercise(exerciseId, authorizationHeader);
-        const assignment = await CourseDataService.getAssignment(exercise.courseId, exercise.assignmentId, authorizationHeader);
-        this.setState({ exercise, exercises: assignment.exercises });
+        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
+        const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
+
+        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+        const workspace = new Workspace(exercise, submission);
+        
+        this.setState({ 
+            exercise, 
+            exercises: assignment.exercises,
+            workspace,
+        });
     };
 
-    setSubmissionId = (submissionId) => {
-        this.setState({ submissionId: submissionId });
+    componentDidUpdate = async (prevProps) => {
+        if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
+            const exerciseId = this.props.match.params.exerciseId;
+            const authorizationHeader = this.props.context.authorizationHeader();
+
+            const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
+            const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
+
+            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const workspace = new Workspace(exercise, submission);
+            
+            this.setState({ 
+                exercise, 
+                exercises: assignment.exercises,
+                workspace,
+            });
+        }
+    }
+
+    fetchExercise = (exerciseId, authHeader) => {
+        return CourseDataService.getExercise(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchExerciseList = (exercise, authHeader) => {
+        return CourseDataService.getAssignment(exercise.courseId, exercise.assignmentId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchLastSubmission = (exerciseId, authHeader) => {
+        return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchSubmissionById = (submissionId, authHeader) => {
+        return SubmissionService.getSubmission(submissionId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+
+    loadSubmissionById = (submissionId) => {
+        const authorizationHeader = this.props.context.authorizationHeader();
+        const submission = this.fetchSubmissionById(submissionId, authorizationHeader);
+        this.setState(prevState => ({ 
+            workspace: {
+                ...prevState.workspace,
+                submission
+            } 
+        }));
     };
 
 
@@ -49,15 +95,14 @@ class Exercise extends Component {
         console.log('Top Submit clicked');
     };
 
-    renderMainExerciseArea(exercise, authorizationHeader, submissionId) {
+    renderMainExerciseArea(exercise, authorizationHeader, workspace) {
         let content = <p>unknown exercise type</p>;
         if (exercise.type === 'code') {
             content = <CodeExercise
                 key={exercise.id}
                 exercise={exercise}
                 authorizationHeader={authorizationHeader}
-                submissionId={submissionId}
-                submit={sub => this.submit = sub}
+                workspace={workspace}
             />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -65,8 +110,7 @@ class Exercise extends Component {
                     key={exercise.id}
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
-                    submissionId={submissionId}
-                    submit={sub => this.submit = sub}
+                    workspace={workspace}
                 />;
         } else if (exercise.type === 'text'){
             content =
@@ -83,17 +127,19 @@ class Exercise extends Component {
     }
 
     render() {
-        const { exercise, exercises, submissionId } = this.state;
+        const { exercise, exercises, workspace } = this.state;
 
         if (!exercise) {
             return null;
         }
 
+        const submissionid = workspace.submission ? workspace.submission.id : undefined;
+
         const authorizationHeader = this.props.context.authorizationHeader();
-        const content = this.renderMainExerciseArea(exercise, authorizationHeader, submissionId);
+        const content = this.renderMainExerciseArea(exercise, authorizationHeader, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
-                                         submit={this.submit} submissionId={submissionId}
-                                         changeSubmissionId={this.setSubmissionId}/>;
+                                         submit={this.submit} selectedSubmissionId={submissionid}
+                                         changeSubmissionById={this.loadSubmissionById}/>;
 
         return (
             <div className="row">

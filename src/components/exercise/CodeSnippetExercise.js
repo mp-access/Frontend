@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './CodeExercise.css';
-import Workspace from '../../models/Workspace';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
-import equal from 'fast-deep-equal'
 import Logger from './Logger.js';
 
 class CodeSnippetExercise extends Component {
@@ -12,32 +10,28 @@ class CodeSnippetExercise extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedFile: undefined,
-            workspace: undefined,
-            console: '',
+            file: undefined
         };
-
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.submitButtonClick = this.submitButtonClick.bind(this);
     }
 
     componentDidMount = async () => {
-        document.addEventListener('keydown', this.handleKeyDown);
-        this.props.submit(this.submitButtonClick);
-
         const { authorizationHeader, exercise } = this.props;
 
         const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
 
-        this.setState({
-            workspace,
-            selectedFile: workspace.publicFiles[0],
-        });
-
+        if(submission) {
+            this.setState({
+                file: submission.publicFiles[0],
+            });
+        }else{
+            this.setState({
+                file: exercise.public_files[0],
+            });
+        }
     };
 
     componentDidUpdate = async (prevProps) => {
+        /*
         if(!equal(this.props.submissionId, prevProps.submissionId))
         {
             const { authorizationHeader, exercise, submissionId } = this.props;
@@ -61,11 +55,8 @@ class CodeSnippetExercise extends Component {
                 });
             }
         }
+        */
     } 
-
-    componentWillUnmount = () => {
-        document.removeEventListener('keydown', this.handleKeyDown);
-    };
 
     fetchLastSubmission = (exerciseId, authHeader) => {
         return SubmissionService.getLastSubmission(exerciseId, authHeader)
@@ -82,6 +73,7 @@ class CodeSnippetExercise extends Component {
     }
 
     submitButtonClick = async () => {
+        /*
         console.log('Submit Button pressed');
         let { workspace } = this.state;
         const { headers } = this.props.authorizationHeader;
@@ -96,12 +88,6 @@ class CodeSnippetExercise extends Component {
                 console.debug(submissionId);
                 clearInterval(intervalId);
 
-                /*
-                let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
-                console.debug(submissionResponse);
-                this.setState({ console: submissionResponse.console.stderr });
-
-                */
                 const myheaders = {
                     headers: {...headers},
                 }
@@ -114,24 +100,19 @@ class CodeSnippetExercise extends Component {
                 });
             }
         }, 100);
+        */
     };
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile } = this.state;
-
-        const { workspace } = this.state;
-        let files = workspace.publicFiles.slice();
-        let index = files.indexOf(selectedFile);
-        let file = files[index];
-        file = { ...file, content: newValue };
-        files[index] = file;
-        const updatedWorkspace = Object.assign(new Workspace(), workspace);
-        updatedWorkspace.publicFiles = files;
-        this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
-
+        this.setState( prevState => ({
+            file: {
+                 ...prevState.file, 
+                 content: newValue 
+            }
+        }));
     };
 
     editorOptions = (readOnly) => {
@@ -150,40 +131,20 @@ class CodeSnippetExercise extends Component {
         };
     };
 
-    handleKeyDown(e) {
-        // Any key ctrl + [0, 9] || cmd + [0, 9]
-        if ((e.ctrlKey || e.metaKey) && e.which >= 48 && e.which <= 57) {
-            e.preventDefault();
-            let index = e.which - 48;
-            this.selectFileByIndex(index);
-        }
-    };
-
-    selectFileByIndex = (index) => {
-        if (index === 1 || index === 0) {
-            this.setState({ selectedFile: this.state.fileExplorerData[0] });
-        } else {
-            index = Math.min(index, this.state.workspace.publicFiles.length + 1);
-            const selectedFile = this.state.workspace.publicFiles[index - 2];
-            this.setState({ selectedFile });
-        }
-    };
-
     render() {
-        const { selectedFile, workspace } = this.state;
+        const file = this.state.file;
+        const workspace = this.props.workspace;
 
-        if (!selectedFile || !workspace) {
+        if (!file) {
             return null;
         }
 
-        let outputConsole;
-        if(workspace.submission)
-            outputConsole = workspace.submission.console;
+        const outputConsole = workspace.submission ? workspace.submission.console : undefined;
 
-        const { content, extension } = selectedFile;
+        const { content, extension } = file;
         const language = extensionLanguageMap[extension];
 
-        const editorOptions = this.editorOptions(selectedFile.readOnly);
+        const editorOptions = this.editorOptions(file.readOnly);
 
         let consoleLog = <Logger 
                                 log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
