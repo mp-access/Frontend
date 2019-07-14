@@ -12,6 +12,7 @@ class SubmissionService {
     }
 
     static async submitCode(exerciseId, workspace, authHeader) {
+        console.log(exerciseId, workspace, authHeader);
         //const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         return await fetch(url, {

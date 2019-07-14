@@ -27,10 +27,14 @@ class VersionList extends Component {
         }
     }
 
-    createPopover(title, content){
+    createPopover(version, result, commitHash){
+        const score = result ? result.score : "no score";
+        const alert = commitHash !== this.props.exercise.gitHash && <span><br/>(This Submission is outdated)</span>
+            
         return(
-            <Popover id="popover-basic" title={title}>
-                {content}
+            <Popover id="popover-basic" title={"Version " + (version+1)}>
+                {score}
+                {alert}
             </Popover>
         );
     }
@@ -43,11 +47,13 @@ class VersionList extends Component {
                 <ul>
                     <li><button onClick={this.props.changeSubmissionById.bind(this, -1)}>⭯</button> Revert Template</li>
                     <li><hr/></li>
-                    {/* <li><button onClick={this.props.submit.bind(this)}>Submit</button></li> */}
+                    { <li><button onClick={this.props.submit.bind(this)}>Submit</button></li> }
                     {items.map(item => <li key={item.id}>                        
                         <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.selectedSubmissionId ? 'active' : '')}>
                             <button onClick={this.props.changeSubmissionById.bind(this, item.id)}>⭯</button>
-                            <OverlayTrigger trigger="focus" placement="top" overlay={this.createPopover("Version " + (item.version + 1), "Score: 5/7" + (item.commitHash !== this.props.exercise.gitHash ? ' (This Submission is outdated)' : '' ))}>
+                            <OverlayTrigger trigger="focus" 
+                                            placement="top" 
+                                            overlay={this.createPopover(item.version, item.result, item.commitHash )}>
                                 <button>ⓘ</button>
                             </OverlayTrigger> Version {item.version + 1} 
                             <br />

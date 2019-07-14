@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
-import Workspace from '../../models/Workspace';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
 import Logger from './Logger';
+import SubmissionService from '../../utils/SubmissionService';
 
 class CodeExercise extends Component {
 
@@ -14,16 +14,27 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
+            publicFiles: undefined,
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.submitButtonClick = this.submitButtonClick.bind(this);
     }
 
     componentDidMount = async () => {        
         document.addEventListener('keydown', this.handleKeyDown);
+        this.setup();
+    };
 
-        const exercise = this.props.exercise;
+    componentDidUpdate = async (prevProps) => {       
+        if (prevProps.exercise.id !== this.props.exercise.id) {
+            //this.setup();
+        }
+    }
+
+    setup = async () => {
+        const { authorizationHeader, exercise } = this.props;
+        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
 
         const questionFile = {
             id: 'question',
@@ -62,79 +73,47 @@ class CodeExercise extends Component {
         }
 
 
-        pub_dir.children = mapVirtualFilesToTreeStructure(exercise['public_files']);
-        res_dir.children = mapVirtualFilesToTreeStructure(exercise['resource_files']);
+        pub_dir.children = mapVirtualFilesToTreeStructure(exercise.public_files);
+        res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
 
-        const files = [questionFile]
+        var files = [questionFile]
             .concat(pub_dir)
             .concat(res_dir);
 
-        if(exercise['solution_files']){
-            sol_dir.children = mapVirtualFilesToTreeStructure(exercise['solution_files']);
-            files.concat(sol_dir);
+        if(exercise.solution_files){
+            sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
+            files = files.concat(sol_dir);
         }
-        if(exercise['private_files']){
-            priv_dir.children = mapVirtualFilesToTreeStructure(exercise['private_files']);
-            files.concat(priv_dir);
+        if(exercise.private_files){
+            priv_dir.children = mapVirtualFilesToTreeStructure(exercise.private_files);
+            files = files.concat(priv_dir);
         }
 
         const fileExplorerData = files;
-
         this.setState({
             fileExplorerData,
-            selectedFile: questionFile
+            selectedFile: questionFile,
+            publicFiles
         });
-
-        //this.props.submit(this.submitButtonClick);
-    };
+    }
 
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
+    fetchLastSubmission = (exerciseId, authHeader) => {
+        return SubmissionService.getLastSubmission(exerciseId, authHeader)
+            .catch(err => console.error(err));
+    };
+
     onFileSelected(fileId) {
-        const { fileExplorerData, workspace } = this.state;
-        const selectedFile = fileId === 'question' ? fileExplorerData[0] : workspace.findFile(fileId);
+        const fileExplorerData = this.state.fileExplorerData;
+        const selectedFile = fileId === 'question' ? fileExplorerData[0] : this.state.publicFiles.find(f => f.id === fileId);
         this.setState({ selectedFile });
     }
 
-    submitButtonClick = async () => {
-        /*
-        console.log('Submit Button pressed');
-        let { workspace } = this.state;
-        const { headers } = this.props.authorizationHeader;
-
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers);
-        let submissionId = '';
-
-        const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
-            if ('ok' === evalResponse.status) {
-                submissionId = evalResponse.submission;
-                console.debug(submissionId);
-                clearInterval(intervalId);
-
-                //let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
-                //console.debug(submissionResponse);
-                //this.setState({ console: submissionResponse.console.stderr });
-
-                const myheaders = {
-                    headers: {...headers},
-                }
-                const submission = await this.fetchSubmissionById(submissionId, myheaders);
-                const workspace = new Workspace(this.state.workspace.exercise, submission);
-    
-
-                this.setState({
-                    workspace
-                });
-            }
-        }, 300);
-        */
-    };
-
-    sleep(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    getPublicFiles = () =>{
+        return this.state.publicFiles;
     }
 
     /**
@@ -143,16 +122,12 @@ class CodeExercise extends Component {
     onChange = (newValue) => {
         const { selectedFile } = this.state;
 
-        const { workspace } = this.state;
-        let files = workspace.publicFiles.slice();
+        let files = this.state.publicFiles.slice();
         let index = files.indexOf(selectedFile);
         let file = files[index];
         file = { ...file, content: newValue };
         files[index] = file;
-        const updatedWorkspace = Object.assign(new Workspace(), workspace);
-        updatedWorkspace.publicFiles = files;
-        this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
-
+        this.setState(({ publicFiles: files, selectedFile: file }));
     };
 
     onFileExplorerChange = (data) => {
@@ -176,9 +151,24 @@ class CodeExercise extends Component {
             return n;
         });
 
-        const selectedFile = node.id === 'question' ? this.state.fileExplorerData[0] : this.state.workspace.findFile(node.id);
+        
+        const selectedFile = this.searchInFiles(this.state.fileExplorerData, node.id);
+        console.log(selectedFile);
+
         this.setState({ selectedFile, fileExplorerData });
     };
+
+    searchInFiles = (folder, fileId) =>{
+        folder.forEach(element => {
+            if(element.isDirectory) {
+                return this.searchInFiles(element.children, fileId);
+            }else{
+                if(element.id === fileId){
+                    return element;
+                }
+            }
+        });
+    }
 
     editorOptions = (readOnly) => {
         return {
@@ -209,8 +199,8 @@ class CodeExercise extends Component {
         if (index === 1 || index === 0) {
             this.setState({ selectedFile: this.state.fileExplorerData[0] });
         } else {
-            index = Math.min(index, this.state.workspace.publicFiles.length + 1);
-            const selectedFile = this.state.workspace.publicFiles[index - 2];
+            index = Math.min(index, this.state.publicFiles.length + 1);
+            const selectedFile = this.state.publicFiles[index - 2];
             this.setState({ selectedFile });
         }
     };
@@ -276,13 +266,13 @@ class CodeExercise extends Component {
                         */}
 
                         <div>
-
+                            <span>{selectedFile.name + "." + selectedFile.extension}</span>
                             {showQuestion &&
                             <ReactMarkdown source={workspace.question}/>
                             }
                             {!showQuestion &&
                             <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} onRun={this.submitButtonClick}/>
+                                        onChange={this.onChange} height="600px"/>
                             }
 
                         </div>

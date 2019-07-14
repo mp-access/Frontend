@@ -1,18 +1,15 @@
 import MonacoEditor from 'react-monaco-editor';
 import React from 'react';
 
-const CodeEditor = ({ content, language, options, onChange, onRun }) => (
+const CodeEditor = ({ content, language, options, onChange, height }) => (
     <>
         <MonacoEditor
-            height="600px"
+            height={height}
             language={language}
             value={content}
             options={options}
             onChange={onChange}
         />
-        <button onClick={onRun}>
-            Testrun
-        </button>
     </>
 );
 

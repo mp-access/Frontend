@@ -10,7 +10,7 @@ class CodeSnippetExercise extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            file: undefined
+            publicFiles: undefined
         };
     }
 
@@ -21,11 +21,11 @@ class CodeSnippetExercise extends Component {
 
         if(submission) {
             this.setState({
-                file: submission.publicFiles[0],
+                publicFiles: submission.publicFiles[0],
             });
         }else{
             this.setState({
-                file: exercise.public_files[0],
+                publicFiles: exercise.public_files[0],
             });
         }
     };
@@ -33,28 +33,7 @@ class CodeSnippetExercise extends Component {
     componentDidUpdate = async (prevProps) => {
         /*
         if(!equal(this.props.submissionId, prevProps.submissionId))
-        {
-            const { authorizationHeader, exercise, submissionId } = this.props;
-
-            if(submissionId === -1){
-                const workspace = new Workspace(exercise);
-
-                this.setState({
-                    workspace,
-                    selectedFile: workspace.publicFiles[0]
-                });                
-            }
-            else
-            {
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-                const workspace = new Workspace(exercise, submission);
-    
-                this.setState({
-                    workspace,
-                    selectedFile: workspace.publicFiles[0]
-                });
-            }
-        }
+        {}
         */
     } 
 
@@ -63,53 +42,17 @@ class CodeSnippetExercise extends Component {
             .catch(err => console.error(err));
     };
 
-    fetchSubmissionById = (submissionId, authHeader) => {
-        return SubmissionService.getSubmission(submissionId, authHeader)
-            .catch(err => console.error(err));
-    };
-
-    onFileSelected(file) {
-        this.setState({ selectedFile: file });
+    getPublicFiles = () =>{
+        return this.state.publicFiles;
     }
-
-    submitButtonClick = async () => {
-        /*
-        console.log('Submit Button pressed');
-        let { workspace } = this.state;
-        const { headers } = this.props.authorizationHeader;
-
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers)
-            .catch(err => console.error(err));
-
-        const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
-            if ('ok' === evalResponse.status) {
-                const submissionId = evalResponse.submission;
-                console.debug(submissionId);
-                clearInterval(intervalId);
-
-                const myheaders = {
-                    headers: {...headers},
-                }
-                const submission = await this.fetchSubmissionById(submissionId, myheaders);
-                const workspace = new Workspace(this.state.workspace.exercise, submission);
-    
-
-                this.setState({
-                    workspace
-                });
-            }
-        }, 100);
-        */
-    };
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
         this.setState( prevState => ({
-            file: {
-                 ...prevState.file, 
+            publicFiles: {
+                 ...prevState.publicFiles, 
                  content: newValue 
             }
         }));
@@ -132,19 +75,21 @@ class CodeSnippetExercise extends Component {
     };
 
     render() {
-        const file = this.state.file;
+        const publicFiles = this.state.publicFiles;
         const workspace = this.props.workspace;
 
-        if (!file) {
+        console.log("render", workspace);
+
+        if (!publicFiles) {
             return null;
         }
 
         const outputConsole = workspace.submission ? workspace.submission.console : undefined;
 
-        const { content, extension } = file;
+        const { content, extension } = publicFiles;
         const language = extensionLanguageMap[extension];
 
-        const editorOptions = this.editorOptions(file.readOnly);
+        const editorOptions = this.editorOptions(publicFiles.readOnly);
 
         let consoleLog = <Logger 
                                 log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
@@ -162,17 +107,11 @@ class CodeSnippetExercise extends Component {
                 </div>
 
                 <div className="row">
-                    <div className="col-12">
-                        <div className="row">
-                            <div className="col-12">
-                                <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} onRun={this.submitButtonClick}/>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            {consoleLog}
-                        </div>
+                    <div className="col-12">      
+                        <CodeEditor content={content} language={language} options={editorOptions}
+                                onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                        <h4>Output</h4>
+                        {consoleLog}
                     </div>
                 </div>
             </>

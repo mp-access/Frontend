@@ -18,7 +18,6 @@ class Exercise extends Component {
             exercise: undefined,
             exercises: [],
             workspace: Workspace,
-            //submissionId: undefined,
         };
     }
 
@@ -37,6 +36,8 @@ class Exercise extends Component {
             exercises: assignment.exercises,
             workspace,
         });
+
+        console.log("Initial", workspace);
     };
 
     componentDidUpdate = async (prevProps) => {
@@ -55,6 +56,7 @@ class Exercise extends Component {
                 exercises: assignment.exercises,
                 workspace,
             });
+            console.log("Update", workspace);
         }
     }
 
@@ -82,32 +84,72 @@ class Exercise extends Component {
     loadSubmissionById = (submissionId) => {
         const authorizationHeader = this.props.context.authorizationHeader();
         const submission = this.fetchSubmissionById(submissionId, authorizationHeader);
-        this.setState(prevState => ({ 
-            workspace: {
-                ...prevState.workspace,
-                submission
-            } 
-        }));
+        console.log("prev", this.state.workspace.submission.id);
+        
+        let newWorkspace = Object.assign({}, this.state.workspace);
+        newWorkspace.submission = submission;
+        this.setState({workspace: newWorkspace});
+
+        console.log("post", this.state.workspace.submission.id);
     };
 
 
     submit = async () => {
-        console.log('Top Submit clicked');
+        const publicFiles = this.refs.child.getPublicFiles();        
+
+        console.log("prev", this.state.workspace);
+
+        let newWorkspace = Object.assign({}, this.state.workspace);
+        newWorkspace.publicFiles = publicFiles;
+        this.setState({workspace: newWorkspace});
+
+        console.log("post", this.state.workspace);
+
+
+        let { workspace } = this.state;
+        const authorizationHeader = this.props.context.authorizationHeader();
+
+        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, authorizationHeader)
+            .catch(err => console.error(err));
+
+        console.log(codeResponse)
+        const intervalId = setInterval(async () => {
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);
+            if ('ok' === evalResponse.status) {
+                const submissionId = evalResponse.submission;
+                console.debug(submissionId);
+                clearInterval(intervalId);
+
+                const myheaders = {
+                    headers: {...authorizationHeader},
+                }
+                
+                const submission = await this.fetchSubmissionById(submissionId, myheaders);
+                const workspace = new Workspace(this.state.workspace.exercise, submission);
+
+                this.setState({
+                    workspace
+                });
+            }
+        }, 100);
     };
 
     renderMainExerciseArea(exercise, authorizationHeader, workspace) {
         let content = <p>unknown exercise type</p>;
         if (exercise.type === 'code') {
-            content = <CodeExercise
-                key={exercise.id}
-                exercise={exercise}
-                authorizationHeader={authorizationHeader}
-                workspace={workspace}
-            />;
+            content = 
+                <CodeExercise
+                    key={exercise.id}
+                    ref="child"
+                    exercise={exercise}
+                    authorizationHeader={authorizationHeader}
+                    workspace={workspace}
+                />;
         } else if (exercise.type === 'codeSnippet') {
             content =
                 <CodeSnippetExercise
                     key={exercise.id}
+                    ref="child"
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
                     workspace={workspace}
@@ -115,13 +157,18 @@ class Exercise extends Component {
         } else if (exercise.type === 'text'){
             content =
                 <TextExercise
+                    key={exercise.id}
+                    ref="child"
                     exercise={exercise}
-                    />
+                />
         } else if (exercise.type === 'multipleChoice') {
-            content = <ChoiceExercise
-                exercise={exercise}
-                authorizationHeader={authorizationHeader}
-            />;
+            content = 
+                <ChoiceExercise
+                    key={exercise.id}
+                    ref="child"
+                    exercise={exercise}
+                    authorizationHeader={authorizationHeader}
+                />;
         }
         return content;
     }
