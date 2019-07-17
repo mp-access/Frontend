@@ -30,13 +30,6 @@ class CodeSnippetExercise extends Component {
         }
     };
 
-    componentDidUpdate = async (prevProps) => {
-        /*
-        if(!equal(this.props.submissionId, prevProps.submissionId))
-        {}
-        */
-    } 
-
     fetchLastSubmission = (exerciseId, authHeader) => {
         return SubmissionService.getLastSubmission(exerciseId, authHeader)
             .catch(err => console.error(err));
