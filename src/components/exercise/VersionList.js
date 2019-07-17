@@ -19,7 +19,8 @@ class VersionList extends Component {
     }
 
     componentDidUpdate = async (prevProps) => {
-        if(!equal(this.props.exercise, prevProps.exercise)){
+        if(!equal(this.props.exercise, prevProps.exercise) || !equal(this.props.submissionid, prevProps.submissionid)){
+            console.log("Need update!");
             const items = await SubmissionService.getSubmissionList(this.props.exercise.id, this.props.authorizationHeader);
             this.setState({
                 items: items.submissions

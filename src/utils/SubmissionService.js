@@ -6,7 +6,7 @@ class SubmissionService {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
         const response = await fetch(url, authHeader);
         console.log(response);
-        if (response.status === "200") {
+        if (response.status === 200) {
             return await response.json();
         }
         console.debug(response.toString());

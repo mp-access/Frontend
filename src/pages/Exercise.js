@@ -79,15 +79,14 @@ class Exercise extends Component {
     };
 
 
-    loadSubmissionById = (submissionId) => {
+    loadSubmissionById = async (submissionId) => {
         const authorizationHeader = this.props.context.authorizationHeader();
-        const submission = this.fetchSubmissionById(submissionId, authorizationHeader);
-        debugger;
-        console.log("prev", this.state.workspace.submission.id);
+        const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
         
-        let newWorkspace = Object.assign({}, this.state.workspace);
-        newWorkspace.submission = submission;
-        this.setState({workspace: newWorkspace});
+        const exercise = this.state.exercise;
+        const workspace = new Workspace(exercise, submission);
+
+        this.setState({workspace});
 
         console.log("post", this.state.workspace.submission.id);
     };
