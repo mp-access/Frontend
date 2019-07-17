@@ -54,7 +54,6 @@ class Exercise extends Component {
                 exercises: assignment.exercises,
                 workspace,
             });
-            console.log("Update", workspace);
         }
     }
 
@@ -80,15 +79,17 @@ class Exercise extends Component {
 
 
     loadSubmissionById = async (submissionId) => {
-        const authorizationHeader = this.props.context.authorizationHeader();
-        const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-        
+        let submission;
+        if(submissionId === -1){
+            submission = undefined;
+        }else{
+            const authorizationHeader = this.props.context.authorizationHeader();
+            submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+        }
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({workspace});
-
-        console.log("post", this.state.workspace.submission.id);
+        this.setState({workspace});    
     };
 
 
@@ -121,7 +122,7 @@ class Exercise extends Component {
         let content = <p>unknown exercise type</p>;
 
         const key = exercise.id + '-' + workspace.submissionId;
-        debugger;
+        
         if (exercise.type === 'code') {
             content = 
                 <CodeExercise

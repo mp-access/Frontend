@@ -15,12 +15,8 @@ class CodeSnippetExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { authorizationHeader, exercise, workspace } = this.props;
-
-        // const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        const { exercise, workspace } = this.props;
         const submission = workspace.submission;
-
-        debugger;
 
         if(submission) {
             this.setState({
@@ -73,8 +69,6 @@ class CodeSnippetExercise extends Component {
     render() {
         const publicFiles = this.state.publicFiles;
         const workspace = this.props.workspace;
-
-        console.log("render", workspace);
 
         if (!publicFiles) {
             return null;
