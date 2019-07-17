@@ -43,7 +43,7 @@ class CodeSnippetExercise extends Component {
     };
 
     getPublicFiles = () =>{
-        return this.state.publicFiles;
+        return [this.state.publicFiles];
     }
 
     /**

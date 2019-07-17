@@ -151,23 +151,23 @@ class CodeExercise extends Component {
             return n;
         });
 
-        
         const selectedFile = this.searchInFiles(this.state.fileExplorerData, node.id);
-        console.log(selectedFile);
 
         this.setState({ selectedFile, fileExplorerData });
     };
 
-    searchInFiles = (folder, fileId) =>{
-        folder.forEach(element => {
-            if(element.isDirectory) {
-                return this.searchInFiles(element.children, fileId);
+    searchInFiles(folder, fileId){        
+        for(let i = 0; i < folder.length; ++i){
+            if(folder[i].isDirectory) {
+                const ret = this.searchInFiles(folder[i].children, fileId);
+                if (ret !== undefined)
+                    return ret;
             }else{
-                if(element.id === fileId){
-                    return element;
+                if(folder[i].id === fileId){
+                    return folder[i];
                 }
             }
-        });
+        }
     }
 
     editorOptions = (readOnly) => {
