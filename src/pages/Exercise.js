@@ -119,10 +119,13 @@ class Exercise extends Component {
 
     renderMainExerciseArea(exercise, authorizationHeader, workspace) {
         let content = <p>unknown exercise type</p>;
+
+        const key = exercise.id + '-' + workspace.submissionId;
+        debugger;
         if (exercise.type === 'code') {
             content = 
                 <CodeExercise
-                    key={exercise.id}
+                    key={key}
                     ref="child"
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
@@ -131,7 +134,7 @@ class Exercise extends Component {
         } else if (exercise.type === 'codeSnippet') {
             content =
                 <CodeSnippetExercise
-                    key={exercise.id}
+                    key={key}
                     ref="child"
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
@@ -140,14 +143,14 @@ class Exercise extends Component {
         } else if (exercise.type === 'text'){
             content =
                 <TextExercise
-                    key={exercise.id}
+                    key={key}
                     ref="child"
                     exercise={exercise}
                 />
         } else if (exercise.type === 'multipleChoice') {
             content = 
                 <ChoiceExercise
-                    key={exercise.id}
+                    key={key}
                     ref="child"
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
@@ -163,12 +166,12 @@ class Exercise extends Component {
             return null;
         }
 
-        const submissionid = workspace.submission ? workspace.submission.id : undefined;
+        const submissionId = workspace.submissionId;
 
         const authorizationHeader = this.props.context.authorizationHeader();
         const content = this.renderMainExerciseArea(exercise, authorizationHeader, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
-                                         submit={this.submit} selectedSubmissionId={submissionid}
+                                         submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById}/>;
 
         return (

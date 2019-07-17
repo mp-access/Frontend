@@ -15,9 +15,12 @@ class CodeSnippetExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { authorizationHeader, exercise } = this.props;
+        const { authorizationHeader, exercise, workspace } = this.props;
 
-        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        // const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        const submission = workspace.submission;
+
+        debugger;
 
         if(submission) {
             this.setState({
