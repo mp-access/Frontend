@@ -93,7 +93,7 @@ class Exercise extends Component {
     };
 
 
-    submit = async () => {
+    submit = async (callback) => {
         const toSubmit = this.refs.child.getPublicFiles();        
 
         let { workspace } = this.state;
@@ -114,6 +114,7 @@ class Exercise extends Component {
                 this.setState({
                     workspace
                 });
+                callback();
             }
         }, 100);
     };

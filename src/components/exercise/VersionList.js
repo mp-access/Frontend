@@ -8,7 +8,19 @@ import {OverlayTrigger, Popover} from 'react-bootstrap'
 
 class VersionList extends Component {
 
-    state = { items:[] }
+    state = { 
+        items:[],
+        submissionState: false
+    }
+
+    onSubmit = () => {
+        this.props.submit(this.resetSubmitButton);
+        this.setState({submissionState: true});
+    }
+
+    resetSubmitButton = () =>{
+        this.setState({submissionState: false});
+    }
 
     componentDidMount = async () => {
         const {exercise} = this.props;
@@ -47,7 +59,8 @@ class VersionList extends Component {
                 <ul>
                     <li><button onClick={this.props.changeSubmissionById.bind(this, -1)}>⭯</button> Revert Template</li>
                     <li><hr/></li>
-                    { <li><button onClick={this.props.submit.bind(this)}>Submit</button></li> }
+                    { <li><button disabled={this.state.submissionState} onClick={this.onSubmit}>Submit</button></li> }
+                    <li><hr/></li>
                     {items.map(item => <li key={item.id}>                        
                         <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.selectedSubmissionId ? 'active' : '')}>
                             <button onClick={this.props.changeSubmissionById.bind(this, item.id)}>⭯</button>

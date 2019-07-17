@@ -17,16 +17,11 @@ class CodeSnippetExercise extends Component {
     componentDidMount = async () => {
         const { exercise, workspace } = this.props;
         const submission = workspace.submission;
+        const publicFiles = (submission ? submission.publicFiles[0] : exercise.public_files[0]);
 
-        if(submission) {
-            this.setState({
-                publicFiles: submission.publicFiles[0],
-            });
-        }else{
-            this.setState({
-                publicFiles: exercise.public_files[0],
-            });
-        }
+        this.setState({
+            publicFiles
+        });
     };
 
     fetchLastSubmission = (exerciseId, authHeader) => {

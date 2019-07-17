@@ -5,7 +5,6 @@ import './CodeExercise.css';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
 import Logger from './Logger';
-import SubmissionService from '../../utils/SubmissionService';
 
 class CodeExercise extends Component {
 
@@ -14,7 +13,7 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
-            publicFiles: undefined,
+            publicFiles: [],
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -22,18 +21,9 @@ class CodeExercise extends Component {
 
     componentDidMount = async () => {        
         document.addEventListener('keydown', this.handleKeyDown);
-        this.setup();
-    };
 
-    componentDidUpdate = async (prevProps) => {       
-        if (prevProps.exercise.id !== this.props.exercise.id) {
-            //this.setup();
-        }
-    }
-
-    setup = async () => {
-        const { authorizationHeader, exercise } = this.props;
-        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
+        const { exercise, workspace } = this.props;
+        const submission = workspace.submission;
         const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
 
         const questionFile = {
@@ -101,17 +91,6 @@ class CodeExercise extends Component {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
-    fetchLastSubmission = (exerciseId, authHeader) => {
-        return SubmissionService.getLastSubmission(exerciseId, authHeader)
-            .catch(err => console.error(err));
-    };
-
-    onFileSelected(fileId) {
-        const fileExplorerData = this.state.fileExplorerData;
-        const selectedFile = fileId === 'question' ? fileExplorerData[0] : this.state.publicFiles.find(f => f.id === fileId);
-        this.setState({ selectedFile });
-    }
-
     getPublicFiles = () =>{
         return this.state.publicFiles;
     }
@@ -122,12 +101,31 @@ class CodeExercise extends Component {
     onChange = (newValue) => {
         const { selectedFile } = this.state;
 
-        let files = this.state.publicFiles.slice();
-        let index = files.indexOf(selectedFile);
-        let file = files[index];
-        file = { ...file, content: newValue };
-        files[index] = file;
-        this.setState(({ publicFiles: files, selectedFile: file }));
+        let files = this.state.publicFiles;
+        console.log("files: ", files);
+        let index = files.findIndex(el => el.id === selectedFile.id);
+        
+        const newPublicFiles = Object.assign([], this.state.publicFiles);
+        newPublicFiles[index].content = newValue;
+
+        console.log("selectedFile: ", selectedFile);
+        console.log("index: ", index);
+        console.log("newValue: ", newValue);
+
+        if(index !== -1) {
+            console.log("Change State!", newPublicFiles);
+            this.setState({publicFiles: newPublicFiles});
+            
+            /*
+            this.setState(prevState => ({
+                publicFiles: {
+                    ...prevState.publicFiles,
+                    [prevState.publicFiles[index].content]: newValue,
+                },
+            }));
+            */
+        }
+        console.log("State:", this.state.publicFiles);
     };
 
     onFileExplorerChange = (data) => {
@@ -224,20 +222,6 @@ class CodeExercise extends Component {
         const editorOptions = this.editorOptions(selectedFile.readOnly);
 
         const showQuestion = selectedFile.title === 'Question.md';
-
-        /*
-        let fileTabs = fileExplorerData.map((f) => {
-                const isSelected = f.id === selectedFile.id;
-                return (
-                    <button key={f.id}
-                            className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
-                            onClick={() => this.onFileSelected(f.id)}>
-                        {f.name + '.' + f.extension}
-                    </button>
-                );
-            },
-        );
-        */
 
        let consoleLog = <Logger 
                             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
