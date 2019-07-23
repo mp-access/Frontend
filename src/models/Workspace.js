@@ -12,6 +12,10 @@ export default class Workspace {
         return this.exercise.question;
     }
 
+    get submissionId() {
+        return !!this.submission ? this.submission.id : '';
+    }
+
     /**
      * If a student has already submitted some code, then show the submission
      * @returns {*|Workspace.publicFiles|*}

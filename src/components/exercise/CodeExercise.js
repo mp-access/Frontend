@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
-import Workspace from '../../models/Workspace';
-import SubmissionService from '../../utils/SubmissionService';
 import FileExplorer from './FileExplorer';
 import CodeEditor from './CodeEditor';
-import equal from 'fast-deep-equal'
 import Logger from './Logger';
 
 class CodeExercise extends Component {
@@ -16,17 +13,18 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: demoFiles,
-            workspace: undefined
+            publicFiles: [],
         };
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.submitButtonClick = this.submitButtonClick.bind(this);
     }
 
-    componentDidMount = async () => {        
+    componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
 
-        const { authorizationHeader, exercise } = this.props;
+        const { exercise, workspace } = this.props;
+        const submission = workspace.submission;
+        const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
 
         const questionFile = {
             id: 'question',
@@ -43,154 +41,83 @@ class CodeExercise extends Component {
             title: 'Public Files',
             isDirectory: true,
             expanded: true,
-            children: []
-        }
+            children: [],
+        };
         const priv_dir = {
             id: 'private_files',
             title: 'Private Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
         const sol_dir = {
             id: 'solution_files',
             title: 'Solution Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
         const res_dir = {
             id: 'resource_files',
             title: 'Resource Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
 
 
-        pub_dir.children = mapVirtualFilesToTreeStructure(exercise['public_files']);
-        res_dir.children = mapVirtualFilesToTreeStructure(exercise['resource_files']);
+        pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
+        res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
 
-        const files = [questionFile]
+        let files = [questionFile]
             .concat(pub_dir)
             .concat(res_dir);
 
-        if(exercise['solution_files']){
-            sol_dir.children = mapVirtualFilesToTreeStructure(exercise['solution_files']);
-            files.concat(sol_dir);
+        if (exercise.solution_files) {
+            sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
+            files = files.concat(sol_dir);
         }
-        if(exercise['private_files']){
-            priv_dir.children = mapVirtualFilesToTreeStructure(exercise['private_files']);
-            files.concat(priv_dir);
+        if (exercise.private_files) {
+            priv_dir.children = mapVirtualFilesToTreeStructure(exercise.private_files);
+            files = files.concat(priv_dir);
         }
 
-        const fileExplorerData = files; // mapVirtualFilesToTreeStructure(files);
-        const submission = await this.fetchLastSubmission(exercise.id, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
-
+        const fileExplorerData = files;
         this.setState({
             fileExplorerData,
-            workspace,
-            selectedFile: questionFile
+            selectedFile: questionFile,
+            publicFiles,
         });
-
-        this.props.submit(this.submitButtonClick);
     };
-
-    componentDidUpdate = async (prevProps) => {
-        if(!equal(this.props.submissionId, prevProps.submissionId)){
-            const { authorizationHeader, exercise, submissionId } = this.props;
-
-            if(submissionId === -1){
-                const workspace = new Workspace(exercise);
-                this.setState({
-                    workspace
-                });                
-            }
-            else
-            {
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-                const workspace = new Workspace(exercise, submission);
-    
-                this.setState({
-                    workspace
-                });
-            }
-
-            this.onFileSelected(this.state.selectedFile.id);
-        }
-    } 
 
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
-    fetchLastSubmission = (exerciseId, authHeader) => {
-        return SubmissionService.getLastSubmission(exerciseId, authHeader)
-            .catch(err => console.error(err));
+    getPublicFiles = () => {
+        return this.state.publicFiles;
     };
-
-    fetchSubmissionById = (submissionId, authHeader) => {
-        return SubmissionService.getSubmission(submissionId, authHeader)
-            .catch(err => console.error(err));
-    };
-
-    onFileSelected(fileId) {
-        const { fileExplorerData, workspace } = this.state;
-        const selectedFile = fileId === 'question' ? fileExplorerData[0] : workspace.findFile(fileId);
-        this.setState({ selectedFile });
-    }
-
-    submitButtonClick = async () => {
-        console.log('Submit Button pressed');
-        let { workspace } = this.state;
-        const { headers } = this.props.authorizationHeader;
-
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, workspace, headers);
-        let submissionId = '';
-
-        const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, headers);
-            if ('ok' === evalResponse.status) {
-                submissionId = evalResponse.submission;
-                console.debug(submissionId);
-                clearInterval(intervalId);
-
-                //let submissionResponse = await SubmissionService.getSubmission(submissionId, headers);
-                //console.debug(submissionResponse);
-                //this.setState({ console: submissionResponse.console.stderr });
-
-                const myheaders = {
-                    headers: {...headers},
-                }
-                const submission = await this.fetchSubmissionById(submissionId, myheaders);
-                const workspace = new Workspace(this.state.workspace.exercise, submission);
-    
-
-                this.setState({
-                    workspace
-                });
-            }
-        }, 300);
-    };
-
-    sleep(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile } = this.state;
+        const { selectedFile, publicFiles } = this.state;
 
-        const { workspace } = this.state;
-        let files = workspace.publicFiles.slice();
-        let index = files.indexOf(selectedFile);
-        let file = files[index];
-        file = { ...file, content: newValue };
-        files[index] = file;
-        const updatedWorkspace = Object.assign(new Workspace(), workspace);
-        updatedWorkspace.publicFiles = files;
-        this.setState(({ workspace: updatedWorkspace, selectedFile: file }));
+        const updatedSelectedFile = {
+            ...selectedFile,
+            content: newValue,
+        };
 
+        const updatedPublicFiles = publicFiles.map(file => {
+            if (file.id === updatedSelectedFile.id) {
+                return updatedSelectedFile;
+            } else {
+                return file;
+            }
+        });
+
+        this.setState({
+            publicFiles: updatedPublicFiles,
+            selectedFile: updatedSelectedFile,
+        });
     };
 
     onFileExplorerChange = (data) => {
@@ -198,7 +125,6 @@ class CodeExercise extends Component {
     };
 
     nodeClicked = (node) => {
-        if(node.isDirectory) return;
         const fileExplorerData = this.state.fileExplorerData.map(n => {
             if (n.id === node.id && n.isDirectory) {
                 return {
@@ -214,9 +140,27 @@ class CodeExercise extends Component {
             return n;
         });
 
-        const selectedFile = node.id === 'question' ? this.state.fileExplorerData[0] : this.state.workspace.findFile(node.id);
-        this.setState({ selectedFile, fileExplorerData });
+        if (node.isDirectory) {
+            this.setState({ fileExplorerData });
+        } else {
+            const selectedFile = this.searchInFiles(fileExplorerData, node.id);
+            this.setState({ selectedFile, fileExplorerData });
+        }
     };
+
+    searchInFiles(folder, fileId) {
+        for (let i = 0; i < folder.length; ++i) {
+            if (folder[i].isDirectory) {
+                const ret = this.searchInFiles(folder[i].children, fileId);
+                if (ret !== undefined)
+                    return ret;
+            } else {
+                if (folder[i].id === fileId) {
+                    return folder[i];
+                }
+            }
+        }
+    }
 
     editorOptions = (readOnly) => {
         return {
@@ -247,21 +191,22 @@ class CodeExercise extends Component {
         if (index === 1 || index === 0) {
             this.setState({ selectedFile: this.state.fileExplorerData[0] });
         } else {
-            index = Math.min(index, this.state.workspace.publicFiles.length + 1);
-            const selectedFile = this.state.workspace.publicFiles[index - 2];
+            index = Math.min(index, this.state.publicFiles.length + 1);
+            const selectedFile = this.state.publicFiles[index - 2];
             this.setState({ selectedFile });
         }
     };
 
     render() {
-        const { selectedFile, workspace, fileExplorerData } = this.state;
-        
+        const workspace = this.props.workspace;
+        const { selectedFile, fileExplorerData } = this.state;
+
         if (!selectedFile || !workspace) {
             return null;
         }
 
         let outputConsole;
-        if(workspace.submission)
+        if (workspace.submission)
             outputConsole = workspace.submission.console;
 
         const { content, extension } = selectedFile;
@@ -272,24 +217,10 @@ class CodeExercise extends Component {
 
         const showQuestion = selectedFile.title === 'Question.md';
 
-        /*
-        let fileTabs = fileExplorerData.map((f) => {
-                const isSelected = f.id === selectedFile.id;
-                return (
-                    <button key={f.id}
-                            className={`btn code-editor-workspace-tab ${isSelected ? 'active' : ''}`}
-                            onClick={() => this.onFileSelected(f.id)}>
-                        {f.name + '.' + f.extension}
-                    </button>
-                );
-            },
-        );
-        */
-
-       let consoleLog = <Logger 
-                            log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                        />;
+        let consoleLog = <Logger
+            log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+        />;
 
         return (
             <>
@@ -313,13 +244,13 @@ class CodeExercise extends Component {
                         */}
 
                         <div>
-
+                            <span>{selectedFile.name + '.' + selectedFile.extension}</span>
                             {showQuestion &&
                             <ReactMarkdown source={workspace.question}/>
                             }
                             {!showQuestion &&
                             <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} onRun={this.submitButtonClick}/>
+                                        onChange={this.onChange} height="600px"/>
                             }
 
                         </div>

@@ -5,7 +5,6 @@ class ExerciseList extends Component {
 
     render() {
         const {exercises} = this.props;
-
         const listItems = exercises.map((e, index) =>
             <Link to={`/exercises/${e.id}`} key={e.id}>
                 <li className="list-group-item"> 

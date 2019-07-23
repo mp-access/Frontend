@@ -16,10 +16,10 @@
     "react-markdown": "^4.0.8",
     "react-monaco-editor": "^0.25.1",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "2.1.8",
+    "react-scripts": "^3.0.1",
     "react-sortable-tree": "^2.6.2",
     "react-sortable-tree-theme-file-explorer": "^2.0.0",
-    "snyk": "^1.189.0"
+    "fast-deep-equal": "latest"
   },
   "homepage": "https://142.93.164.106",
   "scripts": {
@@ -28,9 +28,7 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "mock:api": "json-server --watch dev/fake-api-db.json --routes dev/fake-api-routes.json --port 4000",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "mock:api": "json-server --watch dev/fake-api-db.json --routes dev/fake-api-routes.json --port 4000"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,6 +45,5 @@
   },
   "devDependencies": {
     "json-server": "^0.15.0"
-  },
-  "snyk": true
+  }
 }

@@ -71,6 +71,7 @@ class AuthProvider extends Component {
         return {
             headers: {
                 'Authorization': `Bearer ${keycloak.token}`,
+                'Content-Type': 'application/json'
             },
         };
     };
