@@ -19,7 +19,7 @@ class CodeExercise extends Component {
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
-    componentDidMount = async () => {        
+    componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
 
         const { exercise, workspace } = this.props;
@@ -41,40 +41,40 @@ class CodeExercise extends Component {
             title: 'Public Files',
             isDirectory: true,
             expanded: true,
-            children: []
-        }
+            children: [],
+        };
         const priv_dir = {
             id: 'private_files',
             title: 'Private Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
         const sol_dir = {
             id: 'solution_files',
             title: 'Solution Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
         const res_dir = {
             id: 'resource_files',
             title: 'Resource Files',
             isDirectory: true,
-            children: []
-        }
+            children: [],
+        };
 
 
         pub_dir.children = mapVirtualFilesToTreeStructure(exercise.public_files);
         res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
 
-        var files = [questionFile]
+        let files = [questionFile]
             .concat(pub_dir)
             .concat(res_dir);
 
-        if(exercise.solution_files){
+        if (exercise.solution_files) {
             sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
             files = files.concat(sol_dir);
         }
-        if(exercise.private_files){
+        if (exercise.private_files) {
             priv_dir.children = mapVirtualFilesToTreeStructure(exercise.private_files);
             files = files.concat(priv_dir);
         }
@@ -83,49 +83,41 @@ class CodeExercise extends Component {
         this.setState({
             fileExplorerData,
             selectedFile: questionFile,
-            publicFiles
+            publicFiles,
         });
-    }
+    };
 
     componentWillUnmount = () => {
         document.removeEventListener('keydown', this.handleKeyDown);
     };
 
-    getPublicFiles = () =>{
+    getPublicFiles = () => {
         return this.state.publicFiles;
-    }
+    };
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile } = this.state;
+        const { selectedFile, publicFiles } = this.state;
 
-        let files = this.state.publicFiles;
-        console.log("files: ", files);
-        let index = files.findIndex(el => el.id === selectedFile.id);
-        
-        const newPublicFiles = Object.assign([], this.state.publicFiles);
-        newPublicFiles[index].content = newValue;
+        const updatedSelectedFile = {
+            ...selectedFile,
+            content: newValue,
+        };
 
-        console.log("selectedFile: ", selectedFile);
-        console.log("index: ", index);
-        console.log("newValue: ", newValue);
+        const updatedPublicFiles = publicFiles.map(file => {
+            if (file.id === updatedSelectedFile.id) {
+                return updatedSelectedFile;
+            } else {
+                return file;
+            }
+        });
 
-        if(index !== -1) {
-            console.log("Change State!", newPublicFiles);
-            this.setState({publicFiles: newPublicFiles});
-            
-            /*
-            this.setState(prevState => ({
-                publicFiles: {
-                    ...prevState.publicFiles,
-                    [prevState.publicFiles[index].content]: newValue,
-                },
-            }));
-            */
-        }
-        console.log("State:", this.state.publicFiles);
+        this.setState({
+            publicFiles: updatedPublicFiles,
+            selectedFile: updatedSelectedFile,
+        });
     };
 
     onFileExplorerChange = (data) => {
@@ -133,7 +125,6 @@ class CodeExercise extends Component {
     };
 
     nodeClicked = (node) => {
-        if(node.isDirectory) return;
         const fileExplorerData = this.state.fileExplorerData.map(n => {
             if (n.id === node.id && n.isDirectory) {
                 return {
@@ -149,19 +140,22 @@ class CodeExercise extends Component {
             return n;
         });
 
-        const selectedFile = this.searchInFiles(this.state.fileExplorerData, node.id);
-
-        this.setState({ selectedFile, fileExplorerData });
+        if (node.isDirectory) {
+            this.setState({ fileExplorerData });
+        } else {
+            const selectedFile = this.searchInFiles(fileExplorerData, node.id);
+            this.setState({ selectedFile, fileExplorerData });
+        }
     };
 
-    searchInFiles(folder, fileId){        
-        for(let i = 0; i < folder.length; ++i){
-            if(folder[i].isDirectory) {
+    searchInFiles(folder, fileId) {
+        for (let i = 0; i < folder.length; ++i) {
+            if (folder[i].isDirectory) {
                 const ret = this.searchInFiles(folder[i].children, fileId);
                 if (ret !== undefined)
                     return ret;
-            }else{
-                if(folder[i].id === fileId){
+            } else {
+                if (folder[i].id === fileId) {
                     return folder[i];
                 }
             }
@@ -206,13 +200,13 @@ class CodeExercise extends Component {
     render() {
         const workspace = this.props.workspace;
         const { selectedFile, fileExplorerData } = this.state;
-        
+
         if (!selectedFile || !workspace) {
             return null;
         }
 
         let outputConsole;
-        if(workspace.submission)
+        if (workspace.submission)
             outputConsole = workspace.submission.console;
 
         const { content, extension } = selectedFile;
@@ -223,10 +217,10 @@ class CodeExercise extends Component {
 
         const showQuestion = selectedFile.title === 'Question.md';
 
-       let consoleLog = <Logger 
-                            log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                        />;
+        let consoleLog = <Logger
+            log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+        />;
 
         return (
             <>
@@ -250,7 +244,7 @@ class CodeExercise extends Component {
                         */}
 
                         <div>
-                            <span>{selectedFile.name + "." + selectedFile.extension}</span>
+                            <span>{selectedFile.name + '.' + selectedFile.extension}</span>
                             {showQuestion &&
                             <ReactMarkdown source={workspace.question}/>
                             }

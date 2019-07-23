@@ -94,7 +94,7 @@ class Exercise extends Component {
 
 
     submit = async (callback) => {
-        const toSubmit = this.refs.child.getPublicFiles();        
+        const toSubmit = this.refs.child.getPublicFiles();
 
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader();
