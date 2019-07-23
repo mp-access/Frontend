@@ -30,9 +30,9 @@ class Exercise extends Component {
 
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
-        
-        this.setState({ 
-            exercise, 
+
+        this.setState({
+            exercise,
             exercises: assignment.exercises,
             workspace,
         });
@@ -48,14 +48,14 @@ class Exercise extends Component {
 
             const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
             const workspace = new Workspace(exercise, submission);
-            
-            this.setState({ 
-                exercise, 
+
+            this.setState({
+                exercise,
                 exercises: assignment.exercises,
                 workspace,
             });
         }
-    }
+    };
 
     fetchExercise = (exerciseId, authHeader) => {
         return CourseDataService.getExercise(exerciseId, authHeader)
@@ -80,16 +80,16 @@ class Exercise extends Component {
 
     loadSubmissionById = async (submissionId) => {
         let submission;
-        if(submissionId === -1){
+        if (submissionId === -1) {
             submission = undefined;
-        }else{
+        } else {
             const authorizationHeader = this.props.context.authorizationHeader();
             submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
         }
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({workspace});    
+        this.setState({ workspace });
     };
 
 
@@ -107,12 +107,12 @@ class Exercise extends Component {
             if ('ok' === evalResponse.status) {
                 const submissionId = evalResponse.submission;
                 clearInterval(intervalId);
-                
+
                 const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
                 const workspace = new Workspace(this.state.workspace.exercise, submission);
 
                 this.setState({
-                    workspace
+                    workspace,
                 });
                 callback();
             }
@@ -123,9 +123,10 @@ class Exercise extends Component {
         let content = <p>unknown exercise type</p>;
 
         const key = exercise.id + '-' + workspace.submissionId;
-        
+
         if (exercise.type === 'code') {
-            content = 
+            debugger;
+            content =
                 <CodeExercise
                     key={key}
                     ref="child"
@@ -142,15 +143,15 @@ class Exercise extends Component {
                     authorizationHeader={authorizationHeader}
                     workspace={workspace}
                 />;
-        } else if (exercise.type === 'text'){
+        } else if (exercise.type === 'text') {
             content =
                 <TextExercise
                     key={key}
                     ref="child"
                     exercise={exercise}
-                />
+                />;
         } else if (exercise.type === 'multipleChoice') {
-            content = 
+            content =
                 <ChoiceExercise
                     key={key}
                     ref="child"
