@@ -95,7 +95,7 @@ class VersionList extends Component {
 
 VersionList.propTypes = {
     exercise: PropTypes.object.isRequired,
-    authorizationHeader: PropTypes.func.isRequired,
+    authorizationHeader: PropTypes.object.isRequired,
     submit: PropTypes.func.isRequired,
     selectedSubmissionId: PropTypes.string.isRequired,
     changeSubmissionById: PropTypes.func.isRequired,

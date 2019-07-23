@@ -63,7 +63,7 @@ class CodeExercise extends Component {
         };
 
 
-        pub_dir.children = mapVirtualFilesToTreeStructure(exercise.public_files);
+        pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
         res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
 
         let files = [questionFile]

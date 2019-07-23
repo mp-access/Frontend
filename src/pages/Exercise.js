@@ -125,7 +125,6 @@ class Exercise extends Component {
         const key = exercise.id + '-' + workspace.submissionId;
 
         if (exercise.type === 'code') {
-            debugger;
             content =
                 <CodeExercise
                     key={key}
