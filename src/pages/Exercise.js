@@ -19,6 +19,7 @@ class Exercise extends Component {
             exercises: [],
             workspace: Workspace,
         };
+        this.exerciseComponentRef = React.createRef();
     }
 
     componentDidMount = async () => {
@@ -94,7 +95,7 @@ class Exercise extends Component {
 
 
     submit = async (callback) => {
-        const toSubmit = this.refs.child.getPublicFiles();
+        const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader();
@@ -128,7 +129,7 @@ class Exercise extends Component {
             content =
                 <CodeExercise
                     key={key}
-                    ref="child"
+                    ref={this.exerciseComponentRef}
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
                     workspace={workspace}
@@ -137,7 +138,7 @@ class Exercise extends Component {
             content =
                 <CodeSnippetExercise
                     key={key}
-                    ref="child"
+                    ref={this.exerciseComponentRef}
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
                     workspace={workspace}
@@ -146,14 +147,14 @@ class Exercise extends Component {
             content =
                 <TextExercise
                     key={key}
-                    ref="child"
+                    ref={this.exerciseComponentRef}
                     exercise={exercise}
                 />;
         } else if (exercise.type === 'multipleChoice') {
             content =
                 <ChoiceExercise
                     key={key}
-                    ref="child"
+                    ref={this.exerciseComponentRef}
                     exercise={exercise}
                     authorizationHeader={authorizationHeader}
                 />;
