@@ -150,7 +150,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                 />;
-        } else if (exercise.type === 'multipleChoice') {
+        } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
                 <ChoiceExercise
                     key={key}
