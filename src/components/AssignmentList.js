@@ -8,17 +8,18 @@ class AssignmentList extends Component {
         const {courseId} = this.props;
         const {assignments} = this.props;
 
-        const listItems = assignments.map((a, index) =>
-            <Link to={`/courses/${courseId}/assignments/${a.id}`} key={a.id}>
-                <li className="list-group-item">
-                    <p className="h6">Assignment {index + 1} - {a.title}</p>
+        const listItems = assignments.map((a, index) =>            
+            <li key={index}>
+                <Link to={`/courses/${courseId}/assignments/${a.id}`}>
+                    <strong>Assignment {index + 1} - {a.title}</strong>
+                    <br />
                     <small>{Util.timeFormatter(a.dueDate)}</small>
-                </li>
-            </Link>
+                </Link>
+            </li>
         );
 
         return (
-            <ul className="list-group">
+            <ul className="style-list">
                 {listItems}
             </ul>
         );

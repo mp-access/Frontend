@@ -169,6 +169,7 @@ class Exercise extends Component {
             return null;
         }
 
+        const selectedId = exercise.id;
         const submissionId = workspace.submissionId;
 
         const authorizationHeader = this.props.context.authorizationHeader();
@@ -182,7 +183,7 @@ class Exercise extends Component {
                 <div className="col-sm-2">
                     <div className={'panel'}>
                         <h4>Exercise list</h4>
-                        <ExerciseList exercises={exercises}/>
+                        <ExerciseList exercises={exercises} selectedId={selectedId}/>
                     </div>
                 </div>
                 <div className="col-sm-8">

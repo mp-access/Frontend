@@ -32,16 +32,18 @@ class Course extends Component {
 
         return (
             <div className="container">
-                <h2>{this.state.course.title}</h2>
+                <div className="panel">
+                    <h2>{this.state.course.title}</h2>
 
-                <div>
-                    <p>{this.state.course.description}</p>
-                    <small>Open from: <strong>{Util.timeFormatter(this.state.course.startDate)}</strong> - to: <strong>{Util.timeFormatter(this.state.course.endDate)}</strong></small>
-                    <br/><br/>
-                </div>
+                    <div>
+                        <p>{this.state.course.description}</p>
+                        <small>Open from: <strong>{Util.timeFormatter(this.state.course.startDate)}</strong> - to: <strong>{Util.timeFormatter(this.state.course.endDate)}</strong></small>
+                        <br/><br/>
+                    </div>
 
-                <div>
-                    <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments}/>
+                    <div>
+                        <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments}/>
+                    </div>
                 </div>
             </div>
         );
