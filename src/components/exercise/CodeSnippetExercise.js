@@ -10,7 +10,7 @@ class CodeSnippetExercise extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            publicFiles: undefined
+            publicFiles: undefined,
         };
     }
 
@@ -20,7 +20,7 @@ class CodeSnippetExercise extends Component {
         const publicFiles = (submission ? submission.publicFiles[0] : exercise.public_files[0]);
 
         this.setState({
-            publicFiles
+            publicFiles,
         });
     };
 
@@ -29,19 +29,23 @@ class CodeSnippetExercise extends Component {
             .catch(err => console.error(err));
     };
 
-    getPublicFiles = () =>{
-        return [this.state.publicFiles];
-    }
+    getPublicFiles = () => {
+        const { publicFiles } = this.state;
+        return {
+            publicFiles: [publicFiles],
+            selectedFile: 0,
+        };
+    };
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        this.setState( prevState => ({
+        this.setState(prevState => ({
             publicFiles: {
-                 ...prevState.publicFiles, 
-                 content: newValue 
-            }
+                ...prevState.publicFiles,
+                content: newValue,
+            },
         }));
     };
 
@@ -76,11 +80,11 @@ class CodeSnippetExercise extends Component {
 
         const editorOptions = this.editorOptions(publicFiles.readOnly);
 
-        let consoleLog = <Logger 
-                                log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                                err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''} 
-                                />;
-        
+        let consoleLog = <Logger
+            log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+        />;
+
         return (
             <>
                 <div className="row">
@@ -92,9 +96,9 @@ class CodeSnippetExercise extends Component {
                 </div>
 
                 <div className="row">
-                    <div className="col-12">      
+                    <div className="col-12">
                         <CodeEditor content={content} language={language} options={editorOptions}
-                                onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                                    onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
                         <h4>Output</h4>
                         {consoleLog}
                     </div>
