@@ -188,12 +188,14 @@ class Exercise extends Component {
                 </div>
                 <div className="col-sm-8">
                     <div className={'panel'}>
+                        <div className="code-panel">
+                            <button className="style-btn full"  disabled={this.state.submissionState} onClick={this.onSubmit}>Save & Run</button>
+                        </div>
                         {content}
                     </div>
                 </div>
                 <div className="col-sm-2">
                     <div className={'panel'}>
-                        <h4>Versions</h4>
                         {versionList}
                     </div>
                 </div>

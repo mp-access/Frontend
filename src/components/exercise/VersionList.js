@@ -56,18 +56,15 @@ class VersionList extends Component {
     render() {
         const items = this.state.items || [];
         const type = this.props.exercise.type;
-        let RunButton;
-        if(type === 'codeSnippet' || type === 'code') {
-            RunButton = <button className="style-btn"  disabled={this.state.submissionState} onClick={this.onSubmit}>Run</button>
-        }
         
         return (
             <div id={'version-wrapper'}>
                     <div>
-                        <button className="style-btn submit"  disabled={this.state.submissionState} onClick={this.onSubmit}>Submit</button>
-                        {RunButton}
+                        <button className="style-btn submit full"  disabled={this.state.submissionState} onClick={this.onSubmit}>Submit</button>
                     </div>
-                    <br/><br/>
+                    <br/>
+
+                    <h4>Versions</h4>
 
                     <ul className="style-list">
                         {items.map(item =>
@@ -77,12 +74,13 @@ class VersionList extends Component {
                                     <br />
                                     <small>{Util.timeFormatter(item.timestamp)}</small>
                                     <br />
-                                    <div className="two-box">
+                                    <div className="">
                                         <a href={null} className={"style-btn " + (item.commitHash !== this.props.exercise.gitHash ? 'warn' : 'submit')} onClick={this.props.changeSubmissionById.bind(this, item.id)}>⭯ Load</a>
+                                        <span className="p-2"></span>
                                         <OverlayTrigger trigger="focus"
                                                         placement="top"
                                                         overlay={this.createPopover(item.version, item.result, item.commitHash)}>
-                                            <a href={null} className="style-btn">ⓘ Info</a>
+                                            <a href={null} className="style-btn ghost">ⓘ Info</a>
                                         </OverlayTrigger>
                                     </div>
                                 </div>
@@ -93,7 +91,7 @@ class VersionList extends Component {
                             <div id={-1} className={'submission-item'}>
                                 <strong>Template Version</strong>
                                 <br />
-                                <div className="one-box">
+                                <div className="">
                                     <a href={null} className="style-btn submit" onClick={this.props.changeSubmissionById.bind(this, -1)}>⭯ Load</a>
                                 </div>
                             </div>

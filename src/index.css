@@ -75,6 +75,9 @@ code {
   transition: 0.3s;
 }
 
+.style-btn.full{
+  width: 100%;
+}
 .style-btn.submit{
   color: white !important;
   background: #5EE2A0;
@@ -82,6 +85,12 @@ code {
 .style-btn.warn{
   color: white !important;
   background: #FF6565;
+}
+
+.style-btn.ghost{
+  border: 1px solid #43425D;
+  color: #43425D !important;
+  background: transparent;
 }
 
 
