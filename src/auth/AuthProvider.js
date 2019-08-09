@@ -86,7 +86,7 @@ class AuthProvider extends Component {
 
     allowedAccessToCourses = () => {
         const { keycloak } = this.state;
-        let groupStrings = keycloak.tokenParsed.groups;
+        let groupStrings = keycloak.tokenParsed.groups || [];
         groupStrings = groupStrings.map(el => el.split('/').filter(Boolean));
 
         const groups = {};
@@ -100,6 +100,11 @@ class AuthProvider extends Component {
         return groups;
     };
 
+    isCourseAssistant = (courseTitle) => {
+        const courseAccess = this.allowedAccessToCourses()[courseTitle];
+        return !!courseAccess && courseAccess.isAdmin;
+    };
+
 
     render() {
         const { keycloak, isAuthenticated } = this.state;
@@ -110,7 +115,7 @@ class AuthProvider extends Component {
                 {
                     isInitialized: !!keycloak,
                     isAuthenticated: isAuthenticated,
-                    courseAccess: this.allowedAccessToCourses,
+                    isCourseAssistant: this.isCourseAssistant,
                     accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,
