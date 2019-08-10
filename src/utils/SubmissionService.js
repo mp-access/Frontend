@@ -4,7 +4,7 @@ class SubmissionService {
 
     static async getLastSubmission(exerciseId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
-        const response = await fetch(url, authHeader);
+        const response = await fetch(url, authHeader());
         console.log(response);
         if (response.status === 200) {
             return await response.json();
@@ -16,7 +16,7 @@ class SubmissionService {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         return await fetch(url, {
             method: 'POST',
-            headers: authHeader.headers,
+            headers: authHeader().headers,
             body: JSON.stringify({
                 'type': 'code',
                 'details': {
@@ -36,7 +36,7 @@ class SubmissionService {
 
     static async checkEvaluation(evalId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/evals/${evalId}`;
-        return await fetch(url, authHeader)
+        return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -48,7 +48,7 @@ class SubmissionService {
 
     static async getSubmission(submissionId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/${submissionId}`;
-        return await fetch(url, authHeader)
+        return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -60,7 +60,7 @@ class SubmissionService {
 
     static async getSubmissionList(exerciseId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
-        return await fetch(url, authHeader)
+        return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
                     return response.json();

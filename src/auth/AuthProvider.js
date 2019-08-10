@@ -23,6 +23,13 @@ class AuthProvider extends Component {
         if (!utils.canBypassLogin) {
             const keycloakJson = utils.isDevelopment ? '/keycloak.json' : '/keycloak-prod.json';
             const keycloak = Keycloak(keycloakJson);
+
+            keycloak.onTokenExpired = () => {
+                keycloak
+                    .updateToken(10)
+                    .success(refreshed => console.log('Token refreshed:', refreshed));
+            };
+
             keycloak.init({ onLoad: 'check-sso' })
                 .success(authenticated => {
                     this.setState({
@@ -67,6 +74,9 @@ class AuthProvider extends Component {
         if (!keycloak) {
             return {};
         }
+
+        // Check if the token will expire in the next 30 seconds and update it if needed
+        keycloak.updateToken(30);
 
         return {
             headers: {
