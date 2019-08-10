@@ -59,7 +59,7 @@ class SubmissionService {
 
     static async getSubmissionList(exerciseId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
-        return await fetch(url, authHeader)
+        return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
                     return response.json();

@@ -98,18 +98,18 @@ class Exercise extends Component {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
         let { workspace } = this.state;
-        const authorizationHeader = this.props.context.authorizationHeader();
+        const authorizationHeader = this.props.context.authorizationHeader;
 
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
+        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader())
             .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader());
             if ('ok' === evalResponse.status) {
                 const submissionId = evalResponse.submission;
                 clearInterval(intervalId);
 
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader());
                 const workspace = new Workspace(this.state.workspace.exercise, submission);
 
                 this.setState({
@@ -120,7 +120,7 @@ class Exercise extends Component {
         }, 100);
     };
 
-    renderMainExerciseArea(exercise, authorizationHeader, workspace) {
+    renderMainExerciseArea(exercise, workspace) {
         let content = <p>unknown exercise type</p>;
 
         const key = exercise.id + '-' + workspace.submissionId;
@@ -131,7 +131,6 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
-                    authorizationHeader={authorizationHeader}
                     workspace={workspace}
                 />;
         } else if (exercise.type === 'codeSnippet') {
@@ -140,7 +139,6 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
-                    authorizationHeader={authorizationHeader}
                     workspace={workspace}
                 />;
         } else if (exercise.type === 'text') {
@@ -156,7 +154,6 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
-                    authorizationHeader={authorizationHeader}
                 />;
         }
         return content;
@@ -171,8 +168,8 @@ class Exercise extends Component {
 
         const submissionId = workspace.submissionId;
 
-        const authorizationHeader = this.props.context.authorizationHeader();
-        const content = this.renderMainExerciseArea(exercise, authorizationHeader, workspace);
+        const authorizationHeader = this.props.context.authorizationHeader;
+        const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById}/>;
