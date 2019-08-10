@@ -21,7 +21,8 @@ class SubmissionService {
                 'type': type,
                 'details': {
                     'graded': graded,
-                    'publicFiles': submission,
+                    'publicFiles': submission.publicFiles,
+                    'selectedFile': submission.selectedFile
                 },
             }),
         }).then(response => {

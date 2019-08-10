@@ -3,6 +3,8 @@ import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import AssignmentList from '../components/AssignmentList';
 import Util from '../utils/Util';
+import AdminService from '../utils/AdminService';
+import { ExportModal } from '../components/course/AssistantExport';
 
 class Course extends Component {
 
@@ -10,6 +12,9 @@ class Course extends Component {
         super(props);
         this.state = {
             course: undefined,
+            showModal: false,
+            modalAssignmentTitle: '',
+            assignmentExport: undefined,
         };
     }
 
@@ -22,28 +27,58 @@ class Course extends Component {
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
-
     }
 
+    onAssignmentExportClick = (assignment) => {
+        this.setState({
+            showModal: true,
+            modalAssignmentTitle: assignment.label,
+        });
+
+        const assignmentId = assignment.id;
+        const courseId = this.state.course.id;
+        const { context } = this.props;
+
+        AdminService.exportAssignmentResults(courseId, assignmentId, context.authorizationHeader())
+            .then(result => this.setState({ assignmentExport: result }))
+            .catch(err => console.error(err));
+    };
+
+    closeModal = () => this.setState({ showModal: false });
+
     render() {
-        if (!this.state.course) {
+        const { course, assignmentExport, modalAssignmentTitle, showModal } = this.state;
+        if (!course) {
             return null;
         }
+
+        const isCourseAssistant = this.props.context.isCourseAssistant(course.title);
 
         return (
             <div className="container">
                 <div className="panel">
-                    <h2>{this.state.course.title}</h2>
+                    <h2>{course.title}</h2>
 
                     <div>
-                        <p>{this.state.course.description}</p>
-                        <small>Open from: <strong>{Util.timeFormatter(this.state.course.startDate)}</strong> - to: <strong>{Util.timeFormatter(this.state.course.endDate)}</strong></small>
+                        <p>{course.description}</p>
+                        <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
+                            to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
+
                         <br/><br/>
                     </div>
 
                     <div>
-                        <AssignmentList courseId={this.state.course.id} assignments={this.state.course.assignments}/>
+                        <AssignmentList courseId={course.id} assignments={course.assignments}
+                                        isAssistant={isCourseAssistant}
+                                        onAssignmentExportClick={this.onAssignmentExportClick}
+                        />
                     </div>
+
+                    {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
+                                                    assignmentExport={assignmentExport}
+                                                    showModal={showModal && !!assignmentExport}
+                                                    handleClose={this.closeModal}/>
+                    }
                 </div>
             </div>
         );
