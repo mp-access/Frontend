@@ -15,7 +15,7 @@ class Courses extends Component {
     componentDidMount() {
         const { context } = this.props;
 
-        CourseDataService.getCourses(context.authorizationHeader())
+        CourseDataService.getCourses(context.authorizationHeader)
             .then(result => this.setState({ courses: result }))
             .catch(err => {
                 console.debug('Error:', err.toString());

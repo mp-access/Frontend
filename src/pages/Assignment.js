@@ -17,7 +17,7 @@ class Assignment extends Component {
         const { context } = this.props;
         const { courseId, assignmentId } = this.props.match.params;
 
-        CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader())
+        CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
             .then(result => this.setState({ assignment: result }))
             .catch(err => {
                 console.debug('Error:', err.toString());

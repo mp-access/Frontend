@@ -24,7 +24,7 @@ class Exercise extends Component {
 
     componentDidMount = async () => {
         const exerciseId = this.props.match.params.exerciseId;
-        const authorizationHeader = this.props.context.authorizationHeader();
+        const authorizationHeader = this.props.context.authorizationHeader;
 
         const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
         const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
@@ -42,7 +42,7 @@ class Exercise extends Component {
     componentDidUpdate = async (prevProps) => {
         if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
             const exerciseId = this.props.match.params.exerciseId;
-            const authorizationHeader = this.props.context.authorizationHeader();
+            const authorizationHeader = this.props.context.authorizationHeader;
 
             const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
             const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
@@ -84,7 +84,7 @@ class Exercise extends Component {
         if (submissionId === -1) {
             submission = undefined;
         } else {
-            const authorizationHeader = this.props.context.authorizationHeader();
+            const authorizationHeader = this.props.context.authorizationHeader;
             submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
         }
         const exercise = this.state.exercise;
@@ -100,16 +100,16 @@ class Exercise extends Component {
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader())
+        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
             .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader());
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);
             if ('ok' === evalResponse.status) {
                 const submissionId = evalResponse.submission;
                 clearInterval(intervalId);
 
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader());
+                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
                 const workspace = new Workspace(this.state.workspace.exercise, submission);
 
                 this.setState({
