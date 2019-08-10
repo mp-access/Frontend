@@ -75,11 +75,24 @@ code {
   transition: 0.3s;
 }
 
+.style-btn:hover{
+  background: #66a1ff;
+}
+
+.style-btn:disabled,
+.style-btn[disabled]{
+  cursor: unset;
+  opacity: 0.6;
+}
+
 .style-btn.full{
   width: 100%;
 }
 .style-btn.submit{
   color: white !important;
+  background: #4AD991;
+}
+.style-btn.submit:hover{
   background: #5EE2A0;
 }
 .style-btn.warn{
@@ -92,6 +105,11 @@ code {
   color: #43425D !important;
   background: transparent;
 }
+
+.style-btn svg{
+  margin-right: 5px;
+}
+
 
 
 .style-list{
@@ -131,15 +149,10 @@ code {
 
 .two-box,
 .one-box{
-  margin: 8px -25px -13px -25px;
+  margin-top: 10px;
 }
 
-.two-box a{
-  border-radius: 0;
-  width: 50%;
-}
-.one-box a{
-  border-radius: 0;
-  width: 100%;
-}
 
+.code-panel{
+  float: right;
+}

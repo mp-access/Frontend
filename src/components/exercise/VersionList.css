@@ -43,4 +43,9 @@ button[disabled]{
 
 #version-wrapper ul li .submission-item.outdated{
     opacity: 0.6;
+    transition: 0.3s;
+}
+
+#version-wrapper ul li.active .submission-item.outdated{
+    opacity: 1;
 }

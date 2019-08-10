@@ -6,7 +6,15 @@ import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft} from '@fortawesome/free-solid-svg-icons';
+
+
 import PropTypes from 'prop-types';
+
+library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft);
 
 class VersionList extends Component {
 
@@ -16,7 +24,7 @@ class VersionList extends Component {
     };
 
     onSubmit = () => {
-        this.props.submit(this.resetSubmitButton);
+        this.props.submit(true, this.resetSubmitButton);
         this.setState({ submissionState: true });
     };
 
@@ -53,50 +61,71 @@ class VersionList extends Component {
         );
     }
 
+    availableSubmits(){
+        // TODO: Only count if is not outdated and not run submission
+        //this.state.items.map(item => console.log(item));
+        return Math.max(this.props.exercise.maxSubmits - this.state.items.length, 0);
+    }
+
     render() {
         const items = this.state.items || [];
-        const type = this.props.exercise.type;
-        
+        const isCodeType = this.props.isCodeType
+
+        let submitButtonContent;
+        if(this.state.submissionState)
+            submitButtonContent = <><FontAwesomeIcon icon="spinner" spin/><span>Processing...</span></>;
+        else
+            submitButtonContent = <><FontAwesomeIcon icon="paper-plane" /><span>Submit</span></>;
+
+        let templatePart;
+        if(isCodeType){
+            templatePart = (
+            <li>
+                <div id={-1} className={'submission-item'}>
+                    <strong>Template Version</strong>
+                    <br />
+                    <div className="two-box">
+                        <button className="style-btn submit" onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon icon="arrow-alt-circle-left" />Load</button>
+                    </div>
+                </div>
+            </li>
+            );
+        }
+
         return (
             <div id={'version-wrapper'}>
-                    <div>
-                        <button className="style-btn submit full"  disabled={this.state.submissionState} onClick={this.onSubmit}>Submit</button>
-                    </div>
-                    <br/>
+                
+                
+                <div>
+                    <p><strong>{this.availableSubmits()}</strong>{"/" + this.props.exercise.maxSubmits} Submissions available</p>
+                    <button className="style-btn submit full"  disabled={this.state.submissionState || this.availableSubmits() <= 0} onClick={this.onSubmit}>{submitButtonContent}</button>
+                </div>
+                <br/>
 
-                    <h4>Versions</h4>
+                <h4>{isCodeType ? 'Versions' : 'Submission'}</h4>
 
-                    <ul className="style-list">
-                        {items.map(item =>
-                            <li key={item.id} className={item.id === this.props.selectedSubmissionId ? 'active' : ''}>
-                                <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '')}>
-                                    <strong>Submission {item.version + 1}</strong>
-                                    <br />
-                                    <small>{Util.timeFormatter(item.timestamp)}</small>
-                                    <br />
-                                    <div className="">
-                                        <a href={null} className={"style-btn " + (item.commitHash !== this.props.exercise.gitHash ? 'warn' : 'submit')} onClick={this.props.changeSubmissionById.bind(this, item.id)}>⭯ Load</a>
-                                        <span className="p-2"></span>
-                                        <OverlayTrigger trigger="focus"
-                                                        placement="top"
-                                                        overlay={this.createPopover(item.version, item.result, item.commitHash)}>
-                                            <a href={null} className="style-btn ghost">ⓘ Info</a>
-                                        </OverlayTrigger>
-                                    </div>
-                                </div>
-                            </li>
-                        )}
-                        <br />
-                        <li>
-                            <div id={-1} className={'submission-item'}>
-                                <strong>Template Version</strong>
+                <ul className="style-list">
+                    {items.map(item =>
+                        <li key={item.id} className={item.id === this.props.selectedSubmissionId ? 'active' : ''}>
+                            <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '')}>
+                                <strong>Submission {item.version + 1}</strong>
                                 <br />
-                                <div className="">
-                                    <a href={null} className="style-btn submit" onClick={this.props.changeSubmissionById.bind(this, -1)}>⭯ Load</a>
+                                <small>{Util.timeFormatter(item.timestamp)}</small>
+                                <br />
+                                <div className="two-box">
+                                    <button className={"style-btn " + (item.commitHash !== this.props.exercise.gitHash ? 'warn' : 'submit')} onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon icon="arrow-alt-circle-left"></FontAwesomeIcon>Load</button>
+                                    <span className="p-1"></span>
+                                    <OverlayTrigger trigger="focus"
+                                                    placement="top"
+                                                    overlay={this.createPopover(item.version, item.result, item.commitHash)}>
+                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle" />Info</button>
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                         </li>
-                    </ul>
+                    )}
+                    {templatePart}
+                </ul>
             </div>
         );
     }

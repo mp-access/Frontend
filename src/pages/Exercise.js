@@ -10,6 +10,12 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPlay, faSpinner);
+
 class Exercise extends Component {
 
     constructor(props) {
@@ -18,6 +24,7 @@ class Exercise extends Component {
             exercise: undefined,
             exercises: [],
             workspace: Workspace,
+            runButtonState: false,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -93,14 +100,22 @@ class Exercise extends Component {
         this.setState({ workspace });
     };
 
+    onCodeSubmit = () => {
+        this.submit(false, this.resetRunButton);
+        this.setState({runButtonState: true});
+    };
 
-    submit = async (callback) => {
+    resetRunButton = () => {
+        this.setState({runButtonState: false});
+    };
+
+    submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let { workspace } = this.state;
+        let { workspace, exercise } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader();
 
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
+        let codeResponse = await SubmissionService.submitExercise(workspace.exerciseId, toSubmit, exercise.type, graded, authorizationHeader)
             .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
@@ -115,7 +130,7 @@ class Exercise extends Component {
                 this.setState({
                     workspace,
                 });
-                callback();
+                if(callback !== undefined) callback();
             }
         }, 100);
     };
@@ -169,6 +184,8 @@ class Exercise extends Component {
             return null;
         }
 
+        const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
+
         const selectedId = exercise.id;
         const submissionId = workspace.submissionId;
 
@@ -176,7 +193,28 @@ class Exercise extends Component {
         const content = this.renderMainExerciseArea(exercise, authorizationHeader, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
-                                         changeSubmissionById={this.loadSubmissionById}/>;
+                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}/>;
+
+        
+        let buttonCluster;
+        if(isCodeType){
+            let runButtonContent;
+            if(this.state.runButtonState)
+                runButtonContent = <><FontAwesomeIcon icon="spinner" spin/><span>Processing...</span></>;
+            else
+                runButtonContent = <><FontAwesomeIcon icon="play" /><span>Save & Run</span></>;
+    
+
+            buttonCluster = (
+                <div className="row">
+                    <div className="col-sm-12">
+                        <div className="code-panel">
+                            <button className="style-btn"  disabled={this.state.runButtonState} onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div className="row">
@@ -188,9 +226,7 @@ class Exercise extends Component {
                 </div>
                 <div className="col-sm-8">
                     <div className={'panel'}>
-                        <div className="code-panel">
-                            <button className="style-btn full"  disabled={this.state.submissionState} onClick={this.onSubmit}>Save & Run</button>
-                        </div>
+                        {buttonCluster}
                         {content}
                     </div>
                 </div>
