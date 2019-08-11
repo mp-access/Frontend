@@ -22,7 +22,7 @@ class Course extends Component {
         const courseId = this.props.match.params.courseId;
         const { context } = this.props;
 
-        CourseDataService.getCourses(context.authorizationHeader())
+        CourseDataService.getCourses(context.authorizationHeader)
             .then(result => this.setState({ course: result.find(c => c.id === courseId) }))
             .catch(err => {
                 console.debug('Error:', err.toString());
@@ -39,7 +39,7 @@ class Course extends Component {
         const courseId = this.state.course.id;
         const { context } = this.props;
 
-        AdminService.exportAssignmentResults(courseId, assignmentId, context.authorizationHeader())
+        AdminService.exportAssignmentResults(courseId, assignmentId, context.authorizationHeader)
             .then(result => this.setState({ assignmentExport: result }))
             .catch(err => console.error(err));
     };
