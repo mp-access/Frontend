@@ -57,16 +57,14 @@ class Course extends Component {
         return (
             <div className="container">
                 <div className="panel">
-                    <h2>{course.title}</h2>
-
-                    <div>
-                        <p>{course.description}</p>
+                    <div className="heading">
+                        <h2>{course.title}</h2>
                         <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
                             to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
-
-                        <br/><br/>
                     </div>
-
+                    <p>{course.description}</p>
+                    <br/>
+                    <br/>
                     <div>
                         <AssignmentList courseId={course.id} assignments={course.assignments}
                                         isAssistant={isCourseAssistant}

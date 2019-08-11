@@ -18,9 +18,18 @@ small{
   color: #949599;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+.v-flex{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.h-flex{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 }
 
 #header{
@@ -34,9 +43,13 @@ code {
 }
 
 #footer{
-
   padding: 30px 15px;
 }
+
+.logo img{
+  height: 60px;
+}
+
 
 .panel{
   padding: 20px 25px;
@@ -59,6 +72,13 @@ code {
 
 .pad{
   padding: 20px 25px;
+}
+
+.heading{
+  margin-bottom: 20px;
+}
+.heading h2{
+  margin-bottom: 0;
 }
 
 .style-btn{
@@ -111,6 +131,12 @@ code {
 }
 
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+
 
 .style-list{
   list-style: none;
@@ -155,4 +181,29 @@ code {
 
 .code-panel{
   float: right;
+}
+
+
+.loading-box{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+
+
+.file-explorer{
+  margin-left: -12px;
+}
+
+
+.rstcustom__expandButton,
+.rstcustom__collapseButton{
+  display: none;
+}
+
+.rstcustom__lineBlock{
+  width: 15px !important;
 }

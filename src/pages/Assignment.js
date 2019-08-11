@@ -34,14 +34,13 @@ class Assignment extends Component {
         return (
             <div className="container">
                 <div className="panel">
-                    <h2>{assignment.title}</h2>
-
-                    <div>
-                        <p>{assignment.description}</p>
+                    <div className="heading">
+                        <h2>{assignment.title}</h2>
                         <small>Open from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> - to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
-                        <br /><br />
                     </div>
-
+                    <p>{assignment.description}</p>
+                    <br />
+                    <br />
                     <div>
                         <ExerciseList exercises={assignment.exercises}/>
                     </div>

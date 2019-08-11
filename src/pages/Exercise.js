@@ -112,7 +112,7 @@ class Exercise extends Component {
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let { workspace } = this.state;
+        let { workspace, exercise } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
         let codeResponse = await SubmissionService.submitExercise(workspace.exerciseId, toSubmit, exercise.type, graded, authorizationHeader)

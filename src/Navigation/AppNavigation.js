@@ -3,6 +3,11 @@ import { Assignment, Course, Courses, Exercise, Profile, Welcome } from '../page
 import { Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+library.add(faSpinner);
+
 const AppNavigation = () => {
 
     return (
@@ -31,8 +36,9 @@ const PrivateRoute = withAuth(({ context, component: Component, ...rest }) => {
 
                     return <Component {...props} />;
                 } else {
-                    // Show spinner maybe...
-                    return <span>Loading</span>;
+                    return (
+                        <div className="loading-box"><FontAwesomeIcon icon="spinner" spin/> <span> Loading...</span></div>
+                    );
                 }
 
             }

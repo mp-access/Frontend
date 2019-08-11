@@ -103,8 +103,11 @@ class VersionList extends Component {
                 <br/>
 
                 <h4>{isCodeType ? 'Versions' : 'Submission'}</h4>
-
+                
+                {items.length === 0 ? 'No submissions' : ''} 
+                
                 <ul className="style-list">
+
                     {items.map(item =>
                         <li key={item.id} className={item.id === this.props.selectedSubmissionId ? 'active' : ''}>
                             <div id={item.id} className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '')}>
