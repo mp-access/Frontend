@@ -97,8 +97,10 @@ class CodeSnippetExercise extends Component {
 
                 <div className="row">
                     <div className="col-12">
-                        <CodeEditor content={content} language={language} options={editorOptions}
-                                    onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                        <div className="media-viewport">
+                            <CodeEditor content={content} language={language} options={editorOptions}
+                                        onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                        </div>
                         <h4>Output</h4>
                         {consoleLog}
                     </div>

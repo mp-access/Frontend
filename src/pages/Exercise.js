@@ -11,11 +11,11 @@ import SubmissionService from '../utils/SubmissionService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faSpinner, faMoon } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../components/core/Spinner';
 import { withAuth } from '../auth/AuthProvider';
 
-library.add(faPlay, faSpinner);
+library.add(faPlay, faSpinner, faMoon);
 
 class Exercise extends Component {
 
@@ -26,6 +26,7 @@ class Exercise extends Component {
             exercises: [],
             workspace: Workspace,
             runButtonState: false,
+            isDark: false
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -110,6 +111,10 @@ class Exercise extends Component {
         this.setState({ runButtonState: false });
     };
 
+    onIsDark = () => {
+        this.setState({isDark: !this.state.isDark});
+    }
+
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
@@ -148,6 +153,8 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    authorizationHeader={this.props.context.authorizationHeader}
+                    isDark={this.state.isDark}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -208,6 +215,7 @@ class Exercise extends Component {
                 <div className="row">
                     <div className="col-sm-12">
                         <div className="code-panel">
+                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon" /></button>
                             <button className="style-btn" disabled={this.state.runButtonState}
                                     onClick={this.onCodeSubmit}>{runButtonContent}</button>
                         </div>

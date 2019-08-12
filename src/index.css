@@ -180,7 +180,12 @@ code {
 
 
 .code-panel{
-  float: right;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.code-panel > *{
+  margin-left: 5px;
 }
 
 
