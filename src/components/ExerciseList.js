@@ -1,22 +1,20 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Util from '../utils/Util';
 
 class ExerciseList extends Component {
 
     render() {
-        const {exercises, selectedId} = this.props;
+        const { exercises, selectedId } = this.props;
 
-        console.log("Exercises", exercises);
-        
         const listItems = exercises.map((e, index) =>
-            <li key={index} className={selectedId === e.id ? 'active' : ''}> 
+            <li key={index} className={selectedId === e.id ? 'active' : ''}>
                 <Link to={`/exercises/${e.id}`}>
                     <strong>Exercise {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
-                    <br />
-                    <small>{Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet' ) ? '(' + Util.humanize(e.language) + ')' : '' }</small>
+                    <br/>
+                    <small>{Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                 </Link>
-            </li>
+            </li>,
         );
 
         return (
