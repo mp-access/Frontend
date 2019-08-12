@@ -103,7 +103,9 @@ const mediaTypeMap = {
     'md': 'code',
     'c': 'code',
     'cpp': 'code',
+    'h': 'code',
     'java': 'code',
+    'txt': 'code',
 
     'png': 'img',
     'jpg': 'img',
@@ -118,6 +120,11 @@ const extensionLanguageMap = {
     'css': 'css',
     'json': 'json',
     'md': 'markdown',
+    'c' : 'c',
+    'cpp' : 'cpp',
+    'h' : 'cpp',
+    'txt' : 'text',
+    'java': 'java',
 };
 
 export default MediaViewer;
