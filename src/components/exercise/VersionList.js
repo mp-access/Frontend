@@ -71,7 +71,6 @@ class VersionList extends Component {
 
     availableSubmits() {
         // TODO: Only count if is not outdated and not run submission
-        //this.state.items.map(item => console.log(item));
         return Math.max(this.props.exercise.maxSubmits - this.state.items.length, 0);
     }
 
