@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
@@ -11,8 +10,10 @@ import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import Spinner from '../components/core/Spinner';
+import { withAuth } from '../auth/AuthProvider';
 
 library.add(faPlay, faSpinner);
 
@@ -102,11 +103,11 @@ class Exercise extends Component {
 
     onCodeSubmit = () => {
         this.submit(false, this.resetRunButton);
-        this.setState({runButtonState: true});
+        this.setState({ runButtonState: true });
     };
 
     resetRunButton = () => {
-        this.setState({runButtonState: false});
+        this.setState({ runButtonState: false });
     };
 
     submit = async (graded, callback) => {
@@ -130,7 +131,7 @@ class Exercise extends Component {
                 this.setState({
                     workspace,
                 });
-                if(callback !== undefined) callback();
+                if (callback !== undefined) callback();
             }
         }, 100);
     };
@@ -192,21 +193,23 @@ class Exercise extends Component {
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}/>;
 
-        
+
         let buttonCluster;
-        if(isCodeType){
+        if (isCodeType) {
             let runButtonContent;
-            if(this.state.runButtonState)
-                runButtonContent = <><FontAwesomeIcon icon="spinner" spin/><span>Processing...</span></>;
-            else
-                runButtonContent = <><FontAwesomeIcon icon="play" /><span>Save & Run</span></>;
-    
+            if (this.state.runButtonState) {
+                runButtonContent = <Spinner text={'Processing...'}/>;
+            } else {
+                runButtonContent = <><FontAwesomeIcon icon="play"/><span>Save & Run</span></>;
+            }
+
 
             buttonCluster = (
                 <div className="row">
                     <div className="col-sm-12">
                         <div className="code-panel">
-                            <button className="style-btn"  disabled={this.state.runButtonState} onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                            <button className="style-btn" disabled={this.state.runButtonState}
+                                    onClick={this.onCodeSubmit}>{runButtonContent}</button>
                         </div>
                     </div>
                 </div>

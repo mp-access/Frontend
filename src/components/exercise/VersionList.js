@@ -19,6 +19,7 @@ import {
 
 
 import PropTypes from 'prop-types';
+import Spinner from '../core/Spinner';
 
 library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft);
 
@@ -80,7 +81,7 @@ class VersionList extends Component {
 
         let submitButtonContent;
         if (this.state.submissionState)
-            submitButtonContent = <><FontAwesomeIcon icon="spinner" spin/><span>Processing...</span></>;
+            submitButtonContent = <Spinner text={'Processing...'} />;
         else
             submitButtonContent = <><FontAwesomeIcon icon="paper-plane"/><span>Submit</span></>;
 
