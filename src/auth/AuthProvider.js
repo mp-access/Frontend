@@ -23,6 +23,13 @@ class AuthProvider extends Component {
         if (!utils.canBypassLogin) {
             const keycloakJson = utils.isDevelopment ? '/keycloak.json' : '/keycloak-prod.json';
             const keycloak = Keycloak(keycloakJson);
+
+            keycloak.onTokenExpired = () => {
+                keycloak
+                    .updateToken(10)
+                    .success(refreshed => console.log('Token refreshed:', refreshed));
+            };
+
             keycloak.init({ onLoad: 'check-sso' })
                 .success(authenticated => {
                     this.setState({
@@ -68,10 +75,13 @@ class AuthProvider extends Component {
             return {};
         }
 
+        // Check if the token will expire in the next 30 seconds and update it if needed
+        keycloak.updateToken(30);
+
         return {
             headers: {
                 'Authorization': `Bearer ${keycloak.token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
         };
     };
@@ -84,6 +94,27 @@ class AuthProvider extends Component {
         return keycloak.token;
     };
 
+    allowedAccessToCourses = () => {
+        const { keycloak } = this.state;
+        let groupStrings = keycloak.tokenParsed.groups || [];
+        groupStrings = groupStrings.map(el => el.split('/').filter(Boolean));
+
+        const groups = {};
+        groupStrings.forEach(course => {
+            groups[course[0]] = {
+                group: course[1],
+                isAdmin: course[1] === 'authors',
+            };
+        });
+
+        return groups;
+    };
+
+    isCourseAssistant = (courseTitle) => {
+        const courseAccess = this.allowedAccessToCourses()[courseTitle];
+        return !!courseAccess && courseAccess.isAdmin;
+    };
+
 
     render() {
         const { keycloak, isAuthenticated } = this.state;
@@ -94,6 +125,7 @@ class AuthProvider extends Component {
                 {
                     isInitialized: !!keycloak,
                     isAuthenticated: isAuthenticated,
+                    isCourseAssistant: this.isCourseAssistant,
                     accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,

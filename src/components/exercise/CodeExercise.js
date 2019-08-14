@@ -80,9 +80,13 @@ class CodeExercise extends Component {
         }
 
         const fileExplorerData = files;
+
+        const selectedFileId = sessionStorage.getItem('selectedFile');
+        const selectedFile = publicFiles.find(f => f.id === selectedFileId);
+
         this.setState({
             fileExplorerData,
-            selectedFile: questionFile,
+            selectedFile: !!selectedFileId ? selectedFile : questionFile,
             publicFiles,
         });
     };
@@ -93,9 +97,13 @@ class CodeExercise extends Component {
 
     getPublicFiles = () => {
         let type = "code";
+        const {publicFiles, selectedFile} = this.state;
+        const selectedFileIndex = publicFiles.findIndex(f => f.id === selectedFile.id);
+        sessionStorage.setItem('selectedFile', selectedFile.id);
         return {
             type: type,
-            this.state.publicFiles
+            publicFiles: publicFiles,
+            selectedFile: selectedFileIndex
         };
     };
 
