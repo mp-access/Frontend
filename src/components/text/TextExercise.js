@@ -1,7 +1,8 @@
 //TODO how is an answer represented/stored/submitted
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
+
 // import { StyleSheet, View, TextInput} from 'react-native';
 
 class TextExercise extends Component {
@@ -10,16 +11,29 @@ class TextExercise extends Component {
         super(props);
         this.state = {
             question: undefined,
+            value: '',
         };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount = async () => {
-        const { exercise } = this.props;
+        const {exercise} = this.props;
 
         this.setState({
             question: exercise.question,
         });
     };
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        alert('Text submitted: ' + this.state.value);
+        event.preventDefault();
+    }
 
     render() {
         return (
@@ -28,30 +42,31 @@ class TextExercise extends Component {
                     <div className="col-12">
                         <ReactMarkdown source={this.state.question}/>
                     </div>
-                <div className="col-12">
-                    <form>
-                        Answer:
-                        <br/>
-                        <input type="text" name="answer"/>
-                        <br/>
-                        <input type="submit" value="Submit"/>
-                    </form>
-                    {/*<View style={styles.container}>*/}
+                    <div className="col-12">
+                        <form onSubmit={this.handleSubmit}>
+                            Answer:
+                            <br/>
+                            <input type="text" name="answer" value={this.state.value} onChange={this.handleChange}/>
+                            <br/>
+                            <input type="submit" value="Submit"/>
+                        </form>
+                        {/*<View style={styles.container}>*/}
 
-                    {/*    <TextInput*/}
-                    {/*        placeholder="Enter Your Mobile Number"*/}
-                    {/*        underlineColorAndroid='transparent'*/}
-                    {/*        style={styles.TextInputStyle}*/}
-                    {/*        keyboardType={'numeric'}*/}
-                    {/*    />*/}
+                        {/*    <TextInput*/}
+                        {/*        placeholder="Enter Your Mobile Number"*/}
+                        {/*        underlineColorAndroid='transparent'*/}
+                        {/*        style={styles.TextInputStyle}*/}
+                        {/*        keyboardType={'numeric'}*/}
+                        {/*    />*/}
 
-                    {/*</View>*/}
-                </div>
+                        {/*</View>*/}
+                    </div>
                 </div>
             </>
         );
     }
 }
+
 // const styles = StyleSheet.create({
 //     container: {
 //         flex: 1,
