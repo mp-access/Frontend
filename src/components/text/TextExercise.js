@@ -35,6 +35,10 @@ class TextExercise extends Component {
         event.preventDefault();
     }
 
+    getPublicFiles = () => {
+        return this.state.value;
+    };
+
     render() {
         return (
             <>
