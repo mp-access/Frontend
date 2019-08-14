@@ -12,44 +12,35 @@ class SubmissionService {
         console.debug(response.toString());
     }
 
-    static async submit(exerciseId, submission, authHeader) {
+    static async submit(exerciseId, submission, graded, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
-        let submissionBody;
+        let submissionBody = {
+            "type": submission.type,
+            "details": undefined
+        };
         if (submission.type === "code") {
-            submissionBody = JSON.stringify({
-                'type': submission.type,
-                'details': {
-                    'graded': graded,
-                    'publicFiles': submission.publicFiles,
-                    'selectedFile': submission.selectedFile
-                },
-            });
+            submissionBody["details"] = {
+                'graded': graded,
+                'publicFiles': submission.publicFiles,
+                'selectedFile': submission.selectedFile
+            };
         } else if (submission.type === "singleChoice") {
-            submissionBody = JSON.stringify({
-                'type': submission.type,
-                'details': {
-                    'answer': submission.value
-                },
-            });
+            submissionBody["details"] = {
+                'choice': submission.value
+            };
         } else if (submission.type === "multipleChoice") {
-            submissionBody = JSON.stringify({
-                'type': submission.type,
-                'details': {
-                    'choices': submission.value
-                },
-            });
+            submissionBody["details"] = {
+                'choices': submission.value
+            };
         } else if (submission.type === "text") {
-            submissionBody = JSON.stringify({
-                'type': submission.type,
-                'details': {
-                    'answer': submission.value
-                },
-            });
+            submissionBody["details"] =  {
+                'answer': submission.value
+            };
         }
         return await fetch(url, {
             method: 'POST',
             headers: authHeader().headers,
-            body: submissionBody,
+            body: JSON.stringify(submissionBody),
         }).then(response => {
             if (response.ok) {
                 return response.json();

@@ -118,10 +118,10 @@ class Exercise extends Component {
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let { workspace, exercise } = this.state;
+        let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, authorizationHeader)
+        let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader)
             .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
