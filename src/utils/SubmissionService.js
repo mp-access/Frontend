@@ -48,7 +48,7 @@ class SubmissionService {
         }
         return await fetch(url, {
             method: 'POST',
-            headers: authHeader.headers,
+            headers: authHeader().headers,
             body: submissionBody,
         }).then(response => {
             if (response.ok) {
