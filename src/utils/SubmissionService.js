@@ -15,33 +15,33 @@ class SubmissionService {
     static async submit(exerciseId, submission, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         let submissionBody;
-        if (submission[0] === "code") {
+        if (submission.type === "code") {
             submissionBody = JSON.stringify({
-                'type': submission[0],
+                'type': submission.type,
                 'details': {
                     'graded': 'false',
-                    'publicFiles': submission[1]
+                    'publicFiles': submission.value
                 },
             });
-        } else if (submission[0] === "singleChoice") {
+        } else if (submission.type === "singleChoice") {
             submissionBody = JSON.stringify({
-                'type': submission[0],
+                'type': submission.type,
                 'details': {
-                    'answer': submission[1]
+                    'answer': submission.value
                 },
             });
-        } else if (submission[0] === "multipleChoice") {
+        } else if (submission.type === "multipleChoice") {
             submissionBody = JSON.stringify({
-                'type': submission[0],
+                'type': submission.type,
                 'details': {
-                    'choices': submission[1]
+                    'choices': submission.value
                 },
             });
-        } else if (submission[0] === "text") {
+        } else if (submission.type === "text") {
             submissionBody = JSON.stringify({
-                'type': submission[0],
+                'type': submission.type,
                 'details': {
-                    'answer': submission[1]
+                    'answer': submission.value
                 },
             });
         }

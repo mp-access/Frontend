@@ -93,7 +93,10 @@ class CodeExercise extends Component {
 
     getPublicFiles = () => {
         let type = "code";
-        return [type, this.state.publicFiles];
+        return {
+            type: type,
+            this.state.publicFiles
+        };
     };
 
     /**

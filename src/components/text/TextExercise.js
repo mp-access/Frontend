@@ -31,7 +31,10 @@ class TextExercise extends Component {
 
     getPublicFiles = () => {
         let type = "text";
-        return [type, this.state.value];
+        return {
+            type: type,
+            value: this.state.value
+        };
     };
 
     render() {

@@ -40,10 +40,16 @@ class ChoiceExercise extends Component {
     getPublicFiles = () => {
         if (this.state.type === 'singleChoice') {
             let type = "singleChoice";
-            return [type, this.state.singleChoiceValue];
+            return {
+                type: type,
+                value: this.state.singleChoiceValue
+            };
         } else if (this.state.type === 'multipleChoice') {
             let type = "multipleChoice";
-            return [type, this.state.multipleChoiceValue];
+            return {
+                type: type,
+                value: this.state.multipleChoiceValue
+            };
         }
     };
 
