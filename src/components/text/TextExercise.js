@@ -1,7 +1,8 @@
 //TODO how is an answer represented/stored/submitted
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
+
 // import { StyleSheet, View, TextInput} from 'react-native';
 
 class TextExercise extends Component {
@@ -10,15 +11,30 @@ class TextExercise extends Component {
         super(props);
         this.state = {
             question: undefined,
+            value: '',
         };
+
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount = async () => {
-        const { exercise } = this.props;
+        const {exercise} = this.props;
 
         this.setState({
             question: exercise.question,
         });
+    };
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    getPublicFiles = () => {
+        let type = "text";
+        return {
+            type: type,
+            value: this.state.value
+        };
     };
 
     render() {
@@ -28,30 +44,28 @@ class TextExercise extends Component {
                     <div className="col-12">
                         <ReactMarkdown source={this.state.question}/>
                     </div>
-                <div className="col-12">
-                    <form>
-                        Answer:
-                        <br/>
-                        <input type="text" name="answer"/>
-                        <br/>
-                        <input type="submit" value="Submit"/>
-                    </form>
-                    {/*<View style={styles.container}>*/}
+                    <div className="col-12">
+                        <form>
+                            Answer:
+                            <br/>
+                        </form>
+                        {/*<View style={styles.container}>*/}
 
-                    {/*    <TextInput*/}
-                    {/*        placeholder="Enter Your Mobile Number"*/}
-                    {/*        underlineColorAndroid='transparent'*/}
-                    {/*        style={styles.TextInputStyle}*/}
-                    {/*        keyboardType={'numeric'}*/}
-                    {/*    />*/}
+                        {/*    <TextInput*/}
+                        {/*        placeholder="Enter Your Mobile Number"*/}
+                        {/*        underlineColorAndroid='transparent'*/}
+                        {/*        style={styles.TextInputStyle}*/}
+                        {/*        keyboardType={'numeric'}*/}
+                        {/*    />*/}
 
-                    {/*</View>*/}
-                </div>
+                        {/*</View>*/}
+                    </div>
                 </div>
             </>
         );
     }
 }
+
 // const styles = StyleSheet.create({
 //     container: {
 //         flex: 1,

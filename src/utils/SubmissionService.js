@@ -12,19 +12,35 @@ class SubmissionService {
         console.debug(response.toString());
     }
 
-    static async submitExercise(exerciseId, submission, type, graded, authHeader) {
+    static async submit(exerciseId, submission, graded, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
+        let submissionBody = {
+            "type": submission.type,
+            "details": undefined
+        };
+        if (submission.type === "code") {
+            submissionBody["details"] = {
+                'graded': graded,
+                'publicFiles': submission.publicFiles,
+                'selectedFile': submission.selectedFile
+            };
+        } else if (submission.type === "singleChoice") {
+            submissionBody["details"] = {
+                'choice': submission.value
+            };
+        } else if (submission.type === "multipleChoice") {
+            submissionBody["details"] = {
+                'choices': submission.value
+            };
+        } else if (submission.type === "text") {
+            submissionBody["details"] =  {
+                'answer': submission.value
+            };
+        }
         return await fetch(url, {
             method: 'POST',
             headers: authHeader().headers,
-            body: JSON.stringify({
-                'type': type,
-                'details': {
-                    'graded': graded,
-                    'publicFiles': submission.publicFiles,
-                    'selectedFile': submission.selectedFile
-                },
-            }),
+            body: JSON.stringify(submissionBody),
         }).then(response => {
             if (response.ok) {
                 return response.json();
@@ -33,6 +49,7 @@ class SubmissionService {
             }
         });
     }
+
 
     static async checkEvaluation(evalId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/evals/${evalId}`;
@@ -68,7 +85,7 @@ class SubmissionService {
                     throw new Error('Something went wrong on api server!');
                 }
             });
-        }
+    }
 
 }
 
