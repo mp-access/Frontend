@@ -24,15 +24,15 @@ class ChoiceExercise extends Component {
         });
     };
 
-    handleChange(event) { //add options to array or remove them if unclicked
+    handleChange(event) { //add options to array or remove them if option is unchecked again by user
         if (this.state.type === 'singleChoice') {
             this.setState({singleChoiceValue: event.target.value});
         } else if (this.state.type === 'multipleChoice') {
             let multipleChoiceArray = this.state.multipleChoiceValue;
-            if (this.state.multipleChoiceValue.includes(event.target.value)) {
-                multipleChoiceArray = multipleChoiceArray.filter(e => e !== event.target.value);
+            if (this.state.multipleChoiceValue.includes(parseInt(event.target.value))) {
+                multipleChoiceArray = multipleChoiceArray.filter(e => e !== parseInt(event.target.value));
             } else {
-                multipleChoiceArray.push(event.target.value);
+                multipleChoiceArray.push(parseInt(event.target.value));
             }
             this.setState({multipleChoiceValue: multipleChoiceArray});
         }
@@ -49,9 +49,11 @@ class ChoiceExercise extends Component {
 
     getPublicFiles = () => {
         if (this.state.type === 'singleChoice') {
-            return this.state.singleChoiceValue;
+            let type = "singleChoice";
+            return [type, this.state.singleChoiceValue];
         } else if (this.state.type === 'multipleChoice') {
-            return this.state.multipleChoiceValue;
+            let type = "multipleChoice";
+            return [type, this.state.multipleChoiceValue];
         }
     };
 
@@ -73,7 +75,7 @@ class ChoiceExercise extends Component {
         for (let i = 0; i < optionsLength; i++) {
             // note: we add a key prop here to allow react to uniquely identify each
             // element in this array. see: https://reactjs.org/docs/lists-and-keys.html
-            options.push(<input type={type} name={name} value={this.state.options[i]}
+            options.push(<input type={type} name={name} value={i}
                                 key={i} onChange={this.handleChange}/>);
             options.push(" " + this.state.options[i]);
             options.push(<br/>);

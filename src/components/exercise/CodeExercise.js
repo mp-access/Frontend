@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
@@ -22,7 +22,7 @@ class CodeExercise extends Component {
     componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
 
-        const { exercise, workspace } = this.props;
+        const {exercise, workspace} = this.props;
         const submission = workspace.submission;
         const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
 
@@ -92,14 +92,15 @@ class CodeExercise extends Component {
     };
 
     getPublicFiles = () => {
-        return this.state.publicFiles;
+        let type = "code";
+        return [type, this.state.publicFiles];
     };
 
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile, publicFiles } = this.state;
+        const {selectedFile, publicFiles} = this.state;
 
         const updatedSelectedFile = {
             ...selectedFile,
@@ -121,7 +122,7 @@ class CodeExercise extends Component {
     };
 
     onFileExplorerChange = (data) => {
-        this.setState({ fileExplorerData: data });
+        this.setState({fileExplorerData: data});
     };
 
     nodeClicked = (node) => {
@@ -141,10 +142,10 @@ class CodeExercise extends Component {
         });
 
         if (node.isDirectory) {
-            this.setState({ fileExplorerData });
+            this.setState({fileExplorerData});
         } else {
             const selectedFile = this.searchInFiles(fileExplorerData, node.id);
-            this.setState({ selectedFile, fileExplorerData });
+            this.setState({selectedFile, fileExplorerData});
         }
     };
 
@@ -189,17 +190,17 @@ class CodeExercise extends Component {
 
     selectFileByIndex = (index) => {
         if (index === 1 || index === 0) {
-            this.setState({ selectedFile: this.state.fileExplorerData[0] });
+            this.setState({selectedFile: this.state.fileExplorerData[0]});
         } else {
             index = Math.min(index, this.state.publicFiles.length + 1);
             const selectedFile = this.state.publicFiles[index - 2];
-            this.setState({ selectedFile });
+            this.setState({selectedFile});
         }
     };
 
     render() {
         const workspace = this.props.workspace;
-        const { selectedFile, fileExplorerData } = this.state;
+        const {selectedFile, fileExplorerData} = this.state;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -209,7 +210,7 @@ class CodeExercise extends Component {
         if (workspace.submission)
             outputConsole = workspace.submission.console;
 
-        const { content, extension } = selectedFile;
+        const {content, extension} = selectedFile;
 
         const language = extensionLanguageMap[extension];
 
@@ -301,26 +302,26 @@ const mapVirtualFilesToTreeStructure = (virtualFiles) => {
  * @type {*[]}
  */
 const demoFiles = [
-    { id: 1, title: '.gitignore' },
-    { id: 2, title: 'package.json' },
+    {id: 1, title: '.gitignore'},
+    {id: 2, title: 'package.json'},
     {
         id: 3,
         title: 'src',
         isDirectory: true,
         expanded: true,
         children: [
-            { id: 4, title: 'styles.css' },
-            { id: 5, title: 'index.js' },
-            { id: 6, title: 'reducers.js' },
-            { id: 7, title: 'actions.js' },
-            { id: 8, title: 'utils.js' },
+            {id: 4, title: 'styles.css'},
+            {id: 5, title: 'index.js'},
+            {id: 6, title: 'reducers.js'},
+            {id: 7, title: 'actions.js'},
+            {id: 8, title: 'utils.js'},
         ],
     },
     {
         id: 9,
         title: 'build',
         isDirectory: true,
-        children: [{ id: 12, title: 'react-sortable-tree.js' }],
+        children: [{id: 12, title: 'react-sortable-tree.js'}],
     },
     {
         id: 10,
