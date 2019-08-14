@@ -15,26 +15,26 @@ class SubmissionService {
     static async submit(exerciseId, submission, graded, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         let submissionBody = {
-            "type": submission.type,
-            "details": undefined
+            'type': submission.type,
+            'details': undefined,
         };
-        if (submission.type === "code") {
-            submissionBody["details"] = {
+        if (submission.type === 'code' || submission.type === 'codeSnippet') {
+            submissionBody['details'] = {
                 'graded': graded,
                 'publicFiles': submission.publicFiles,
-                'selectedFile': submission.selectedFile
+                'selectedFile': submission.selectedFile,
             };
-        } else if (submission.type === "singleChoice") {
-            submissionBody["details"] = {
-                'choice': submission.value
+        } else if (submission.type === 'singleChoice') {
+            submissionBody['details'] = {
+                'choice': submission.value,
             };
-        } else if (submission.type === "multipleChoice") {
-            submissionBody["details"] = {
-                'choices': submission.value
+        } else if (submission.type === 'multipleChoice') {
+            submissionBody['details'] = {
+                'choices': submission.value,
             };
-        } else if (submission.type === "text") {
-            submissionBody["details"] =  {
-                'answer': submission.value
+        } else if (submission.type === 'text') {
+            submissionBody['details'] = {
+                'answer': submission.value,
             };
         }
         return await fetch(url, {

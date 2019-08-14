@@ -32,6 +32,7 @@ class CodeSnippetExercise extends Component {
     getPublicFiles = () => {
         const { publicFiles } = this.state;
         return {
+            type: 'codeSnippet',
             publicFiles: [publicFiles],
             selectedFile: 0,
         };
