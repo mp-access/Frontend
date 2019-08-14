@@ -12,6 +12,7 @@ class SubmissionService {
         console.debug(response.toString());
     }
 
+    /*
     static async submitCode(exerciseId, submission, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         return await fetch(url, {
@@ -32,6 +33,30 @@ class SubmissionService {
             }
         });
     }
+    
+     */
+
+    static async submit(exerciseId, submission, authHeader) {
+        const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
+        return await fetch(url, {
+            method: 'POST',
+            headers: authHeader.headers,
+            body: JSON.stringify({
+                'type': submission[0],
+                'details': {
+                    'graded': 'false',
+                    'publicFiles': submission[1],
+                },
+            }),
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Something went wrong on api server!');
+            }
+        });
+    }
+
 
     static async checkEvaluation(evalId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/evals/${evalId}`;

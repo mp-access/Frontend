@@ -100,8 +100,11 @@ class Exercise extends Component {
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader();
 
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
+        let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, authorizationHeader)
             .catch(err => console.error(err));
+
+        //let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
+        //    .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
             let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);
