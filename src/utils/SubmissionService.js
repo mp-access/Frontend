@@ -20,7 +20,7 @@ class SubmissionService {
                 'type': submission.type,
                 'details': {
                     'graded': 'false',
-                    'publicFiles': submission.value,
+                    'publicFiles': submission.publicFiles,
                     'selectedFile': submission.selectedFile
                 },
             });
