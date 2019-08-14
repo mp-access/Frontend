@@ -12,42 +12,43 @@ class SubmissionService {
         console.debug(response.toString());
     }
 
-    /*
-    static async submitCode(exerciseId, submission, authHeader) {
-        const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
-        return await fetch(url, {
-            method: 'POST',
-            headers: authHeader.headers,
-            body: JSON.stringify({
-                'type': 'code',
-                'details': {
-                    'graded': 'false',
-                    'publicFiles': submission,
-                },
-            }),
-        }).then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Something went wrong on api server!');
-            }
-        });
-    }
-    
-     */
-
     static async submit(exerciseId, submission, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
-        return await fetch(url, {
-            method: 'POST',
-            headers: authHeader.headers,
-            body: JSON.stringify({
+        let submissionBody;
+        if (submission[0] === "code") {
+            submissionBody = JSON.stringify({
                 'type': submission[0],
                 'details': {
                     'graded': 'false',
-                    'publicFiles': submission[1],
+                    'publicFiles': submission[1]
                 },
-            }),
+            });
+        } else if (submission[0] === "singleChoice") {
+            submissionBody = JSON.stringify({
+                'type': submission[0],
+                'details': {
+                    'answer': submission[1]
+                },
+            });
+        } else if (submission[0] === "multipleChoice") {
+            submissionBody = JSON.stringify({
+                'type': submission[0],
+                'details': {
+                    'choices': submission[1]
+                },
+            });
+        } else if (submission[0] === "text") {
+            submissionBody = JSON.stringify({
+                'type': submission[0],
+                'details': {
+                    'answer': submission[1]
+                },
+            });
+        }
+        return await fetch(url, {
+            method: 'POST',
+            headers: authHeader.headers,
+            body: submissionBody,
         }).then(response => {
             if (response.ok) {
                 return response.json();
@@ -92,7 +93,7 @@ class SubmissionService {
                     throw new Error('Something went wrong on api server!');
                 }
             });
-        }
+    }
 
 }
 
