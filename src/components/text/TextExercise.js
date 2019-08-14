@@ -15,7 +15,6 @@ class TextExercise extends Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount = async () => {
@@ -28,11 +27,6 @@ class TextExercise extends Component {
 
     handleChange(event) {
         this.setState({value: event.target.value});
-    }
-
-    handleSubmit(event) {
-        alert('Text submitted: ' + this.state.value);
-        event.preventDefault();
     }
 
     getPublicFiles = () => {
@@ -48,12 +42,9 @@ class TextExercise extends Component {
                         <ReactMarkdown source={this.state.question}/>
                     </div>
                     <div className="col-12">
-                        <form onSubmit={this.handleSubmit}>
+                        <form>
                             Answer:
                             <br/>
-                            <input type="text" name="answer" value={this.state.value} onChange={this.handleChange}/>
-                            <br/>
-                            <input type="submit" value="Submit"/>
                         </form>
                         {/*<View style={styles.container}>*/}
 

@@ -11,7 +11,6 @@ class ChoiceExercise extends Component {
             multipleChoiceValue: []
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount = async () => {
@@ -36,15 +35,6 @@ class ChoiceExercise extends Component {
             }
             this.setState({multipleChoiceValue: multipleChoiceArray});
         }
-    }
-
-    handleSubmit(event) {
-        if (this.state.type === 'singleChoice') {
-            alert('This option has been submitted: ' + this.state.singleChoiceValue);
-        } else if (this.state.type === 'multipleChoice') {
-            alert('This array of options has been submitted: ' + this.state.multipleChoiceValue);
-        }
-        event.preventDefault();
     }
 
     getPublicFiles = () => {
@@ -88,10 +78,8 @@ class ChoiceExercise extends Component {
                         <ReactMarkdown source={this.state.question}/>
                     </div>
                     <div className="col-12">
-                        <form onSubmit={this.handleSubmit}>
+                        <form>
                             {options}
-                            <br/>
-                            <input type="submit" value="Submit"/>
                         </form>
                     </div>
                 </div>
