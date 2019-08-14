@@ -70,9 +70,43 @@ class VersionList extends Component {
         );
     }
 
+    createSubmissionItem(item){
+        const active = item.id === this.props.selectedSubmissionId;
+        const outdated = item.commitHash !== this.props.exercise.gitHash;
+        const title = item.graded ? ('Submission ' + (item.version + 1)) : 'Run'; 
+
+        const ret_item = (
+                        <li key={item.id} className={ active ? 'active' : ''}>
+                            <div id={item.id}
+                                 className={'submission-item ' + (outdated ? 'outdated' : '')}>
+                                <strong>{title}</strong>
+                                <br/>
+                                <small>{Util.timeFormatter(item.timestamp)}</small>
+                                <br/>
+                                <div className="two-box">
+                                    <button
+                                        className={'style-btn ' + (outdated ? 'warn' : 'submit')}
+                                        onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon
+                                        icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
+                                    </button>
+                                    <span className="p-1"></span>
+                                    <OverlayTrigger trigger="focus"
+                                                    placement="top"
+                                                    overlay={this.createPopover(item.version, item.result, item.commitHash)}>
+                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
+                                        </button>
+                                    </OverlayTrigger>
+                                </div>
+                            </div>
+                        </li>
+                    );
+
+        return(ret_item);
+    }
+
     availableSubmits() {
         // TODO: Only count if is not outdated and not run submission
-        return Math.max(this.props.exercise.maxSubmits - this.state.items.length, 0);
+        return Math.max(this.props.exercise.maxSubmits - this.state.items.filter(item => item.graded).length, 0);
     }
 
     render() {
@@ -121,32 +155,7 @@ class VersionList extends Component {
                 {items.length === 0 ? 'No submissions' : ''}
 
                 <ul className="style-list">
-
-                    {items.map(item =>
-                        <li key={item.id} className={item.id === this.props.selectedSubmissionId ? 'active' : ''}>
-                            <div id={item.id}
-                                 className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '')}>
-                                <strong>Submission {item.version + 1}</strong>
-                                <br/>
-                                <small>{Util.timeFormatter(item.timestamp)}</small>
-                                <br/>
-                                <div className="two-box">
-                                    <button
-                                        className={'style-btn ' + (item.commitHash !== this.props.exercise.gitHash ? 'warn' : 'submit')}
-                                        onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon
-                                        icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
-                                    </button>
-                                    <span className="p-1"></span>
-                                    <OverlayTrigger trigger="focus"
-                                                    placement="top"
-                                                    overlay={this.createPopover(item.version, item.result, item.commitHash)}>
-                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
-                                        </button>
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                        </li>,
-                    )}
+                    {items.map(item => this.createSubmissionItem(item),)}
                     {templatePart}
                 </ul>
             </div>
