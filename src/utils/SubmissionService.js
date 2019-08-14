@@ -19,7 +19,7 @@ class SubmissionService {
             submissionBody = JSON.stringify({
                 'type': submission.type,
                 'details': {
-                    'graded': 'false',
+                    'graded': graded,
                     'publicFiles': submission.publicFiles,
                     'selectedFile': submission.selectedFile
                 },

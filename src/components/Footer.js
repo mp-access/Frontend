@@ -3,7 +3,7 @@ import React from 'react';
 const Footer = () => (
     <footer id={"footer"}>
         <div className={"container-fluid"}>
-            Copyright 2019 CourseService
+            © 2019 ACCESS
         </div>
     </footer>
 );

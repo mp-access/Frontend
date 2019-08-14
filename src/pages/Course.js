@@ -56,28 +56,28 @@ class Course extends Component {
 
         return (
             <div className="container">
-                <h2>{course.title}</h2>
-
-                <div>
+                <div className="panel">
+                    <div className="heading">
+                        <h2>{course.title}</h2>
+                        <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
+                            to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
+                    </div>
                     <p>{course.description}</p>
-                    <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
-                        to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
+                    <br/>
+                    <br/>
+                    <div>
+                        <AssignmentList courseId={course.id} assignments={course.assignments}
+                                        isAssistant={isCourseAssistant}
+                                        onAssignmentExportClick={this.onAssignmentExportClick}
+                        />
+                    </div>
 
-                    <br/><br/>
+                    {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
+                                                    assignmentExport={assignmentExport}
+                                                    showModal={showModal && !!assignmentExport}
+                                                    handleClose={this.closeModal}/>
+                    }
                 </div>
-
-                <div>
-                    <AssignmentList courseId={course.id} assignments={course.assignments}
-                                    isAssistant={isCourseAssistant}
-                                    onAssignmentExportClick={this.onAssignmentExportClick}
-                    />
-                </div>
-
-                {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
-                                                  assignmentExport={assignmentExport}
-                                                  showModal={showModal && !!assignmentExport}
-                                                  handleClose={this.closeModal}/>
-                }
             </div>
         );
     }

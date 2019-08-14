@@ -9,15 +9,14 @@ class Profile extends Component {
 
         if (context.isAuthenticated) {
             return (
-                <div>
-                    <p>This is a Keycloak-secured component of your application. You shouldn't be able
-                        to see this unless you've authenticated with Keycloak.</p>
-
-                    <UserInfo loadUserInfo={context.loadUserInfo} accessToken={context.accessToken}
-                              accountManagement={context.accountManagement}/>
-
-                    <hr/>
-
+                <div className="container">
+                    <div className="panel">
+                        <div className="heading">
+                            <h2>My Profile</h2>
+                        </div>
+                        <UserInfo loadUserInfo={context.loadUserInfo} accessToken={context.accessToken}
+                                accountManagement={context.accountManagement}/>
+                    </div>
                 </div>
             );
         }

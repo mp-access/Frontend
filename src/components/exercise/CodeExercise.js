@@ -1,10 +1,9 @@
-import React, {Component} from 'react';
-import ReactMarkdown from 'react-markdown';
+import React, { Component } from 'react';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import FileExplorer from './FileExplorer';
-import CodeEditor from './CodeEditor';
 import Logger from './Logger';
+import MediaViewer from '../MediaViewer';
 
 class CodeExercise extends Component {
 
@@ -12,7 +11,7 @@ class CodeExercise extends Component {
         super(props);
         this.state = {
             selectedFile: undefined,
-            fileExplorerData: demoFiles,
+            fileExplorerData: undefined,
             publicFiles: [],
         };
 
@@ -174,22 +173,6 @@ class CodeExercise extends Component {
         }
     }
 
-    editorOptions = (readOnly) => {
-        return {
-            readOnly: readOnly,
-            selectOnLineNumbers: true,
-            wordWrap: true,
-            quickSuggestions: true,
-            snippetSuggestions: true,
-            wordBasedSuggestions: true,
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-            minimap: {
-                enabled: false,
-            },
-        };
-    };
-
     handleKeyDown(e) {
         // Any key ctrl + [0, 9] || cmd + [0, 9]
         if ((e.ctrlKey || e.metaKey) && e.which >= 48 && e.which <= 57) {
@@ -210,8 +193,9 @@ class CodeExercise extends Component {
     };
 
     render() {
-        const workspace = this.props.workspace;
-        const {selectedFile, fileExplorerData} = this.state;
+        const {workspace, isDark} = this.props;
+        const { selectedFile, fileExplorerData } = this.state;
+        const exerciseId = this.props.exercise.id;
 
         if (!selectedFile || !workspace) {
             return null;
@@ -220,14 +204,6 @@ class CodeExercise extends Component {
         let outputConsole;
         if (workspace.submission)
             outputConsole = workspace.submission.console;
-
-        const {content, extension} = selectedFile;
-
-        const language = extensionLanguageMap[extension];
-
-        const editorOptions = this.editorOptions(selectedFile.readOnly);
-
-        const showQuestion = selectedFile.title === 'Question.md';
 
         let consoleLog = <Logger
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
@@ -243,28 +219,10 @@ class CodeExercise extends Component {
                                       nodeClicked={this.nodeClicked}/>
 
                     </div>
-
                     <div className="col-10">
-                        {/*
-                        <div className={'row d-flex justify-content-between'}>
-
-                            <div className="btn-group btn-group-sm" role="group" aria-label="files">
-                                {fileTabs}
-                            </div>
-
-                        </div>
-                        */}
-
                         <div>
-                            <span>{selectedFile.name + '.' + selectedFile.extension}</span>
-                            {showQuestion &&
-                            <ReactMarkdown source={workspace.question}/>
-                            }
-                            {!showQuestion &&
-                            <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} height="600px"/>
-                            }
-
+                            <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
+                            <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace} onChange={this.onChange} authorizationHeader={this.props.authorizationHeader} isDark={isDark} />
                         </div>
                     </div>
                 </div>
@@ -279,18 +237,6 @@ class CodeExercise extends Component {
     }
 }
 
-/**
- * For a full list see:
- * https://github.com/microsoft/monaco-languages
- * @type {{css: string, md: string, py: string, js: string, json: string}}
- */
-const extensionLanguageMap = {
-    'py': 'python',
-    'js': 'javascript',
-    'css': 'css',
-    'json': 'json',
-    'md': 'markdown',
-};
 
 /**
  * Maps backend virtual files to frontend tree structure.
@@ -305,45 +251,5 @@ const mapVirtualFilesToTreeStructure = (virtualFiles) => {
         title: `${file.name}.${file.extension}`,
     }));
 };
-
-/**
- * Should have this structure to map it to the component
- *
- * This is for demo.
- * @type {*[]}
- */
-const demoFiles = [
-    {id: 1, title: '.gitignore'},
-    {id: 2, title: 'package.json'},
-    {
-        id: 3,
-        title: 'src',
-        isDirectory: true,
-        expanded: true,
-        children: [
-            {id: 4, title: 'styles.css'},
-            {id: 5, title: 'index.js'},
-            {id: 6, title: 'reducers.js'},
-            {id: 7, title: 'actions.js'},
-            {id: 8, title: 'utils.js'},
-        ],
-    },
-    {
-        id: 9,
-        title: 'build',
-        isDirectory: true,
-        children: [{id: 12, title: 'react-sortable-tree.js'}],
-    },
-    {
-        id: 10,
-        title: 'public',
-        isDirectory: true,
-    },
-    {
-        id: 11,
-        title: 'node_modules',
-        isDirectory: true,
-    },
-];
 
 export default CodeExercise;

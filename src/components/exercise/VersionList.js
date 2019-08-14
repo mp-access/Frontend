@@ -6,7 +6,22 @@ import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+    faArrowAltCircleLeft,
+    faArrowLeft,
+    faInfoCircle,
+    faPaperPlane,
+    faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
+
+
 import PropTypes from 'prop-types';
+import Spinner from '../core/Spinner';
+
+library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft);
 
 class VersionList extends Component {
 
@@ -16,7 +31,7 @@ class VersionList extends Component {
     };
 
     onSubmit = () => {
-        this.props.submit(this.resetSubmitButton);
+        this.props.submit(true, this.resetSubmitButton);
         this.setState({ submissionState: true });
     };
 
@@ -26,19 +41,21 @@ class VersionList extends Component {
 
     componentDidMount = async () => {
         const { exercise } = this.props;
-        const { authorizationHeader } = this.props;
 
-        const items = await SubmissionService.getSubmissionList(exercise.id, authorizationHeader);
-        this.setState({ items: items.submissions });
+        this.fetchSubmissions(exercise.id);
     };
 
     componentDidUpdate = async (prevProps) => {
-        if (!equal(this.props.exercise, prevProps.exercise) || !equal(this.props.selectedSubmissionId, prevProps.selectedSubmissionId)) {
-            const items = await SubmissionService.getSubmissionList(this.props.exercise.id, this.props.authorizationHeader);
-            this.setState({
-                items: items.submissions,
-            });
+        const { exercise, selectedSubmissionId } = this.props;
+        if (!equal(exercise, prevProps.exercise) || !equal(selectedSubmissionId, prevProps.selectedSubmissionId)) {
+            this.fetchSubmissions(exercise.id);
         }
+    };
+
+    fetchSubmissions = async (exerciseId) => {
+        const { authorizationHeader } = this.props;
+        const items = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
+        this.setState({ items: items.submissions });
     };
 
     createPopover(version, result, commitHash) {
@@ -53,40 +70,93 @@ class VersionList extends Component {
         );
     }
 
+    createSubmissionItem(item){
+        const active = item.id === this.props.selectedSubmissionId;
+        const outdated = item.commitHash !== this.props.exercise.gitHash;
+        const title = item.graded ? ('Submission ' + (item.version + 1)) : 'Run'; 
+
+        const ret_item = (
+                        <li key={item.id} className={ active ? 'active' : ''}>
+                            <div id={item.id}
+                                 className={'submission-item ' + (outdated ? 'outdated' : '')}>
+                                <strong>{title}</strong>
+                                <br/>
+                                <small>{Util.timeFormatter(item.timestamp)}</small>
+                                <br/>
+                                <div className="two-box">
+                                    <button
+                                        className={'style-btn ' + (outdated ? 'warn' : 'submit')}
+                                        onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon
+                                        icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
+                                    </button>
+                                    <span className="p-1"></span>
+                                    <OverlayTrigger trigger="focus"
+                                                    placement="top"
+                                                    overlay={this.createPopover(item.version, item.result, item.commitHash)}>
+                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
+                                        </button>
+                                    </OverlayTrigger>
+                                </div>
+                            </div>
+                        </li>
+                    );
+
+        return(ret_item);
+    }
+
+    availableSubmits() {
+        // TODO: Only count if is not outdated and not run submission
+        return Math.max(this.props.exercise.maxSubmits - this.state.items.filter(item => item.graded).length, 0);
+    }
+
     render() {
         const items = this.state.items || [];
+        const isCodeType = this.props.isCodeType;
+
+        let submitButtonContent;
+        if (this.state.submissionState)
+            submitButtonContent = <Spinner text={'Processing...'} />;
+        else
+            submitButtonContent = <><FontAwesomeIcon icon="paper-plane"/><span>Submit</span></>;
+
+        let templatePart;
+        if (isCodeType) {
+            templatePart = (
+                <li>
+                    <div id={-1} className={'submission-item'}>
+                        <strong>Template Version</strong>
+                        <br/>
+                        <div className="two-box">
+                            <button className="style-btn submit"
+                                    onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon
+                                icon="arrow-alt-circle-left"/>Load
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            );
+        }
 
         return (
             <div id={'version-wrapper'}>
-                <ul>
-                    <li>
-                        <button onClick={this.props.changeSubmissionById.bind(this, -1)}>⭯</button>
-                        Revert Template
-                    </li>
-                    <li>
-                        <hr/>
-                    </li>
-                    {<li>
-                        <button disabled={this.state.submissionState} onClick={this.onSubmit}>Submit</button>
-                    </li>}
-                    <li>
-                        <hr/>
-                    </li>
-                    {items.map(item => <li key={item.id}>
-                        <div id={item.id}
-                             className={'submission-item ' + (item.commitHash !== this.props.exercise.gitHash ? 'outdated' : '') + ' ' + (item.id === this.props.selectedSubmissionId ? 'active' : '')}>
-                            <button onClick={this.props.changeSubmissionById.bind(this, item.id)}>⭯</button>
-                            <OverlayTrigger trigger="focus"
-                                            placement="top"
-                                            overlay={this.createPopover(item.version, item.result, item.commitHash)}>
-                                <button>ⓘ</button>
-                            </OverlayTrigger> Version {item.version + 1}
-                            <br/>
-                            <small>
-                                {Util.timeFormatter(item.timestamp)}
-                            </small>
-                        </div>
-                    </li>)}
+
+
+                <div>
+                    <p><strong>{this.availableSubmits()}</strong>{'/' + this.props.exercise.maxSubmits} Submissions
+                        available</p>
+                    <button className="style-btn submit full"
+                            disabled={this.state.submissionState || this.availableSubmits() <= 0}
+                            onClick={this.onSubmit}>{submitButtonContent}</button>
+                </div>
+                <br/>
+
+                <h4>{isCodeType ? 'Versions' : 'Submission'}</h4>
+
+                {items.length === 0 ? 'No submissions' : ''}
+
+                <ul className="style-list">
+                    {items.map(item => this.createSubmissionItem(item),)}
+                    {templatePart}
                 </ul>
             </div>
         );

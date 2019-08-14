@@ -6,12 +6,12 @@ class CourseBanner extends Component {
     render() {
         const {course} = this.props;
         return (
-            <div className="panel">
-                <div className="card-body">
-                    <h5 className="card-title">{course.title}</h5>
-                    <p className="card-text">{course.description}</p>
-                    <Link className="btn btn-primary" to={`/courses/${course.id}`}>Take Course</Link>
+            <div className="panel v-flex">
+                <div>
+                    <h3>{course.title}</h3>
+                    <p>{course.description}</p>
                 </div>
+                <Link className="style-btn" to={`/courses/${course.id}`}>Take Course</Link>
             </div>
         );
     }
