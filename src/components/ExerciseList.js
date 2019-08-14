@@ -1,22 +1,24 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import Util from '../utils/Util';
 
 class ExerciseList extends Component {
 
     render() {
-        const {exercises} = this.props;
+        const { exercises, selectedId } = this.props;
+
         const listItems = exercises.map((e, index) =>
-            <Link to={`/exercises/${e.id}`} key={e.id}>
-                <li className="list-group-item"> 
-                    <p className="h6">Exercise {index + 1}
-                    <br />
-                    <small>{e.type} {(e.type === 'code' || e.type === 'codeSnippet' ) ? '(' + e.language + ')' : '' }</small>
-                </p></li>
-            </Link>
+            <li key={index} className={selectedId === e.id ? 'active' : ''}>
+                <Link to={`/exercises/${e.id}`}>
+                    <strong>Exercise {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
+                    <br/>
+                    <small>{Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
+                </Link>
+            </li>,
         );
 
         return (
-            <ul className="list-group">
+            <ul className="style-list">
                 {listItems}
             </ul>
         );

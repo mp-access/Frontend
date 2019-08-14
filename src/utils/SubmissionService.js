@@ -12,15 +12,15 @@ class SubmissionService {
         console.debug(response.toString());
     }
 
-    static async submitCode(exerciseId, submission, authHeader) {
+    static async submitExercise(exerciseId, submission, type, graded, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
         return await fetch(url, {
             method: 'POST',
             headers: authHeader().headers,
             body: JSON.stringify({
-                'type': 'code',
+                'type': type,
                 'details': {
-                    'graded': 'false',
+                    'graded': graded,
                     'publicFiles': submission.publicFiles,
                     'selectedFile': submission.selectedFile
                 },

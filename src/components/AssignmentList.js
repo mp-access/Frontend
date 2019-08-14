@@ -9,9 +9,10 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
             const label = `Assignment ${index + 1} - ${assignment.title}`;
             assignment.label = label;
             return (
-                <li className="list-group-item" key={assignment.id}>
+                <li key={assignment.id}>
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}>
-                        <p className="h6">{label}</p>
+                        <strong>{label}</strong>
+                        <br />
                         <small>{Util.timeFormatter(assignment.dueDate)}</small>
                     </Link>
                     {isAssistant &&
@@ -23,7 +24,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
     );
 
     return (
-        <ul className="list-group">
+        <ul className="style-list">
             {listItems}
         </ul>
     );

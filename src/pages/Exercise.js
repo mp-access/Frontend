@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
@@ -10,6 +9,14 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlay, faSpinner, faMoon } from '@fortawesome/free-solid-svg-icons';
+import Spinner from '../components/core/Spinner';
+import { withAuth } from '../auth/AuthProvider';
+
+library.add(faPlay, faSpinner, faMoon);
+
 class Exercise extends Component {
 
     constructor(props) {
@@ -18,6 +25,8 @@ class Exercise extends Component {
             exercise: undefined,
             exercises: [],
             workspace: Workspace,
+            runButtonState: false,
+            isDark: false
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -93,14 +102,26 @@ class Exercise extends Component {
         this.setState({ workspace });
     };
 
+    onCodeSubmit = () => {
+        this.submit(false, this.resetRunButton);
+        this.setState({ runButtonState: true });
+    };
 
-    submit = async (callback) => {
+    resetRunButton = () => {
+        this.setState({ runButtonState: false });
+    };
+
+    onIsDark = () => {
+        this.setState({isDark: !this.state.isDark});
+    }
+
+    submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let { workspace } = this.state;
+        let { workspace, exercise } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        let codeResponse = await SubmissionService.submitCode(workspace.exerciseId, toSubmit, authorizationHeader)
+        let codeResponse = await SubmissionService.submitExercise(workspace.exerciseId, toSubmit, exercise.type, graded, authorizationHeader)
             .catch(err => console.error(err));
 
         const intervalId = setInterval(async () => {
@@ -115,7 +136,7 @@ class Exercise extends Component {
                 this.setState({
                     workspace,
                 });
-                callback();
+                if (callback !== undefined) callback();
             }
         }, 100);
     };
@@ -132,6 +153,8 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    authorizationHeader={this.props.context.authorizationHeader}
+                    isDark={this.state.isDark}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -166,30 +189,57 @@ class Exercise extends Component {
             return null;
         }
 
+        const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
+
+        const selectedId = exercise.id;
         const submissionId = workspace.submissionId;
 
         const authorizationHeader = this.props.context.authorizationHeader;
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
-                                         changeSubmissionById={this.loadSubmissionById}/>;
+                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}/>;
+
+
+        let buttonCluster;
+        if (isCodeType) {
+            let runButtonContent;
+            if (this.state.runButtonState) {
+                runButtonContent = <Spinner text={'Processing...'}/>;
+            } else {
+                runButtonContent = <><FontAwesomeIcon icon="play"/><span>Save & Run</span></>;
+            }
+
+
+            buttonCluster = (
+                <div className="row">
+                    <div className="col-sm-12">
+                        <div className="code-panel">
+                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon" /></button>
+                            <button className="style-btn" disabled={this.state.runButtonState}
+                                    onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div className="row">
                 <div className="col-sm-2">
                     <div className={'panel'}>
                         <h4>Exercise list</h4>
-                        <ExerciseList exercises={exercises}/>
+                        <ExerciseList exercises={exercises} selectedId={selectedId}/>
                     </div>
                 </div>
                 <div className="col-sm-8">
                     <div className={'panel'}>
+                        {buttonCluster}
                         {content}
                     </div>
                 </div>
                 <div className="col-sm-2">
                     <div className={'panel'}>
-                        <h4>Versions</h4>
                         {versionList}
                     </div>
                 </div>

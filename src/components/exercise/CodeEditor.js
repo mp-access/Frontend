@@ -1,14 +1,14 @@
 import MonacoEditor from 'react-monaco-editor';
 import React from 'react';
 
-const CodeEditor = ({ content, language, options, onChange, height }) => (
+const CodeEditor = ({ content, language, options, onChange, isDark }) => (
     <>
         <MonacoEditor
-            height={height}
             language={language}
             value={content}
             options={options}
             onChange={onChange}
+            theme={isDark ? "vs-dark" : "vs-light"}
         />
     </>
 );

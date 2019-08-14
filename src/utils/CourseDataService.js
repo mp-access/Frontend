@@ -21,6 +21,11 @@ class CourseDataService {
             });
     }
 
+    static async getExerciseFile(exerciseId, fileId, authHeader) {
+        return fetch(utils.courseServiceUrl + '/exercises/' + exerciseId + "/files/" + fileId, authHeader())
+            .then(result => result.blob());
+    }
+
 }
 
 export default CourseDataService;
