@@ -74,7 +74,7 @@ class ChoiceExercise extends Component {
             options.push(<input type={type} name={name} value={i}
                                 key={i} onChange={this.handleChange}/>);
             options.push(" " + this.state.options[i]);
-            options.push(<br/>);
+            options.push(<br key={'br' + i}/>);
         }
 
         return (

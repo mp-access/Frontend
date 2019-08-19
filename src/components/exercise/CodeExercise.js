@@ -21,7 +21,7 @@ class CodeExercise extends Component {
     componentDidMount = async () => {
         document.addEventListener('keydown', this.handleKeyDown);
 
-        const {exercise, workspace} = this.props;
+        const { exercise, workspace } = this.props;
         const submission = workspace.submission;
         const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
 
@@ -85,7 +85,7 @@ class CodeExercise extends Component {
 
         this.setState({
             fileExplorerData,
-            selectedFile: !!selectedFileId ? selectedFile : questionFile,
+            selectedFile: !!selectedFile ? selectedFile : questionFile,
             publicFiles,
         });
     };
@@ -95,14 +95,21 @@ class CodeExercise extends Component {
     };
 
     getPublicFiles = () => {
-        let type = "code";
-        const {publicFiles, selectedFile} = this.state;
-        const selectedFileIndex = publicFiles.findIndex(f => f.id === selectedFile.id);
+        let type = 'code';
+        const { publicFiles, selectedFile } = this.state;
+
+        // If selected file is not inside the publicFolder,
+        // just take the first file in the public folder as selected file
+        let selectedFileIndex = publicFiles.findIndex(f => f.id === selectedFile.id);
+        if (selectedFileIndex < 0) {
+            selectedFileIndex = 0;
+        }
+
         sessionStorage.setItem('selectedFile', selectedFile.id);
         return {
             type: type,
             publicFiles: publicFiles,
-            selectedFile: selectedFileIndex
+            selectedFile: selectedFileIndex,
         };
     };
 
@@ -110,7 +117,7 @@ class CodeExercise extends Component {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const {selectedFile, publicFiles} = this.state;
+        const { selectedFile, publicFiles } = this.state;
 
         const updatedSelectedFile = {
             ...selectedFile,
@@ -132,7 +139,7 @@ class CodeExercise extends Component {
     };
 
     onFileExplorerChange = (data) => {
-        this.setState({fileExplorerData: data});
+        this.setState({ fileExplorerData: data });
     };
 
     nodeClicked = (node) => {
@@ -152,10 +159,10 @@ class CodeExercise extends Component {
         });
 
         if (node.isDirectory) {
-            this.setState({fileExplorerData});
+            this.setState({ fileExplorerData });
         } else {
             const selectedFile = this.searchInFiles(fileExplorerData, node.id);
-            this.setState({selectedFile, fileExplorerData});
+            this.setState({ selectedFile, fileExplorerData });
         }
     };
 
@@ -184,16 +191,16 @@ class CodeExercise extends Component {
 
     selectFileByIndex = (index) => {
         if (index === 1 || index === 0) {
-            this.setState({selectedFile: this.state.fileExplorerData[0]});
+            this.setState({ selectedFile: this.state.fileExplorerData[0] });
         } else {
             index = Math.min(index, this.state.publicFiles.length + 1);
             const selectedFile = this.state.publicFiles[index - 2];
-            this.setState({selectedFile});
+            this.setState({ selectedFile });
         }
     };
 
     render() {
-        const {workspace, isDark} = this.props;
+        const { workspace, isDark } = this.props;
         const { selectedFile, fileExplorerData } = this.state;
         const exerciseId = this.props.exercise.id;
 
@@ -222,7 +229,9 @@ class CodeExercise extends Component {
                     <div className="col-10">
                         <div>
                             <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
-                            <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace} onChange={this.onChange} authorizationHeader={this.props.authorizationHeader} isDark={isDark} />
+                            <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
+                                         onChange={this.onChange} authorizationHeader={this.props.authorizationHeader}
+                                         isDark={isDark}/>
                         </div>
                     </div>
                 </div>
