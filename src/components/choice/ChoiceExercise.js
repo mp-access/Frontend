@@ -58,6 +58,7 @@ class ChoiceExercise extends Component {
         let optionsLength = 0;
         let type = "";
         let name = "";
+        let id = "";
         if (this.state.options) {
             optionsLength = this.state.options.length;
         }
@@ -68,11 +69,13 @@ class ChoiceExercise extends Component {
             type = "radio";
             name = "singleChoiceOption";
         }
+        
         for (let i = 0; i < optionsLength; i++) {
+            id = escape(this.state.options[i]);
             options.push(
                 <div className="question-elemtn" key={i}>
-                    <input type={type} name={name} value={i} id={name} onChange={this.handleChange}/>
-                    <label htmlFor={name}> {this.state.options[i]}</label>
+                    <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                    <label htmlFor={id}> {this.state.options[i]}</label>
                 </div>
             );
         }
