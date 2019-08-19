@@ -58,6 +58,7 @@ class ChoiceExercise extends Component {
         let optionsLength = 0;
         let type = "";
         let name = "";
+        let id = "";
         if (this.state.options) {
             optionsLength = this.state.options.length;
         }
@@ -68,13 +69,15 @@ class ChoiceExercise extends Component {
             type = "radio";
             name = "singleChoiceOption";
         }
+
         for (let i = 0; i < optionsLength; i++) {
-            // note: we add a key prop here to allow react to uniquely identify each
-            // element in this array. see: https://reactjs.org/docs/lists-and-keys.html
-            options.push(<input type={type} name={name} value={i}
-                                key={i} onChange={this.handleChange}/>);
-            options.push(" " + this.state.options[i]);
-            options.push(<br key={'br' + i}/>);
+            id = escape(this.state.options[i]);
+            options.push(
+                <div className="question-elemtn" key={i}>
+                    <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                    <label htmlFor={id}> {this.state.options[i]}</label>
+                </div>
+            );
         }
 
         return (

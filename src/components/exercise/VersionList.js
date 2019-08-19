@@ -28,6 +28,9 @@ class VersionList extends Component {
     state = {
         items: [],
         submissionState: false,
+        submissionCount: {
+            submissionsRemaining: 0
+        }
     };
 
     onSubmit = () => {
@@ -54,8 +57,12 @@ class VersionList extends Component {
 
     fetchSubmissions = async (exerciseId) => {
         const { authorizationHeader } = this.props;
-        const items = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
-        this.setState({ items: items.submissions });
+        const {submissions, submissionCount} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
+        
+        this.setState({ 
+            items: submissions, 
+            submissionCount: submissionCount
+         });
     };
 
     createPopover(version, result, commitHash) {
@@ -104,10 +111,7 @@ class VersionList extends Component {
         return(ret_item);
     }
 
-    availableSubmits() {
-        // TODO: Only count if is not outdated and not run submission
-        return Math.max(this.props.exercise.maxSubmits - this.state.items.filter(item => item.graded).length, 0);
-    }
+    
 
     render() {
         const items = this.state.items || [];
@@ -142,10 +146,10 @@ class VersionList extends Component {
 
 
                 <div>
-                    <p><strong>{this.availableSubmits()}</strong>{'/' + this.props.exercise.maxSubmits} Submissions
+                    <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions
                         available</p>
                     <button className="style-btn submit full"
-                            disabled={this.state.submissionState || this.availableSubmits() <= 0}
+                            disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
                             onClick={this.onSubmit}>{submitButtonContent}</button>
                 </div>
                 <br/>
