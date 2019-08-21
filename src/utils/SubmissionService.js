@@ -4,12 +4,14 @@ class SubmissionService {
 
     static async getLastSubmission(exerciseId, authHeader) {
         const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
-        const response = await fetch(url, authHeader());
-        console.log(response);
-        if (response.status === 200) {
-            return await response.json();
-        }
-        console.debug(response.toString());
+        return await fetch(url, authHeader())
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('SubmissionService.js Error getting last submission' + response);
+                }
+            }).catch(error => console.error('Error: ', error));
     }
 
     static async submit(exerciseId, submission, graded, authHeader) {
@@ -45,9 +47,9 @@ class SubmissionService {
             if (response.ok) {
                 return response.json();
             } else {
-                throw new Error('Something went wrong on api server!');
+                throw new Error('SubmissionService.js Error submit' + response);
             }
-        });
+        }).catch(error => console.error('Error: ', error));
     }
 
 
@@ -58,9 +60,10 @@ class SubmissionService {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error('Something went wrong on api server!');
+                    throw new Error('SubmissionService.js Error check evaluation' + response);
                 }
-            });
+            })
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getSubmission(submissionId, authHeader) {
@@ -70,9 +73,10 @@ class SubmissionService {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error('Something went wrong on api server!');
+                    throw new Error('SubmissionService.js Error getSubmission' + response);
                 }
-            });
+            })
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getSubmissionList(exerciseId, authHeader) {
@@ -82,9 +86,10 @@ class SubmissionService {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error('Something went wrong on api server!');
+                    throw new Error('SubmissionService.js Error getSubmissionList' + response);
                 }
-            });
+            }).catch(error => console.error('Error: ', error));
+
     }
 
 }
