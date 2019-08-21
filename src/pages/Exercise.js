@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
@@ -9,11 +9,11 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlay, faSpinner, faMoon } from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faPlay, faSpinner, faMoon} from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../components/core/Spinner';
-import { withAuth } from '../auth/AuthProvider';
+import {withAuth} from '../auth/AuthProvider';
 
 library.add(faPlay, faSpinner, faMoon);
 
@@ -99,33 +99,39 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({ workspace });
+        this.setState({workspace});
     };
 
     onCodeSubmit = () => {
         this.submit(false, this.resetRunButton);
-        this.setState({ runButtonState: true });
+        this.setState({runButtonState: true});
     };
 
     resetRunButton = () => {
-        this.setState({ runButtonState: false });
+        this.setState({runButtonState: false});
     };
 
     onIsDark = () => {
         this.setState({isDark: !this.state.isDark});
-    }
+    };
 
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let { workspace } = this.state;
+        let {workspace} = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
         let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader)
             .catch(err => console.error(err));
 
+        let maxTimeout = 20;    //max timeout in seconds
+        let timeoutCounter = 0;
+
         const intervalId = setInterval(async () => {
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);
+            if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
+                return;
+            }
+            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvalucation has a .catch statement already
             if ('ok' === evalResponse.status) {
                 const submissionId = evalResponse.submission;
                 clearInterval(intervalId);
@@ -138,7 +144,8 @@ class Exercise extends Component {
                 });
                 if (callback !== undefined) callback();
             }
-        }, 100);
+            timeoutCounter += 1;
+        }, 1000).catch(error => console.error('Error: ', error));
     };
 
     renderMainExerciseArea(exercise, workspace) {
@@ -183,7 +190,7 @@ class Exercise extends Component {
     }
 
     render() {
-        const { exercise, exercises, workspace } = this.state;
+        const {exercise, exercises, workspace} = this.state;
 
         if (!exercise) {
             return null;
@@ -215,7 +222,8 @@ class Exercise extends Component {
                 <div className="row">
                     <div className="col-sm-12">
                         <div className="code-panel">
-                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon" /></button>
+                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                            </button>
                             <button className="style-btn" disabled={this.state.runButtonState}
                                     onClick={this.onCodeSubmit}>{runButtonContent}</button>
                         </div>
