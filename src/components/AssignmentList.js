@@ -8,7 +8,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
             const label = `Assignment ${index + 1} - ${assignment.title}`;
-            const result = !result ? results.find(r => r.assignmentId === assignment.id): undefined;
+            const result = results ? results.find(r => r.assignmentId === assignment.id): undefined;
             assignment.label = label;
             return (
                 <li key={assignment.id}>
