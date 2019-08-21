@@ -5,6 +5,7 @@ import AssignmentList from '../components/AssignmentList';
 import Util from '../utils/Util';
 import AdminService from '../utils/AdminService';
 import { ExportModal } from '../components/course/AssistantExport';
+import ResultService from "../utils/ResultService";
 
 class Course extends Component {
 
@@ -12,6 +13,7 @@ class Course extends Component {
         super(props);
         this.state = {
             course: undefined,
+            courseResults: undefined,
             showModal: false,
             modalAssignmentTitle: '',
             assignmentExport: undefined,
@@ -24,6 +26,13 @@ class Course extends Component {
 
         CourseDataService.getCourses(context.authorizationHeader)
             .then(result => this.setState({ course: result.find(c => c.id === courseId) }))
+            .catch(err => {
+                console.debug('Error:', err.toString());
+            });
+
+         ResultService.getCourseResults(courseId, context.authorizationHeader)
+            .then(result => this.setState({courseResults: result}))
+           //  .then(result => console.warn(result))
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
@@ -47,8 +56,8 @@ class Course extends Component {
     closeModal = () => this.setState({ showModal: false });
 
     render() {
-        const { course, assignmentExport, modalAssignmentTitle, showModal } = this.state;
-        if (!course) {
+        const { course, assignmentExport, modalAssignmentTitle, showModal, courseResults } = this.state;
+        if (!course || !courseResults) {
             return null;
         }
 
@@ -69,6 +78,7 @@ class Course extends Component {
                         <AssignmentList courseId={course.id} assignments={course.assignments}
                                         isAssistant={isCourseAssistant}
                                         onAssignmentExportClick={this.onAssignmentExportClick}
+                                        results={courseResults}
                         />
                     </div>
 

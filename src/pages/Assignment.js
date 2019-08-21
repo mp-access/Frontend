@@ -3,6 +3,7 @@ import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import Util from '../utils/Util';
+import ResultService from "../utils/ResultService";
 
 class Assignment extends Component {
 
@@ -10,6 +11,7 @@ class Assignment extends Component {
         super(props);
         this.state = {
             assignment: undefined,
+            assignmentScore: undefined,
         };
     }
 
@@ -22,14 +24,22 @@ class Assignment extends Component {
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
+
+        ResultService.getCourseResults(courseId, context.authorizationHeader)
+            .then(result => this.setState({assignmentScore: result.find(r => r.assignmentId === assignmentId)}))
+            .catch(err => {
+                console.debug('Error:', err.toString());
+            });
     }
 
     render() {
-        const { assignment } = this.state;
+        const { assignment, assignmentScore } = this.state;
 
-        if (!assignment) {
+        if (!assignment || !assignmentScore) {
             return null;
         }
+
+        let gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
 
         return (
             <div className="container">
@@ -42,7 +52,7 @@ class Assignment extends Component {
                     <br />
                     <br />
                     <div>
-                        <ExerciseList exercises={assignment.exercises}/>
+                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions} />
                     </div>
                 </div>
             </div>
