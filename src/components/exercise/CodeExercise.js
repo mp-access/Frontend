@@ -12,18 +12,13 @@ class CodeExercise extends Component {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: undefined,
-            publicFiles: [],
         };
-
-        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     componentDidMount = async () => {
-        document.addEventListener('keydown', this.handleKeyDown);
-
         const { exercise, workspace } = this.props;
         const submission = workspace.submission;
-        const publicFiles = (submission ? submission.publicFiles : exercise.public_files);
+        const publicFiles = (submission ? submission.publicFiles : exercise.public_files) || [];
 
         const questionFile = {
             id: 'question',
@@ -81,22 +76,19 @@ class CodeExercise extends Component {
         const fileExplorerData = files;
 
         const selectedFileId = sessionStorage.getItem('selectedFile');
-        const selectedFile = publicFiles.find(f => f.id === selectedFileId);
+        const selectedFile = this.searchInFiles(fileExplorerData, selectedFileId);
 
         this.setState({
             fileExplorerData,
             selectedFile: !!selectedFile ? selectedFile : questionFile,
-            publicFiles,
         });
-    };
-
-    componentWillUnmount = () => {
-        document.removeEventListener('keydown', this.handleKeyDown);
     };
 
     getPublicFiles = () => {
         let type = 'code';
-        const { publicFiles, selectedFile } = this.state;
+        const { selectedFile, fileExplorerData } = this.state;
+        const { children: publicFiles } = fileExplorerData
+            .find(folder => folder.id === 'public_files') || { children: [] };
 
         // If selected file is not inside the publicFolder,
         // just take the first file in the public folder as selected file
@@ -117,24 +109,34 @@ class CodeExercise extends Component {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile, publicFiles } = this.state;
+        const { selectedFile, fileExplorerData } = this.state;
 
         const updatedSelectedFile = {
             ...selectedFile,
             content: newValue,
         };
 
-        const updatedPublicFiles = publicFiles.map(file => {
-            if (file.id === updatedSelectedFile.id) {
-                return updatedSelectedFile;
+        const updatedExplorerData = fileExplorerData.map(folder => {
+            if (folder.id === 'public_files') {
+                const updatedPublicFiles = folder.children.map(file => {
+                    if (file.id === updatedSelectedFile.id) {
+                        return updatedSelectedFile;
+                    } else {
+                        return file;
+                    }
+                });
+                return {
+                    ...folder,
+                    children: updatedPublicFiles,
+                };
             } else {
-                return file;
+                return folder;
             }
         });
 
         this.setState({
-            publicFiles: updatedPublicFiles,
             selectedFile: updatedSelectedFile,
+            fileExplorerData: updatedExplorerData,
         });
     };
 
@@ -180,27 +182,8 @@ class CodeExercise extends Component {
         }
     }
 
-    handleKeyDown(e) {
-        // Any key ctrl + [0, 9] || cmd + [0, 9]
-        if ((e.ctrlKey || e.metaKey) && e.which >= 48 && e.which <= 57) {
-            e.preventDefault();
-            let index = e.which - 48;
-            this.selectFileByIndex(index);
-        }
-    };
-
-    selectFileByIndex = (index) => {
-        if (index === 1 || index === 0) {
-            this.setState({ selectedFile: this.state.fileExplorerData[0] });
-        } else {
-            index = Math.min(index, this.state.publicFiles.length + 1);
-            const selectedFile = this.state.publicFiles[index - 2];
-            this.setState({ selectedFile });
-        }
-    };
-
     render() {
-        const { workspace, isDark } = this.props;
+        const { workspace, isDark, authorizationHeader } = this.props;
         const { selectedFile, fileExplorerData } = this.state;
         const exerciseId = this.props.exercise.id;
 
@@ -230,7 +213,7 @@ class CodeExercise extends Component {
                         <div>
                             <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
-                                         onChange={this.onChange} authorizationHeader={this.props.authorizationHeader}
+                                         onChange={this.onChange} authorizationHeader={authorizationHeader}
                                          isDark={isDark}/>
                         </div>
                     </div>
@@ -245,7 +228,6 @@ class CodeExercise extends Component {
         );
     }
 }
-
 
 /**
  * Maps backend virtual files to frontend tree structure.

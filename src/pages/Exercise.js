@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import CourseDataService from '../utils/CourseDataService';
 import CodeExercise from '../components/exercise/CodeExercise';
 import CodeSnippetExercise from '../components/exercise/CodeSnippetExercise';
@@ -9,11 +9,11 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faPlay, faSpinner, faMoon} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faMoon, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../components/core/Spinner';
-import {withAuth} from '../auth/AuthProvider';
+import { withAuth } from '../auth/AuthProvider';
 
 library.add(faPlay, faSpinner, faMoon);
 
@@ -26,12 +26,22 @@ class Exercise extends Component {
             exercises: [],
             workspace: Workspace,
             runButtonState: false,
-            isDark: false
+            isDark: false,
         };
         this.exerciseComponentRef = React.createRef();
     }
 
     componentDidMount = async () => {
+        this.fetchAll();
+    };
+
+    componentDidUpdate = async (prevProps) => {
+        if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
+            this.fetchAll();
+        }
+    };
+
+    fetchAll = async () => {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
@@ -46,25 +56,6 @@ class Exercise extends Component {
             exercises: assignment.exercises,
             workspace,
         });
-    };
-
-    componentDidUpdate = async (prevProps) => {
-        if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
-            const exerciseId = this.props.match.params.exerciseId;
-            const authorizationHeader = this.props.context.authorizationHeader;
-
-            const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
-            const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
-
-            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-            const workspace = new Workspace(exercise, submission);
-
-            this.setState({
-                exercise,
-                exercises: assignment.exercises,
-                workspace,
-            });
-        }
     };
 
     fetchExercise = (exerciseId, authHeader) => {
@@ -99,26 +90,26 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({workspace});
+        this.setState({ workspace });
     };
 
     onCodeSubmit = () => {
         this.submit(false, this.resetRunButton);
-        this.setState({runButtonState: true});
+        this.setState({ runButtonState: true });
     };
 
     resetRunButton = () => {
-        this.setState({runButtonState: false});
+        this.setState({ runButtonState: false });
     };
 
     onIsDark = () => {
-        this.setState({isDark: !this.state.isDark});
+        this.setState({ isDark: !this.state.isDark });
     };
 
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
-        let {workspace} = this.state;
+        let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 
         let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader)
@@ -127,25 +118,30 @@ class Exercise extends Component {
         let maxTimeout = 20;    //max timeout in seconds
         let timeoutCounter = 0;
 
-        const intervalId = setInterval(async () => {
-            if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
-                return;
-            }
-            let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvalucation has a .catch statement already
-            if ('ok' === evalResponse.status) {
-                const submissionId = evalResponse.submission;
-                clearInterval(intervalId);
+        try {
+            const intervalId = setInterval(async () => {
+                if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
+                    clearInterval(intervalId);
+                    return;
+                }
+                let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvaluation has a .catch statement already
+                if ('ok' === evalResponse.status) {
+                    const submissionId = evalResponse.submission;
+                    clearInterval(intervalId);
 
-                const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-                const workspace = new Workspace(this.state.workspace.exercise, submission);
+                    const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                    const workspace = new Workspace(this.state.workspace.exercise, submission);
 
-                this.setState({
-                    workspace,
-                });
-                if (callback !== undefined) callback();
-            }
-            timeoutCounter += 1;
-        }, 1000).catch(error => console.error('Error: ', error));
+                    this.setState({
+                        workspace,
+                    });
+                    if (callback !== undefined) callback();
+                }
+                timeoutCounter += 1;
+            }, 1000);
+        } catch (e) {
+            console.error('Failed to poll for evaluation status', e);
+        }
     };
 
     renderMainExerciseArea(exercise, workspace) {
@@ -190,7 +186,7 @@ class Exercise extends Component {
     }
 
     render() {
-        const {exercise, exercises, workspace} = this.state;
+        const { exercise, exercises, workspace } = this.state;
 
         if (!exercise) {
             return null;
