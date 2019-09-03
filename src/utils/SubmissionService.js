@@ -15,7 +15,7 @@ class SubmissionService {
     }
 
     static async submit(exerciseId, submission, graded, authHeader) {
-        const url = `${utils.courseServiceUrl}/submissions/exs/${exerciseId}`;
+        const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
         let submissionBody = {
             'type': submission.type,
             'details': undefined,
