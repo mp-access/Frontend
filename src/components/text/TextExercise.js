@@ -18,9 +18,17 @@ class TextExercise extends Component {
     componentDidMount = async () => {
         const {exercise} = this.props;
 
-        this.setState({
-            question: exercise.question,
-        });
+        if (this.props.workspace === undefined) {
+            this.setState({
+                question: exercise.question,
+                value: ''
+            });
+        } else {
+            this.setState({
+                question: exercise.question,
+                value: this.props.workspace.submission.answer,
+            });
+        }
     };
 
     handleChange(event) {
