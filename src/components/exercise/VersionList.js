@@ -65,14 +65,19 @@ class VersionList extends Component {
          });
     };
 
-    createPopover(version, result, commitHash) {
-        const score = result ? result.score : 'no score';
+    createPopover(version, result, hints, commitHash) {
+        const score = result ? 'Score: ' + result.score : 'No score';
+        const hintlist = hints ? hints.map((hint, index) => <small key={index}>{'Hint:' + hint}</small>) : '';
         const alert = commitHash !== this.props.exercise.gitHash && <span><br/>(This Submission is outdated)</span>;
 
         return (
-            <Popover id="popover-basic" title={'Version ' + (version + 1)}>
-                {score}
-                {alert}
+            <Popover id="popover-basic">
+                <Popover.Title>{'Version ' + (version + 1)}</Popover.Title>
+                <Popover.Content>
+                    {score}
+                    {hintlist}
+                    {alert}    
+                </Popover.Content>
             </Popover>
         );
     }
@@ -97,9 +102,10 @@ class VersionList extends Component {
                                         icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
                                     </button>
                                     <span className="p-1"></span>
-                                    <OverlayTrigger trigger="focus"
+                                    <OverlayTrigger trigger="click"
+                                                    rootClose={true}
                                                     placement="top"
-                                                    overlay={this.createPopover(item.version, item.result, item.commitHash)}>
+                                                    overlay={this.createPopover(item.version, item.result, item.hints, item.commitHash)}>
                                         <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
                                         </button>
                                     </OverlayTrigger>
@@ -156,7 +162,7 @@ class VersionList extends Component {
 
                 <h4>{isCodeType ? 'Versions' : 'Submission'}</h4>
 
-                {items.length === 0 ? 'No submissions' : ''}
+                <p>{items.length === 0 ? 'No submissions' : ''}</p>
 
                 <ul className="style-list">
                     {items.map(item => this.createSubmissionItem(item),)}

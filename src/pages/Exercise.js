@@ -218,8 +218,8 @@ class Exercise extends Component {
                 <div className="row">
                     <div className="col-sm-12">
                         <div className="code-panel">
-                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                            </button>
+                            {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                            </button>*/}
                             <button className="style-btn" disabled={this.state.runButtonState}
                                     onClick={this.onCodeSubmit}>{runButtonContent}</button>
                         </div>

@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import './Logger.css';
+import './UserConsole.css';
 
-class Logger extends Component {
+class UserConsole extends Component {
     render(){
         return(
             <div id="logger">
-                <div className="logger-section">
+                {/*<div className="logger-section">
                     <h6>Console Output</h6>
                     <span className="log">{this.props.log }</span>
-                </div>
+                   </div>
+                */}
                 <div className="logger-section">
-                    <h6>Testsuite Output</h6>
                     <span className="err">{this.props.err}</span>
                 </div>
             </div>
@@ -18,4 +18,4 @@ class Logger extends Component {
     }
 };
 
-export default Logger;
+export default UserConsole;

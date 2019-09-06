@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Util from '../utils/Util';
 import PropTypes from 'prop-types';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {

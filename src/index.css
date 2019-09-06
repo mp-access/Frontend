@@ -51,6 +51,10 @@ small{
 }
 
 
+.row.multi-row > div{
+  margin-bottom: 20px
+}
+
 .panel{
   padding: 20px 25px;
   border-radius: 6px;
@@ -126,9 +130,12 @@ small{
   background: transparent;
 }
 
+.loading-box svg,
 .style-btn svg{
   margin-right: 5px;
 }
+
+
 
 
 code {
@@ -197,6 +204,14 @@ code {
 }
 
 
+.question-elemtn {
+  display: flex;
+  align-items: center;
+}
+
+.question-elemtn label{
+  margin: 0 0 0 10px;
+}
 
 
 .file-explorer{

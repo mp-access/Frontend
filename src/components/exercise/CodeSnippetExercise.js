@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import './CodeExercise.css';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
-import Logger from './Logger.js';
+import UserConsole from './UserConsole.js';
 
 class CodeSnippetExercise extends Component {
 
@@ -81,9 +81,9 @@ class CodeSnippetExercise extends Component {
 
         const editorOptions = this.editorOptions(publicFiles.readOnly);
 
-        let consoleLog = <Logger
+        let consoleLog = <UserConsole
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
-            err={outputConsole ? outputConsole.stderr.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            err={outputConsole ? outputConsole.testLog.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
         />;
 
         return (
