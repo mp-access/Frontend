@@ -35,7 +35,8 @@ class ChoiceExercise extends Component {
             }
             this.setState({multipleChoiceValue: multipleChoiceArray});
         }
-        console.log(this.props.workspace.submission.choices);
+        this.props.handleLoadButton(false);
+        console.log(this.props.loadButton);
     }
 
     getPublicFiles = () => {
@@ -76,7 +77,7 @@ class ChoiceExercise extends Component {
             console.log(type);
             if (type === "checkbox") {
                 try {
-                    if (this.props.workspace.submission.choices.includes(i)) {
+                    if (this.props.loadButton && this.props.workspace.submission.choices.includes(i)) {
                         options.push(
                             <div className="question-elemtn" key={i}>
                                 <input type={type} name={name} value={i} id={id} onChange={this.handleChange} checked="checked"/>
@@ -101,7 +102,7 @@ class ChoiceExercise extends Component {
                 }
             } else {
                 try {
-                    if (i === this.props.workspace.submission.choice) {
+                    if (this.props.loadButton && i === this.props.workspace.submission.choice) {
                         options.push(
                             <div className="question-elemtn" key={i}>
                                 <input type={type} name={name} value={i} id={id} onChange={this.handleChange} checked/>

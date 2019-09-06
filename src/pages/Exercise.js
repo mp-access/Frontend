@@ -27,8 +27,15 @@ class Exercise extends Component {
             workspace: Workspace,
             runButtonState: false,
             isDark: false,
+            loadButton: false,
         };
         this.exerciseComponentRef = React.createRef();
+
+        this.handleLoadButton = this.handleLoadButton.bind(this);
+    }
+
+    handleLoadButton(value){
+        this.setState({loadButton:value,});
     }
 
     componentDidMount = async () => {
@@ -90,8 +97,7 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({ workspace });
-        console.log(workspace);
+        this.setState({ workspace, loadButton: true });
     };
 
     onCodeSubmit = () => {
@@ -183,6 +189,8 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    loadButton={this.state.loadButton}
+                    handleLoadButton={this.handleLoadButton}
                 />;
         }
         return content;
