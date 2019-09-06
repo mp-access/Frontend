@@ -18,21 +18,15 @@ class TextExercise extends Component {
     componentDidMount = async () => {
         const {exercise} = this.props;
 
-        if (this.props.workspace === undefined) {
-            this.setState({
-                question: exercise.question,
-                value: ''
-            });
-        } else {
-            this.setState({
-                question: exercise.question,
-                value: this.props.workspace.submission.answer,
-            });
-        }
+        this.setState({
+            question: exercise.question,
+            value: ''
+        });
     };
 
     handleChange(event) {
         this.setState({value: event.target.value});
+        this.props.handleLoadButton(false);
     }
 
     getPublicFiles = () => {
@@ -44,6 +38,14 @@ class TextExercise extends Component {
     };
 
     render() {
+        let textField = <input type="text" value={this.state.value} onChange={this.handleChange}/>;
+        if (this.props.loadButton) {
+            try {
+                textField =
+                    <input type="text" value={this.props.workspace.submission.answer} onChange={this.handleChange}/>
+            } catch (e) {
+            }
+        }
         return (
             <>
                 <div className="row">
@@ -55,7 +57,7 @@ class TextExercise extends Component {
                             <label>
                                 Answer:
                                 <br/>
-                                <input type="text" value={this.state.value} onChange={this.handleChange}/>
+                                {textField}
                             </label>
                         </form>
                     </div>
