@@ -91,6 +91,7 @@ class Exercise extends Component {
         const workspace = new Workspace(exercise, submission);
 
         this.setState({ workspace });
+        console.log(workspace);
     };
 
     onCodeSubmit = () => {
@@ -181,6 +182,7 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
+                    workspace={workspace}
                 />;
         }
         return content;

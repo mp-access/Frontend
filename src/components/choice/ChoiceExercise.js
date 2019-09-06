@@ -35,6 +35,7 @@ class ChoiceExercise extends Component {
             }
             this.setState({multipleChoiceValue: multipleChoiceArray});
         }
+        console.log(this.props.workspace.submission.choice);
     }
 
     getPublicFiles = () => {
@@ -72,15 +73,34 @@ class ChoiceExercise extends Component {
 
         for (let i = 0; i < optionsLength; i++) {
             id = escape(this.state.options[i]);
-            options.push(
-                <div className="question-elemtn" key={i}>
-                    <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
-                    <label htmlFor={id}> {this.state.options[i]}</label>
-                </div>
-            );
+            if (this.props.workspace.submission.choice !== undefined) {
+                if (i === this.props.workspace.submission.choice) {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange} checked/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                } else {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                }
+            } else {
+                options.push(
+                    <div className="question-elemtn" key={i}>
+                        <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                        <label htmlFor={id}> {this.state.options[i]}</label>
+                    </div>
+                );
+            }
         }
 
         return (
+
             <>
                 <div className="row">
                     <div className="col-12">
@@ -93,7 +113,8 @@ class ChoiceExercise extends Component {
                     </div>
                 </div>
             </>
-        );
+        )
+            ;
     }
 }
 
