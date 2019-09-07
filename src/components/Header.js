@@ -6,7 +6,7 @@ const Header = () => {
     return (
         <header id={"header"}>
 
-            <nav className="navbar navbar-expand-lg bg-white">
+            <nav className="navbar navbar-expand-lg" style={{background: '#000000'}}>
                 <Link className="logo" to="/">
                     <img src="/logo.png" alt="logo"/>
                 </Link>

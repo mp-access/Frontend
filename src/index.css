@@ -5,17 +5,32 @@ body {
   padding: 0;
   font-family: 'Source Sans Pro', sans-serif !important;
   font-size: 15px !important;
-  color: #43425D !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+button {
+  background-color: #303030; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
 a{
   text-decoration: none !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 small{
-  color: #949599;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 .v-flex{
@@ -23,6 +38,8 @@ small{
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  background-color: #303030 !important;
+  color: #FFFFFF !important;
 }
 
 .h-flex{
@@ -39,7 +56,8 @@ small{
 #content{
   min-height: 80vh;
   padding: 30px 15px;
-  background-color: #f2f4f8;
+  background-color: #484848 !important;
+  color: #FFFFFF !important;
 }
 
 #footer{
@@ -50,9 +68,8 @@ small{
   height: 60px;
 }
 
-
 .row.multi-row > div{
-  margin-bottom: 20px
+  margin-bottom: 20px;
 }
 
 .panel{
