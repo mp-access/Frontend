@@ -16,12 +16,39 @@ class ChoiceExercise extends Component {
     componentDidMount = async () => {
         const {exercise} = this.props;
 
-        this.setState({
-            question: exercise.question,
-            options: exercise.options,
-            type: exercise.type
-        });
+        try {
+            if (this.props.workspace.submission.choice) {
+                this.setState({
+                    question: exercise.question,
+                    options: exercise.options,
+                    type: exercise.type,
+                    singleChoiceValue: this.props.workspace.submission.choice
+                });
+
+            } else if (this.props.workspace.submission.choices) {
+                console.log(this.props.workspace.submission.choices);
+                this.setState({
+                    question: exercise.question,
+                    options: exercise.options,
+                    type: exercise.type,
+                    multipleChoiceValue: this.props.workspace.submission.choices.slice()
+                }, () => console.log(this.state));
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.workspace !== this.props.workspace) {
+            if (this.state.type === 'singleChoice') {
+                this.setState({singleChoiceValue: this.props.workspace.submission.choice})
+            } else if (this.state.type === 'multipleChoice') {
+                this.setState({multipleChoiceValue: this.props.workspace.submission.choices.slice()})
+            }
+        }
+    }
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
         if (this.state.type === 'singleChoice') {
@@ -72,15 +99,45 @@ class ChoiceExercise extends Component {
 
         for (let i = 0; i < optionsLength; i++) {
             id = escape(this.state.options[i]);
-            options.push(
-                <div className="question-elemtn" key={i}>
-                    <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
-                    <label htmlFor={id}> {this.state.options[i]}</label>
-                </div>
-            );
+            if (type === "checkbox") {
+                try {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}
+                                   checked={this.state.multipleChoiceValue.includes(i)}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                } catch (e) {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                }
+            } else {
+                try {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}
+                                   checked={i === this.state.singleChoiceValue}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                } catch (e) {
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
+                }
+            }
         }
 
         return (
+
             <>
                 <div className="row">
                     <div className="col-12">
@@ -93,7 +150,8 @@ class ChoiceExercise extends Component {
                     </div>
                 </div>
             </>
-        );
+        )
+            ;
     }
 }
 

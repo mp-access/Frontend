@@ -28,14 +28,17 @@ class SubmissionService {
             };
         } else if (submission.type === 'singleChoice') {
             submissionBody['details'] = {
+                'graded': graded,
                 'choice': submission.value,
             };
         } else if (submission.type === 'multipleChoice') {
             submissionBody['details'] = {
+                'graded': graded,
                 'choices': submission.value,
             };
         } else if (submission.type === 'text') {
             submissionBody['details'] = {
+                'graded': graded,
                 'answer': submission.value,
             };
         }
@@ -89,7 +92,6 @@ class SubmissionService {
                     throw new Error('SubmissionService.js Error getSubmissionList' + response);
                 }
             }).catch(error => console.error('Error: ', error));
-
     }
 
 }
