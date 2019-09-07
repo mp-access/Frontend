@@ -12,7 +12,7 @@ body {
 }
 
 button {
-  background-color: #303030; /* Green */
+  background-color: #404040; /* Green */
   border: none;
   color: white;
   padding: 10px 20px;
@@ -25,19 +25,6 @@ button {
 a{
   text-decoration: none !important;
   background-color: #000000 !important;
-  color: #FFFFFF !important;
-}
-.li{
-  background-color: #303030 !important;
-  color: #FFFFFF !important;
-}
-p{
-  background-color: #303030 !important;
-  color: #FFFFFF !important;
-}
-
-small{
-  background-color: #303030 !important;
   color: #FFFFFF !important;
 }
 

@@ -14,7 +14,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}>
                         <strong>{label}</strong>
                         {result &&
-                            <button className="style-btn ghost float-right">Score:  {result.studentScore} / {result.maxScore}</button>
+                            <button className="float-right">Score:  {result.studentScore} / {result.maxScore}</button>
                         }
                         <br />
                         <small>{Util.timeFormatter(assignment.dueDate)}</small>
