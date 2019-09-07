@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import './VersionList.css';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Tabs, Tab } from 'react-bootstrap';
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,7 +26,8 @@ library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircle
 class VersionList extends Component {
 
     state = {
-        items: [],
+        submissions: [],
+        runs: [],
         submissionState: false,
         submissionCount: {
             submissionsRemaining: 0
@@ -57,10 +58,11 @@ class VersionList extends Component {
 
     fetchSubmissions = async (exerciseId) => {
         const { authorizationHeader } = this.props;
-        const {submissions, submissionCount} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
+        const {submissions, runs, submissionCount} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
         
         this.setState({ 
-            items: submissions, 
+            submissions,
+            runs,
             submissionCount: submissionCount
          });
     };
@@ -72,7 +74,7 @@ class VersionList extends Component {
 
         return (
             <Popover id="popover-basic">
-                <Popover.Title>{'Submission ' + (version + 1)}</Popover.Title>
+                <Popover.Title>{'Submission ' + version}</Popover.Title>
                 <Popover.Content>
                     {score}
                     {hintlist}  
@@ -82,16 +84,17 @@ class VersionList extends Component {
         );
     }
 
-    createSubmissionItem(item){
+    createSubmissionItem(item, index, isSubmit){
         const active = item.id === this.props.selectedSubmissionId;
         const outdated = item.invalid;
-        const title = item.graded ? ('Submission ' + (item.version + 1)) : 'Run'; 
+        const title = (isSubmit ? 'Submission ' : 'Run ') + (index + 1); 
+
 
         const ret_item = (
                         <li key={item.id} className={ active ? 'active' : ''}>
                             <div id={item.id}
                                  className={'submission-item ' + (outdated ? 'outdated' : '')}>
-                                <strong>{title}<span className="float-right">({item.result.score}P)</span></strong>
+                                <strong>{title}{item.result && <span className="float-right">({item.result.score}P)</span>}</strong>
                                 <br/>
                                 <small>{Util.timeFormatter(item.timestamp)}</small>
                                 <br/>
@@ -105,9 +108,8 @@ class VersionList extends Component {
                                     <OverlayTrigger trigger="click"
                                                     rootClose={true}
                                                     placement="top"
-                                                    overlay={this.createPopover(item.version, item.result, item.hints, outdated)}>
-                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
-                                        </button>
+                                                    overlay={this.createPopover((index + 1), item.result, item.hints, outdated)}>
+                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info</button>
                                     </OverlayTrigger>
                                 </div>
                             </div>
@@ -116,11 +118,11 @@ class VersionList extends Component {
 
         return(ret_item);
     }
-
     
 
     render() {
-        const items = this.state.items || [];
+        const submissions = this.state.submissions || [];
+        const runs = this.state.runs || [];
         const isCodeType = this.props.isCodeType;
 
         let submitButtonContent;
@@ -143,27 +145,52 @@ class VersionList extends Component {
                 </div>
             </li>
         );
-        
 
         return (
             <div id={'version-wrapper'}>
-                <div>
-                    <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions
-                        available</p>
-                    <button className="style-btn submit full"
+                
+                <span className="style-btn ghost">
+                    <h5>Score: {submissions.length && (submissions[0].result.score + " / " + submissions[0].result.maxScore)}</h5>
+                </span>
+
+                <br/><br />
+
+                <button className="style-btn submit full"
                             disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
                             onClick={this.onSubmit}>{submitButtonContent}</button>
-                </div>
+                <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</p>
+                
                 <br/>
 
-                <h4>{isCodeType ? 'Versions' : 'Submission'}</h4>
+                {
+                isCodeType ? 
+                    <Tabs defaultActiveKey="sibmits" id="uncontrolled-tab-example">
+                        <Tab eventKey="sibmits" title="Submits" >
+                            <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
+                            <ul className="style-list">
+                                {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
+                                {templatePart}
+                            </ul>
+                        </Tab>
+                        <Tab eventKey="testrun" title="Testrun">
+                            <p>{runs.length === 0 ? 'No Runs' : ''}</p>
+                            <ul className="style-list">
+                                {runs.map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
+                                {templatePart}
+                            </ul>
+                        </Tab>
+                    </Tabs>
+                :
+                    <>
+                        <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
+                        <ul className="style-list">
+                            {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
+                            {templatePart}
+                        </ul>
+                    </>
+                }
 
-                <p>{items.length === 0 ? 'No submissions' : ''}</p>
-
-                <ul className="style-list">
-                    {items.map(item => this.createSubmissionItem(item),)}
-                    {templatePart}
-                </ul>
+                
             </div>
         );
     }

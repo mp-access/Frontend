@@ -130,6 +130,10 @@ small{
   box-shadow: none;
 }
 
+.style-btn.ghost > h4{
+  margin: 0;
+}
+
 .style-btn:disabled,
 .style-btn[disabled]{
   cursor: unset;

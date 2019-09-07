@@ -195,7 +195,7 @@ class CodeExercise extends Component {
         if (workspace.submission)
             outputConsole = workspace.submission.console;
 
-        let consoleLog = <UserConsole
+        let userConsole = <UserConsole
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
             err={outputConsole ? outputConsole.testLog.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
         />;
@@ -220,8 +220,7 @@ class CodeExercise extends Component {
                 </div>
                 <div className="row">
                     <div className="col-12">
-                        <h4>Output</h4>
-                        {consoleLog}
+                        {userConsole}
                     </div>
                 </div>
             </>
