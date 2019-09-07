@@ -22,7 +22,7 @@ class ChoiceExercise extends Component {
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
-                    singleChoiceValue: this.props.workspace.submission.choice
+                    singleChoiceValue: parseInt(this.props.workspace.submission.choice)
                 });
 
             } else if (this.props.workspace.submission.choices) {
@@ -49,7 +49,7 @@ class ChoiceExercise extends Component {
         try {
             if (prevProps.workspace !== this.props.workspace) {
                 if (this.state.type === 'singleChoice') {
-                    this.setState({singleChoiceValue: this.props.workspace.submission.choice})
+                    this.setState({singleChoiceValue: parseInt(this.props.workspace.submission.choice)})
                 } else if (this.state.type === 'multipleChoice') {
                     this.setState({multipleChoiceValue: this.props.workspace.submission.choices.slice()})
                 }
@@ -61,7 +61,7 @@ class ChoiceExercise extends Component {
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
         if (this.state.type === 'singleChoice') {
-            this.setState({singleChoiceValue: event.target.value});
+            this.setState({singleChoiceValue: parseInt(event.target.value)});
         } else if (this.state.type === 'multipleChoice') {
             let multipleChoiceArray = this.state.multipleChoiceValue;
             if (this.state.multipleChoiceValue.includes(parseInt(event.target.value))) {
