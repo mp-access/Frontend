@@ -35,18 +35,27 @@ class ChoiceExercise extends Component {
                 }, () => console.log(this.state));
             }
         } catch (e) {
+            this.setState({
+                question: exercise.question,
+                options: exercise.options,
+                type: exercise.type,
+            });
             console.log(e);
         }
 
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.workspace !== this.props.workspace) {
-            if (this.state.type === 'singleChoice') {
-                this.setState({singleChoiceValue: this.props.workspace.submission.choice})
-            } else if (this.state.type === 'multipleChoice') {
-                this.setState({multipleChoiceValue: this.props.workspace.submission.choices.slice()})
+        try {
+            if (prevProps.workspace !== this.props.workspace) {
+                if (this.state.type === 'singleChoice') {
+                    this.setState({singleChoiceValue: this.props.workspace.submission.choice})
+                } else if (this.state.type === 'multipleChoice') {
+                    this.setState({multipleChoiceValue: this.props.workspace.submission.choices.slice()})
+                }
             }
+        } catch (e) {
+            console.log(e);
         }
     }
 
