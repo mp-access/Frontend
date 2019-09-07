@@ -27,9 +27,17 @@ a{
   background-color: #000000 !important;
   color: #FFFFFF !important;
 }
+.li{
+  background-color: #303030 !important;
+  color: #FFFFFF !important;
+}
+p{
+  background-color: #303030 !important;
+  color: #FFFFFF !important;
+}
 
 small{
-  background-color: #000000 !important;
+  background-color: #303030 !important;
   color: #FFFFFF !important;
 }
 
@@ -75,7 +83,7 @@ small{
 .panel{
   padding: 20px 25px;
   border-radius: 6px;
-  background-color: #fff;
+  background-color: #303030;
   box-shadow: 0px 2px 4px rgba(126,142,177,0.12);
   height: 100%;
 }
@@ -108,7 +116,6 @@ small{
   outline: none !important;
   border: none;
   font-size: 0.9em;
-  background: #3B86FF;
   color: white !important;
   display: inline-block;
   text-align: center;
@@ -142,8 +149,6 @@ small{
 }
 .style-btn.ghost{
   border: 1px solid #43425D;
-  color: #43425D !important;
-  background: transparent;
   box-shadow: none;
 }
 
@@ -182,7 +187,6 @@ code {
 
 .style-list li{
   border-bottom: 1px solid #e9e9ec;
-  background: #f7f7f7;
   transition: 0.3s;
 }
 
@@ -198,6 +202,8 @@ code {
 .style-list li > *{
   padding: 12px 25px;
   display: block;
+  background-color: #404040 !important;
+  color: #FFFFFF !important;
 }
 
 .style-list li > a{
