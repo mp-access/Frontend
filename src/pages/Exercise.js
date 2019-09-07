@@ -211,9 +211,9 @@ class Exercise extends Component {
         if (isCodeType) {
             let runButtonContent;
             if (this.state.runButtonState) {
-                runButtonContent = <Spinner text={'Processing...'}/>;
+                runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <><FontAwesomeIcon icon="play"/><span>Save & Run</span></>;
+                runButtonContent = <><FontAwesomeIcon icon="play"/><span>Run</span></>;
             }
 
 
@@ -221,8 +221,8 @@ class Exercise extends Component {
                 <div className="row">
                     <div className="col-sm-12">
                         <div className="code-panel">
-                            <button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                            </button>
+                            {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                            </button>*/}
                             <button className="style-btn" disabled={this.state.runButtonState}
                                     onClick={this.onCodeSubmit}>{runButtonContent}</button>
                         </div>

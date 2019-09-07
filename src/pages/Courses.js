@@ -32,7 +32,7 @@ class Courses extends Component {
         return (
             <div className="container">
                 <h2>My Courses</h2>
-                <div className="row">
+                <div className="row multi-row">
                     {listItems}
                 </div>
             </div>

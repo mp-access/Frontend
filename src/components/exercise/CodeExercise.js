@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import FileExplorer from './FileExplorer';
-import Logger from './Logger';
+import UserConsole from './UserConsole';
 import MediaViewer from '../MediaViewer';
 
 class CodeExercise extends Component {
@@ -195,7 +195,7 @@ class CodeExercise extends Component {
         if (workspace.submission)
             outputConsole = workspace.submission.console;
 
-        let consoleLog = <Logger
+        let userConsole = <UserConsole
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
             err={outputConsole ? outputConsole.testLog.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
         />;
@@ -220,8 +220,7 @@ class CodeExercise extends Component {
                 </div>
                 <div className="row">
                     <div className="col-12">
-                        <h4>Output</h4>
-                        {consoleLog}
+                        {userConsole}
                     </div>
                 </div>
             </>
