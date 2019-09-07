@@ -1,5 +1,3 @@
-//TODO how is an answer represented/stored/submitted
-
 import React, {Component} from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -28,12 +26,15 @@ class TextExercise extends Component {
                 value: '',
             });
         }
-        console.log("remount");
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.workspace !== this.props.workspace) {
-            this.setState({value: this.props.workspace.submission.answer})
+        try {
+            if (prevProps.workspace !== this.props.workspace) {
+                this.setState({value: this.props.workspace.submission.answer})
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 
