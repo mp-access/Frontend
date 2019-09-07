@@ -29,6 +29,7 @@ class Exercise extends Component {
             isDark: false,
         };
         this.exerciseComponentRef = React.createRef();
+
     }
 
     componentDidMount = async () => {
@@ -90,7 +91,7 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({ workspace });
+        this.setState({ workspace});
     };
 
     onCodeSubmit = () => {
@@ -173,6 +174,7 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
+                    workspace={workspace}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
@@ -180,6 +182,7 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
+                    workspace={workspace}
                 />;
         }
         return content;

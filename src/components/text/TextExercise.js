@@ -17,11 +17,25 @@ class TextExercise extends Component {
 
     componentDidMount = async () => {
         const {exercise} = this.props;
-
-        this.setState({
-            question: exercise.question,
-        });
+        try {
+            this.setState({
+                question: exercise.question,
+                value: this.props.workspace.submission.answer,
+            }, () => console.log(this.state));
+        } catch (e) {
+            this.setState({
+                question: exercise.question,
+                value: '',
+            });
+        }
+        console.log("remount");
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.workspace !== this.props.workspace) {
+            this.setState({value: this.props.workspace.submission.answer})
+        }
+    }
 
     handleChange(event) {
         this.setState({value: event.target.value});
@@ -47,7 +61,8 @@ class TextExercise extends Component {
                             <label>
                                 Answer:
                                 <br/>
-                                <input type="text" value={this.state.value} onChange={this.handleChange}/>
+                                <input type="text" value={this.state.value}
+                                       onChange={this.handleChange}/>
                             </label>
                         </form>
                     </div>

@@ -92,7 +92,6 @@ class SubmissionService {
                     throw new Error('SubmissionService.js Error getSubmissionList' + response);
                 }
             }).catch(error => console.error('Error: ', error));
-
     }
 
 }
