@@ -65,18 +65,18 @@ class VersionList extends Component {
          });
     };
 
-    createPopover(version, result, hints, commitHash) {
-        const score = result ? 'Score: ' + result.score : 'No score';
+    createPopover(version, result, hints, outdated) {
+        const score = result ? 'Score: ' + result.score + "/" + result.maxScore : 'No score';
         const hintlist = hints ? hints.map((hint, index) => <small key={index}>{'Hint:' + hint}</small>) : '';
-        const alert = commitHash !== this.props.exercise.gitHash && <span><br/>(This Submission is outdated)</span>;
+        const alert = outdated ? <small><br/>[This Submission is outdated]</small> : '';
 
         return (
             <Popover id="popover-basic">
-                <Popover.Title>{'Version ' + (version + 1)}</Popover.Title>
+                <Popover.Title>{'Submission ' + (version + 1)}</Popover.Title>
                 <Popover.Content>
                     {score}
-                    {hintlist}
-                    {alert}    
+                    {hintlist}  
+                    {alert}
                 </Popover.Content>
             </Popover>
         );
@@ -84,14 +84,14 @@ class VersionList extends Component {
 
     createSubmissionItem(item){
         const active = item.id === this.props.selectedSubmissionId;
-        const outdated = item.commitHash !== this.props.exercise.gitHash;
+        const outdated = item.invalid;
         const title = item.graded ? ('Submission ' + (item.version + 1)) : 'Run'; 
 
         const ret_item = (
                         <li key={item.id} className={ active ? 'active' : ''}>
                             <div id={item.id}
                                  className={'submission-item ' + (outdated ? 'outdated' : '')}>
-                                <strong>{title}</strong>
+                                <strong>{title}<span className="float-right">({item.result.score}P)</span></strong>
                                 <br/>
                                 <small>{Util.timeFormatter(item.timestamp)}</small>
                                 <br/>
@@ -105,7 +105,7 @@ class VersionList extends Component {
                                     <OverlayTrigger trigger="click"
                                                     rootClose={true}
                                                     placement="top"
-                                                    overlay={this.createPopover(item.version, item.result, item.hints, item.commitHash)}>
+                                                    overlay={this.createPopover(item.version, item.result, item.hints, outdated)}>
                                         <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info
                                         </button>
                                     </OverlayTrigger>
@@ -125,32 +125,28 @@ class VersionList extends Component {
 
         let submitButtonContent;
         if (this.state.submissionState)
-            submitButtonContent = <Spinner text={'Processing...'} />;
+            submitButtonContent = <Spinner text={'Submitting'} />;
         else
             submitButtonContent = <><FontAwesomeIcon icon="paper-plane"/><span>Submit</span></>;
 
-        let templatePart;
-        if (isCodeType) {
-            templatePart = (
-                <li>
-                    <div id={-1} className={'submission-item'}>
-                        <strong>Template Version</strong>
-                        <br/>
-                        <div className="two-box">
-                            <button className="style-btn submit"
-                                    onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon
-                                icon="arrow-alt-circle-left"/>Load
-                            </button>
-                        </div>
+        const templatePart = (
+            <li>
+                <div id={-1} className={'submission-item'}>
+                    <strong>{isCodeType ? 'Template Version' : 'Clear Fields'}</strong>
+                    <br/>
+                    <div className="two-box">
+                        <button className="style-btn submit"
+                                onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon
+                            icon="arrow-alt-circle-left"/>{isCodeType ? 'Load' : 'Clear'}
+                        </button>
                     </div>
-                </li>
-            );
-        }
+                </div>
+            </li>
+        );
+        
 
         return (
             <div id={'version-wrapper'}>
-
-
                 <div>
                     <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions
                         available</p>

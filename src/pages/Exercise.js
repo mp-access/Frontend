@@ -208,7 +208,7 @@ class Exercise extends Component {
         if (isCodeType) {
             let runButtonContent;
             if (this.state.runButtonState) {
-                runButtonContent = <Spinner text={'Processing...'}/>;
+                runButtonContent = <Spinner text={'Processing'}/>;
             } else {
                 runButtonContent = <><FontAwesomeIcon icon="play"/><span>Save & Run</span></>;
             }
