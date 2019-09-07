@@ -1,6 +1,6 @@
 import React from 'react';
-import { Assignment, Course, Courses, Exercise, Profile, Welcome } from '../pages/';
-import { Route } from 'react-router-dom';
+import { Assignment, Course, Courses, Exercise, Profile } from '../pages/';
+import { Redirect, Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +12,7 @@ const AppNavigation = () => {
 
     return (
         <>
-            <Route exact path="/" component={Welcome}/>
+            <Route exact path="/" render={() => <Redirect to="/courses"/>}/>
             <PrivateRoute exact path="/courses" component={Courses}/>
             <PrivateRoute exact path="/courses/:courseId" component={Course}/>
             <PrivateRoute exact path="/courses/:courseId/assignments/:assignmentId" component={Assignment}/>
