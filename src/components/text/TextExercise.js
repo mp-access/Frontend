@@ -17,16 +17,28 @@ class TextExercise extends Component {
 
     componentDidMount = async () => {
         const {exercise} = this.props;
-
-        this.setState({
-            question: exercise.question,
-            value: ''
-        });
+        try {
+            this.setState({
+                question: exercise.question,
+                value: this.props.workspace.submission.answer,
+            }, () => console.log(this.state));
+        } catch (e) {
+            this.setState({
+                question: exercise.question,
+                value: '',
+            });
+        }
+        console.log("remount");
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.workspace !== this.props.workspace) {
+            this.setState({value: this.props.workspace.submission.answer})
+        }
+    }
 
     handleChange(event) {
         this.setState({value: event.target.value});
-        this.props.handleLoadButton(false);
     }
 
     getPublicFiles = () => {
@@ -38,14 +50,6 @@ class TextExercise extends Component {
     };
 
     render() {
-        let textField = <input type="text" value={this.state.value} onChange={this.handleChange}/>;
-        if (this.props.loadButton) {
-            try {
-                textField =
-                    <input type="text" value={this.props.workspace.submission.answer} onChange={this.handleChange}/>
-            } catch (e) {
-            }
-        }
         return (
             <>
                 <div className="row">
@@ -57,7 +61,8 @@ class TextExercise extends Component {
                             <label>
                                 Answer:
                                 <br/>
-                                {textField}
+                                <input type="text" value={this.state.value}
+                                       onChange={this.handleChange}/>
                             </label>
                         </form>
                     </div>

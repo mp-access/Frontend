@@ -22,7 +22,7 @@ class ChoiceExercise extends Component {
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
-                    singleChoiceValue: this.props.workspace.submission.choice.slice()
+                    singleChoiceValue: this.props.workspace.submission.choice
                 });
 
             } else if (this.props.workspace.submission.choices) {
@@ -39,6 +39,16 @@ class ChoiceExercise extends Component {
         }
 
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.workspace !== this.props.workspace) {
+            if (this.state.type === 'singleChoice') {
+                this.setState({singleChoiceValue: this.props.workspace.submission.choice})
+            } else if (this.state.type === 'multipleChoice') {
+                this.setState({multipleChoiceValue: this.props.workspace.submission.choices.slice()})
+            }
+        }
+    }
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
         if (this.state.type === 'singleChoice') {
