@@ -191,8 +191,6 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
-                    loadButton={this.state.loadButton}
-                    handleLoadButton={this.handleLoadButton}
                 />;
         }
         return content;

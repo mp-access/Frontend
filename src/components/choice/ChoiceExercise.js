@@ -16,11 +16,28 @@ class ChoiceExercise extends Component {
     componentDidMount = async () => {
         const {exercise} = this.props;
 
-        this.setState({
-            question: exercise.question,
-            options: exercise.options,
-            type: exercise.type
-        });
+        try {
+            if (this.props.workspace.submission.choice) {
+                this.setState({
+                    question: exercise.question,
+                    options: exercise.options,
+                    type: exercise.type,
+                    singleChoiceValue: this.props.workspace.submission.choice.slice()
+                });
+
+            } else if (this.props.workspace.submission.choices) {
+                console.log(this.props.workspace.submission.choices);
+                this.setState({
+                    question: exercise.question,
+                    options: exercise.options,
+                    type: exercise.type,
+                    multipleChoiceValue: this.props.workspace.submission.choices.slice()
+                }, () => console.log(this.state));
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
     };
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
@@ -35,7 +52,6 @@ class ChoiceExercise extends Component {
             }
             this.setState({multipleChoiceValue: multipleChoiceArray});
         }
-        this.props.handleLoadButton(false);
     }
 
     getPublicFiles = () => {
@@ -75,21 +91,13 @@ class ChoiceExercise extends Component {
             id = escape(this.state.options[i]);
             if (type === "checkbox") {
                 try {
-                    if (this.props.loadButton && this.props.workspace.submission.choices.includes(i)) {
-                        options.push(
-                            <div className="question-elemtn" key={i}>
-                                <input type={type} name={name} value={i} id={id} onChange={this.handleChange} checked="checked"/>
-                                <label htmlFor={id}> {this.state.options[i]}</label>
-                            </div>
-                        );
-                    } else {
-                        options.push(
-                            <div className="question-elemtn" key={i}>
-                                <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
-                                <label htmlFor={id}> {this.state.options[i]}</label>
-                            </div>
-                        );
-                    }
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}
+                                   checked={this.state.multipleChoiceValue.includes(i)}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
                 } catch (e) {
                     options.push(
                         <div className="question-elemtn" key={i}>
@@ -100,21 +108,13 @@ class ChoiceExercise extends Component {
                 }
             } else {
                 try {
-                    if (this.props.loadButton && i === this.props.workspace.submission.choice) {
-                        options.push(
-                            <div className="question-elemtn" key={i}>
-                                <input type={type} name={name} value={i} id={id} onChange={this.handleChange} checked/>
-                                <label htmlFor={id}> {this.state.options[i]}</label>
-                            </div>
-                        );
-                    } else {
-                        options.push(
-                            <div className="question-elemtn" key={i}>
-                                <input type={type} name={name} value={i} id={id} onChange={this.handleChange}/>
-                                <label htmlFor={id}> {this.state.options[i]}</label>
-                            </div>
-                        );
-                    }
+                    options.push(
+                        <div className="question-elemtn" key={i}>
+                            <input type={type} name={name} value={i} id={id} onChange={this.handleChange}
+                                   checked={i === this.state.singleChoiceValue}/>
+                            <label htmlFor={id}> {this.state.options[i]}</label>
+                        </div>
+                    );
                 } catch (e) {
                     options.push(
                         <div className="question-elemtn" key={i}>
