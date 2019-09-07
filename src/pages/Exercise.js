@@ -27,15 +27,9 @@ class Exercise extends Component {
             workspace: Workspace,
             runButtonState: false,
             isDark: false,
-            loadButton: false,
         };
         this.exerciseComponentRef = React.createRef();
 
-        this.handleLoadButton = this.handleLoadButton.bind(this);
-    }
-
-    handleLoadButton(value){
-        this.setState({loadButton:value,});
     }
 
     componentDidMount = async () => {
@@ -97,7 +91,7 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({ workspace, loadButton: true });
+        this.setState({ workspace});
     };
 
     onCodeSubmit = () => {
@@ -181,8 +175,6 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
-                    loadButton={this.state.loadButton}
-                    handleLoadButton={this.handleLoadButton}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
