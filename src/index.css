@@ -191,6 +191,7 @@ code {
 
 .style-list li.active{
   padding-left: 6px;
+  background: white;
 }
 .style-list li.active:before{
   width: 4px;
