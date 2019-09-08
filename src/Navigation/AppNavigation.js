@@ -2,13 +2,9 @@ import React from 'react';
 import { Assignment, Course, Courses, Exercise, Profile } from '../pages/';
 import { Redirect, Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../components/core/Spinner';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorPage from '../pages/ErrorPage';
-
-library.add(faSpinner);
 
 const AppNavigation = () => (
     <>

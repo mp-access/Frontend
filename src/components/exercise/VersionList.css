@@ -50,3 +50,15 @@ button[disabled]{
 #version-wrapper ul li.active .submission-item.outdated{
     opacity: 1;
 }
+
+.score-board{
+    width: 100%;
+    border: 1px solid #43425D;
+    color: #43425D;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 20px;
+}

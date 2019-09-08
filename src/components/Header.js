@@ -1,35 +1,49 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { withAuthAndRouter } from '../auth/AuthProvider';
+import { withAuthAndRouter, withAuth } from '../auth/AuthProvider';
+import { LogIn, LogOut, User } from 'react-feather';
 
-const Header = () => {
-    return (
-        <header id={"header"}>
+class Header extends Component {
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            email: ''
+        };
+    }
 
-            <nav className="navbar navbar-expand-lg bg-white">
-                <Link className="logo" to="/">
-                    <img src="/logo.png" alt="logo"/>
-                </Link>
+    componentDidMount() {
+        const {context} = this.props;
+        if(context.isAuthenticated){
+            context.loadUserInfo().then(userInfo => {
+                console.log("userInfo", userInfo);
+                this.setState({ name: userInfo.name, email: userInfo.email});
+            });
+        }
+    }
 
-                <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-                    <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/courses">Courses</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/profile">Profile</Link>
-                        </li>
-                    </ul>
+    render() {
+        const {name} = this.state;
 
-                    <form className="form-inline my-2 my-lg-0">
-                        <LoginOrLogoutBtn/>
-                    </form>
+        return(
+            <header id={"header"}>
+                <div className="h-flex">
+                    <Link className="logo" to="/">
+                        <img src="/logo.png" alt="logo"/>
+                    </Link>
 
+                    <div className="d-flex">
+                        <Link className="nav-link" to="/profile"><User size={14} /> {name}</Link>
+                        <span className="p-1"></span>
+                        <form>
+                            <LoginOrLogoutBtn/>
+                        </form>
+                    </div>
                 </div>
-            </nav>
-
-        </header>
-    );
+            </header>
+        );
+    }
 };
 
 const LoginOrLogoutBtn = withAuthAndRouter(({ context, history }) => {
@@ -42,23 +56,23 @@ const LoginOrLogoutBtn = withAuthAndRouter(({ context, history }) => {
 });
 
 const LoginBtn = ({ onLoginClick }) => (
-    <button onClick={(e) => {
+    <button className="style-btn" onClick={(e) => {
         e.preventDefault();
         onLoginClick();
     }}>
-        Login
+        <LogIn size={14} />Login
     </button>
 );
 
 const LogoutBtn = ({ onLogoutClick, history }) => (
-    <button onClick={(e) => {
+    <button className="style-btn warn" onClick={(e) => {
         e.preventDefault();
         history.push('/');
         onLogoutClick();
     }
     }>
-        Logout
+        <LogOut size={14} />Logout
     </button>
 );
 
-export default Header;
+export default withAuth(Header);

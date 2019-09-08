@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Util from '../utils/Util';
 import PropTypes from 'prop-types';
+import { Lock } from 'react-feather';
 
 const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
-            const label = `Assignment ${index + 1} - ${assignment.title}`;
+            const pastDueDate = new Date(assignment.dueDate) < (new Date());
+            const label = <>Assignment {index + 1} - {assignment.title} {pastDueDate ? <Lock size={14} /> : ''}</>;
             const result = results ? results.find(r => r.assignmentId === assignment.id): undefined;
-            assignment.label = label;
             return (
                 <li key={assignment.id}>
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}>

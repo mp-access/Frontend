@@ -1,27 +1,13 @@
 import SubmissionService from '../../utils/SubmissionService';
 import React, { Component } from 'react';
 
-import './VersionList.css';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover, Tabs, Tab } from 'react-bootstrap';
-
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-    faArrowAltCircleLeft,
-    faArrowLeft,
-    faInfoCircle,
-    faPaperPlane,
-    faSpinner,
-} from '@fortawesome/free-solid-svg-icons';
-
-
+import { ArrowLeftCircle, Send, XCircle } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
-
-library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft);
+import './VersionList.css';
 
 class VersionList extends Component {
 
@@ -103,16 +89,18 @@ class VersionList extends Component {
                     <div className="two-box">
                         <button
                             className={'style-btn ' + (outdated ? 'warn' : 'submit')}
-                            onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon
-                            icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
+                            onClick={this.props.changeSubmissionById.bind(this, item.id)}>
+                                <ArrowLeftCircle size={14} />Load
                         </button>
                         <span className="p-1"></span>
+                        {isSubmit && 
                         <OverlayTrigger trigger="click"
                                         rootClose={true}
                                         placement="top"
                                         overlay={this.createPopover((index + 1), item.result, item.result ? item.result.hints : [], outdated)}>
-                            <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info</button>
+                            <button className="style-btn ghost">{/*<FontAwesomeIcon icon="info-circle"/>*/}Info</button>
                         </OverlayTrigger>
+                        }
                     </div>
                 </div>
             </li>
@@ -131,7 +119,7 @@ class VersionList extends Component {
         if (this.state.submissionState)
             submitButtonContent = <Spinner text={'Submitting'} />;
         else
-            submitButtonContent = <><FontAwesomeIcon icon="paper-plane"/><span>Submit</span></>;
+            submitButtonContent = <><Send size={14} /><span>Submit</span></>;
 
         const templatePart = (
             <li>
@@ -140,8 +128,8 @@ class VersionList extends Component {
                     <br/>
                     <div className="two-box">
                         <button className="style-btn submit"
-                                onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon
-                            icon="arrow-alt-circle-left"/>{isCodeType ? 'Load' : 'Clear'}
+                                onClick={this.props.changeSubmissionById.bind(this, -1)}>
+                                    <XCircle size={14} />{isCodeType ? 'Load' : 'Clear'}
                         </button>
                     </div>
                 </div>
@@ -151,18 +139,16 @@ class VersionList extends Component {
         return (
             <div id={'version-wrapper'}>
                 
-                <span className="style-btn ghost">
-                    <h5>Score: {submissions.length && (submissions[0].result.score + " / " + submissions[0].result.maxScore)}</h5>
+                <span className="score-board">
+                    Your Score: {submissions.length && (submissions[0].result.score + " / " + submissions[0].result.maxScore)}
                 </span>
-
-                <br/><br />
 
                 {!this.state.pastDueDate && 
                     <>
                         <button className="style-btn submit full"
                                     disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
                                     onClick={this.onSubmit}>{submitButtonContent}</button>
-                        <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</p>
+                        <div><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</div>
                         <br/>
                     </>
                 }
@@ -170,14 +156,14 @@ class VersionList extends Component {
                 {isCodeType ? 
                     <Tabs defaultActiveKey="sibmits" id="uncontrolled-tab-example">
                         <Tab eventKey="sibmits" title="Submits" >
-                            <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
+                            {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
                             <ul className="style-list">
                                 {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
                                 {templatePart}
                             </ul>
                         </Tab>
-                        <Tab eventKey="testrun" title="Testrun">
-                            <p>{runs.length === 0 ? 'No Runs' : ''}</p>
+                        <Tab eventKey="testruns" title="Testruns">
+                            {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
                             <ul className="style-list">
                                 {runs.map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
                                 {templatePart}
@@ -186,6 +172,7 @@ class VersionList extends Component {
                     </Tabs>
                 :
                     <>
+                        <h4>Submissions</h4>
                         <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
                         <ul className="style-list">
                             {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}

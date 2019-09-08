@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
+import { Terminal, CheckCircle } from 'react-feather';
 import './UserConsole.css';
 
 class UserConsole extends Component {
@@ -9,15 +10,15 @@ class UserConsole extends Component {
                 <Tab eventKey="console" title="Console">
                     <div id="logger">
                         <div className="logger-section">
-                            <h6>Console Output</h6><br/>
+                            <h6><Terminal size={16} /> Console Output</h6><br/>
                             <span className="log">{this.props.log}</span>
                         </div> 
                     </div>
                 </Tab>
-                <Tab eventKey="tests" title="Tests">
-                    <div id="logger" class="light">
+                <Tab eventKey="tests" title={"Tests"}>
+                    <div id="logger" className="light">
                         <div className="logger-section">
-                            <h6>Test Output</h6><br/>
+                            <h6><CheckCircle size={16} /> Test Output</h6><br/>
                             <span className="">{this.props.err}</span>
                         </div> 
                     </div>

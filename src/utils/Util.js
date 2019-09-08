@@ -1,8 +1,17 @@
 
 class Util{
     static timeFormatter(time){
-        return time.split(".")[0].replace("T", " ");
+        var t = new Date(time);
+        return t.getDate() + "." + (t.getMonth() + 1) + "." + t.getFullYear() + " " + this.paddZero(t.getHours()) + ":" + this.paddZero(t.getMinutes());
+        //return ret.setSeconds(0,0).toLocaleString().replace(",", "");
     }
+
+    static paddZero(n){
+        if(n <= 9){
+          return "0" + n;
+        }
+        return n
+      }
 
     static humanize(str) {
         return str
