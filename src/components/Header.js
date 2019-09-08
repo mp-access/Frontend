@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
 
-const Header = () => {
+const Header = ({ history, context }) => {
+    const { isAuthenticated, login, logout, loadUserInfo } = context;
+    const [userInfo, setUserInfo] = useState(null);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            loadUserInfo().then(userInfo => setUserInfo(userInfo))
+                .catch(error => console.debug(error));
+        }
+    }, [isAuthenticated]);
+
+    console.log('User info', userInfo);
+
     return (
-        <header id={"header"}>
+        <header id={'header'}>
 
             <nav className="navbar navbar-expand-lg bg-white">
                 <Link className="logo" to="/">
@@ -19,10 +31,17 @@ const Header = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/profile">Profile</Link>
                         </li>
+
+                        {userInfo &&
+                        <li className="nav-item">
+                            {userInfo['preferred_username']}
+                        </li>
+                        }
                     </ul>
 
                     <form className="form-inline my-2 my-lg-0">
-                        <LoginOrLogoutBtn/>
+                        <LoginOrLogoutBtn isAuthenticated={isAuthenticated} login={login} logout={logout}
+                                          history={history}/>
                     </form>
 
                 </div>
@@ -32,8 +51,8 @@ const Header = () => {
     );
 };
 
-const LoginOrLogoutBtn = withAuthAndRouter(({ context, history }) => {
-    const { isAuthenticated, login, logout } = context;
+const LoginOrLogoutBtn = withAuthAndRouter(({ isAuthenticated, login, logout, history }) => {
+    // const {isAuthenticated, login, logout} = context;
     if (!isAuthenticated) {
         return <LoginBtn onLoginClick={login}/>;
     }
@@ -61,4 +80,4 @@ const LogoutBtn = ({ onLogoutClick, history }) => (
     </button>
 );
 
-export default Header;
+export default withAuthAndRouter(Header);
