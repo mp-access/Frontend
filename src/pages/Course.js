@@ -6,6 +6,7 @@ import Util from '../utils/Util';
 import AdminService from '../utils/AdminService';
 import { ExportModal } from '../components/course/AssistantExport';
 import ResultService from "../utils/ResultService";
+import { Calendar } from 'react-feather';
 
 class Course extends Component {
 
@@ -68,7 +69,7 @@ class Course extends Component {
                 <div className="panel">
                     <div className="heading">
                         <h2>{course.title}</h2>
-                        <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
+                        <Calendar size={12} /> <small>Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
                             to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
                     </div>
                     <p>{course.description}</p>

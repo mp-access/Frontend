@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { Hexagon } from 'react-feather';
 
-const Spinner = ({ text }) => <><FontAwesomeIcon icon="spinner" spin/><span>{text}</span></>;
+const Spinner = ({ text }) => <><Hexagon size={16} className="spin"/><span>{text}</span></>;
 
 export default Spinner;

@@ -1,8 +1,32 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Util from '../utils/Util';
+import { Code, Type, CheckCircle, CheckSquare } from 'react-feather';
 
 class ExerciseList extends Component {
+
+
+    getIcon(type){
+        let icon;
+        switch (type) {
+            case "code":
+            case "codeSnippet":
+                icon = <Code size={12}/>
+                break;
+            case "text":
+                icon = <Type size={12}/>
+                break;
+            case "singleChoice":
+                icon = <CheckCircle size={12}/>
+                break;
+            case "multipleChoice":
+                icon = <CheckSquare size={12}/>
+                break;
+            default:
+                break;
+        }
+        return icon;
+    }
 
     render() {
         const { exercises, selectedId, gradedSubmissions } = this.props;
@@ -22,7 +46,7 @@ class ExerciseList extends Component {
                         }
 
                         <br/>
-                        <small>{Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
+                        <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
                 </li>
             );

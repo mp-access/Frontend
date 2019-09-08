@@ -8,14 +8,9 @@ import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faMoon, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../components/core/Spinner';
 import { withAuth } from '../auth/AuthProvider';
-
-library.add(faPlay, faSpinner, faMoon);
+import { Play } from 'react-feather';
 
 class Exercise extends Component {
 
@@ -213,7 +208,7 @@ class Exercise extends Component {
             if (this.state.runButtonState) {
                 runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <><FontAwesomeIcon icon="play"/><span>Run</span></>;
+                runButtonContent = <><Play size={14}/><span>Run</span></>;
             }
 
 
