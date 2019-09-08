@@ -8,6 +8,11 @@
     border-radius: 6px;
 }
 
+#logger.light{
+    background: transparent;
+    color: black;
+}
+
 #logger .logger-section{
     padding: 20px 25px;
     border-bottom: 1px solid #4a4a4a;
@@ -23,4 +28,9 @@
 
 #logger span.log{
     color: #2196f3;
+}
+
+
+pre p{
+    margin-bottom: 1px;
 }

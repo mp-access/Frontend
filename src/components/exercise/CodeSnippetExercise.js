@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
-import './CodeExercise.css';
 import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
 import UserConsole from './UserConsole.js';
+import './CodeExercise.css';
 
 class CodeSnippetExercise extends Component {
 
@@ -102,7 +102,6 @@ class CodeSnippetExercise extends Component {
                             <CodeEditor content={content} language={language} options={editorOptions}
                                         onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
                         </div>
-                        <h4>Output</h4>
                         {consoleLog}
                     </div>
                 </div>

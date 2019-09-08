@@ -4,6 +4,7 @@ import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import Util from '../utils/Util';
 import ResultService from "../utils/ResultService";
+import { Calendar } from 'react-feather';
 
 class Assignment extends Component {
 
@@ -46,7 +47,7 @@ class Assignment extends Component {
                 <div className="panel">
                     <div className="heading">
                         <h2>{assignment.title}</h2>
-                        <small>Open from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> - to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
+                        <Calendar size={12} /> <small>Open from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> - to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
                     </div>
                     <p>{assignment.description}</p>
                     <br />

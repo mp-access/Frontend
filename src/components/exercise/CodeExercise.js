@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import 'file-icons-js/css/style.css';
-import './CodeExercise.css';
 import FileExplorer from './FileExplorer';
 import UserConsole from './UserConsole';
 import MediaViewer from '../MediaViewer';
+import 'file-icons-js/css/style.css';
+import './CodeExercise.css';
 
 class CodeExercise extends Component {
 

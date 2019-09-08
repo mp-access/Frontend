@@ -1,27 +1,13 @@
 import SubmissionService from '../../utils/SubmissionService';
 import React, { Component } from 'react';
 
-import './VersionList.css';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover, Tabs, Tab } from 'react-bootstrap';
-
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-    faArrowAltCircleLeft,
-    faArrowLeft,
-    faInfoCircle,
-    faPaperPlane,
-    faSpinner,
-} from '@fortawesome/free-solid-svg-icons';
-
-
+import { Send, RotateCcw } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
-
-library.add(faPaperPlane, faInfoCircle, faArrowLeft, faSpinner, faArrowAltCircleLeft);
+import './VersionList.css';
 
 class VersionList extends Component {
 
@@ -29,6 +15,7 @@ class VersionList extends Component {
         submissions: [],
         runs: [],
         submissionState: false,
+        pastDueDate: false,
         submissionCount: {
             submissionsRemaining: 0
         }
@@ -58,18 +45,19 @@ class VersionList extends Component {
 
     fetchSubmissions = async (exerciseId) => {
         const { authorizationHeader } = this.props;
-        const {submissions, runs, submissionCount} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
+        const {submissions, runs, submissionCount, pastDueDate} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
         
         this.setState({ 
             submissions,
             runs,
+            pastDueDate,
             submissionCount: submissionCount
          });
     };
 
     createPopover(version, result, hints, outdated) {
         const score = result ? 'Score: ' + result.score + "/" + result.maxScore : 'No score';
-        const hintlist = hints ? hints.map((hint, index) => <small key={index}>{'Hint:' + hint}</small>) : '';
+        const hintlist = hints ? hints.map((hint, index) => <small key={index}><br/>{'Hint ' + (index+1) + ": " + hint}</small>) : '';
         const alert = outdated ? <small><br/>[This Submission is outdated]</small> : '';
 
         return (
@@ -77,7 +65,7 @@ class VersionList extends Component {
                 <Popover.Title>{'Submission ' + version}</Popover.Title>
                 <Popover.Content>
                     {score}
-                    {hintlist}  
+                    {hintlist}
                     {alert}
                 </Popover.Content>
             </Popover>
@@ -91,30 +79,32 @@ class VersionList extends Component {
 
 
         const ret_item = (
-                        <li key={item.id} className={ active ? 'active' : ''}>
-                            <div id={item.id}
-                                 className={'submission-item ' + (outdated ? 'outdated' : '')}>
-                                <strong>{title}{item.result && <span className="float-right">({item.result.score}P)</span>}</strong>
-                                <br/>
-                                <small>{Util.timeFormatter(item.timestamp)}</small>
-                                <br/>
-                                <div className="two-box">
-                                    <button
-                                        className={'style-btn ' + (outdated ? 'warn' : 'submit')}
-                                        onClick={this.props.changeSubmissionById.bind(this, item.id)}><FontAwesomeIcon
-                                        icon="arrow-alt-circle-left"></FontAwesomeIcon>Load
-                                    </button>
-                                    <span className="p-1"></span>
-                                    <OverlayTrigger trigger="click"
-                                                    rootClose={true}
-                                                    placement="top"
-                                                    overlay={this.createPopover((index + 1), item.result, item.hints, outdated)}>
-                                        <button className="style-btn ghost"><FontAwesomeIcon icon="info-circle"/>Info</button>
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                        </li>
-                    );
+            <li key={item.id} className={ active ? 'active' : ''}>
+                <div id={item.id}
+                        className={'submission-item ' + (outdated ? 'outdated' : '')}>
+                    <strong>{title}{item.result && <span className="float-right">({item.result.score}P)</span>}</strong>
+                    <br/>
+                    <small>{Util.timeFormatter(item.timestamp)}</small>
+                    <br/>
+                    <div className="two-box">
+                        <button
+                            className={'style-btn ' + (outdated ? 'warn' : 'submit')}
+                            onClick={this.props.changeSubmissionById.bind(this, item.id)}>
+                                <RotateCcw size={14} />Load
+                        </button>
+                        <span className="p-1"></span>
+                        {isSubmit && 
+                        <OverlayTrigger trigger="click"
+                                        rootClose={true}
+                                        placement="top"
+                                        overlay={this.createPopover((index + 1), item.result, item.result ? item.result.hints : [], outdated)}>
+                            <button className="style-btn ghost">{/*<FontAwesomeIcon icon="info-circle"/>*/}Info</button>
+                        </OverlayTrigger>
+                        }
+                    </div>
+                </div>
+            </li>
+        );
 
         return(ret_item);
     }
@@ -123,13 +113,13 @@ class VersionList extends Component {
     render() {
         const submissions = this.state.submissions || [];
         const runs = this.state.runs || [];
-        const isCodeType = this.props.isCodeType;
+        const {isCodeType} = this.props;
 
         let submitButtonContent;
         if (this.state.submissionState)
             submitButtonContent = <Spinner text={'Submitting'} />;
         else
-            submitButtonContent = <><FontAwesomeIcon icon="paper-plane"/><span>Submit</span></>;
+            submitButtonContent = <><Send size={14} />Submit</>;
 
         const templatePart = (
             <li>
@@ -138,8 +128,8 @@ class VersionList extends Component {
                     <br/>
                     <div className="two-box">
                         <button className="style-btn submit"
-                                onClick={this.props.changeSubmissionById.bind(this, -1)}><FontAwesomeIcon
-                            icon="arrow-alt-circle-left"/>{isCodeType ? 'Load' : 'Clear'}
+                                onClick={this.props.changeSubmissionById.bind(this, -1)}>
+                                    <RotateCcw size={14} />Reset
                         </button>
                     </div>
                 </div>
@@ -149,31 +139,31 @@ class VersionList extends Component {
         return (
             <div id={'version-wrapper'}>
                 
-                <span className="style-btn ghost">
-                    <h5>Score: {submissions.length && (submissions[0].result.score + " / " + submissions[0].result.maxScore)}</h5>
+                <span className="score-board">
+                    Score: {submissions.length && <><strong>{submissions[0].result.score}</strong> / {submissions[0].result.maxScore}</>}
                 </span>
 
-                <br/><br />
+                {!this.state.pastDueDate && 
+                    <>
+                        <button className="style-btn submit full"
+                                    disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
+                                    onClick={this.onSubmit}>{submitButtonContent}</button>
+                        <div><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</div>
+                        <br/>
+                    </>
+                }
 
-                <button className="style-btn submit full"
-                            disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
-                            onClick={this.onSubmit}>{submitButtonContent}</button>
-                <p><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</p>
-                
-                <br/>
-
-                {
-                isCodeType ? 
+                {isCodeType ? 
                     <Tabs defaultActiveKey="sibmits" id="uncontrolled-tab-example">
                         <Tab eventKey="sibmits" title="Submits" >
-                            <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
+                            {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
                             <ul className="style-list">
                                 {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
                                 {templatePart}
                             </ul>
                         </Tab>
-                        <Tab eventKey="testrun" title="Testrun">
-                            <p>{runs.length === 0 ? 'No Runs' : ''}</p>
+                        <Tab eventKey="testruns" title="Testruns">
+                            {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
                             <ul className="style-list">
                                 {runs.map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
                                 {templatePart}
@@ -182,6 +172,7 @@ class VersionList extends Component {
                     </Tabs>
                 :
                     <>
+                        <h4>Submissions</h4>
                         <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
                         <ul className="style-list">
                             {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
