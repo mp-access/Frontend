@@ -49,7 +49,7 @@ small{
 }
 
 .logo img{
-  height: 60px;
+  height: 40px;
 }
 
 
@@ -88,7 +88,7 @@ small{
 }
 
 .style-btn{
-  padding: 10px 20px;
+  padding: 8px 20px;
   border-radius: 4px;
   outline: none !important;
   border: none;
@@ -170,6 +170,19 @@ code {
   border-bottom: 1px solid #e9e9ec;
   background: #f7f7f7;
   transition: 0.3s;
+  position: relative;
+}
+
+.style-list li:before{
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 0px;
+  left: 0;
+  opacity: 0;
+  transition: 0.3s;
+  background: rgb(59,134,255);
+  background: linear-gradient(22deg, rgba(59,134,255,1) 0%, rgba(0,212,255,1) 100%);
 }
 
 .style-list li:first-child{
@@ -177,8 +190,11 @@ code {
 }
 
 .style-list li.active{
-  background: white;
-  border-left: 3px solid #3B86FF;
+  padding-left: 6px;
+}
+.style-list li.active:before{
+  width: 4px;
+  opacity: 1;
 }
 
 .style-list li > *{

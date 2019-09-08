@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover, Tabs, Tab } from 'react-bootstrap';
-import { ArrowLeftCircle, Send, XCircle } from 'react-feather';
+import { Send, RotateCcw } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
 import './VersionList.css';
@@ -90,7 +90,7 @@ class VersionList extends Component {
                         <button
                             className={'style-btn ' + (outdated ? 'warn' : 'submit')}
                             onClick={this.props.changeSubmissionById.bind(this, item.id)}>
-                                <ArrowLeftCircle size={14} />Load
+                                <RotateCcw size={14} />Load
                         </button>
                         <span className="p-1"></span>
                         {isSubmit && 
@@ -119,7 +119,7 @@ class VersionList extends Component {
         if (this.state.submissionState)
             submitButtonContent = <Spinner text={'Submitting'} />;
         else
-            submitButtonContent = <><Send size={14} /><span>Submit</span></>;
+            submitButtonContent = <><Send size={14} />Submit</>;
 
         const templatePart = (
             <li>
@@ -129,7 +129,7 @@ class VersionList extends Component {
                     <div className="two-box">
                         <button className="style-btn submit"
                                 onClick={this.props.changeSubmissionById.bind(this, -1)}>
-                                    <XCircle size={14} />{isCodeType ? 'Load' : 'Clear'}
+                                    <RotateCcw size={14} />Reset
                         </button>
                     </div>
                 </div>
@@ -140,7 +140,7 @@ class VersionList extends Component {
             <div id={'version-wrapper'}>
                 
                 <span className="score-board">
-                    Your Score: {submissions.length && (submissions[0].result.score + " / " + submissions[0].result.maxScore)}
+                    Score: {submissions.length && <><strong>{submissions[0].result.score}</strong> / {submissions[0].result.maxScore}</>}
                 </span>
 
                 {!this.state.pastDueDate && 
