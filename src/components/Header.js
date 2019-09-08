@@ -16,6 +16,7 @@ const Header = ({ history, context }) => {
 
     console.log('User info', userInfo);
 
+    const name = !!userInfo ? userInfo['preferred_username'] : '';
     return (
         <header id={'header'}>
             <div className="h-flex">
@@ -24,41 +25,19 @@ const Header = ({ history, context }) => {
                 </Link>
 
                 <div className="d-flex">
-                    <Link className="nav-link" to="/profile"><User size={14} /> {name}</Link>
-                    <span className="p-1"></span>
+                    <Link className="nav-link" to="/profile"><User size={14}/> {name}</Link>
+                    <span className="p-1"/>
                     <form>
-                        <LoginOrLogoutBtn/>
+                        <LoginOrLogoutBtn isAuthenticated={isAuthenticated} login={login} logout={logout}
+                                          history={history}/>
                     </form>
                 </div>
             </div>
-            {/*<nav className="navbar navbar-expand-lg bg-white">*/}
-            {/*    <Link className="logo" to="/">*/}
-            {/*        <img src="/logo.png" alt="logo"/>*/}
-            {/*    </Link>*/}
-
-            {/*    <div className="collapse navbar-collapse" id="navbarTogglerDemo02">*/}
-            {/*        <ul className="navbar-nav mr-auto mt-2 mt-lg-0">*/}
-            {/*            <li className="nav-item">*/}
-            {/*                <Link className="nav-link" to="/courses">Courses</Link>*/}
-            {/*            </li>*/}
-            {/*            <li className="nav-item">*/}
-            {/*                <Link className="nav-link" to="/profile">Profile</Link>*/}
-            {/*            </li>*/}
-            {/*        </ul>*/}
-
-            {/*        <form className="form-inline my-2 my-lg-0">*/}
-            {/*            <LoginOrLogoutBtn/>*/}
-            {/*        </form>*/}
-
-            {/*    </div>*/}
-            {/*</nav>*/}
-
         </header>
     );
 };
 
 const LoginOrLogoutBtn = withAuthAndRouter(({ isAuthenticated, login, logout, history }) => {
-    // const {isAuthenticated, login, logout} = context;
     if (!isAuthenticated) {
         return <LoginBtn onLoginClick={login}/>;
     }
@@ -71,7 +50,7 @@ const LoginBtn = ({ onLoginClick }) => (
         e.preventDefault();
         onLoginClick();
     }}>
-        <LogIn size={14} />Login
+        <LogIn size={14}/>Login
     </button>
 );
 
@@ -82,7 +61,7 @@ const LogoutBtn = ({ onLogoutClick, history }) => (
         onLogoutClick();
     }
     }>
-        <LogOut size={14} />Logout
+        <LogOut size={14}/>Logout
     </button>
 );
 
