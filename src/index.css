@@ -143,7 +143,8 @@ small{
 }
 
 .loading-box svg,
-.style-btn svg{
+.style-btn svg,
+.nav-link svg{
   margin-right: 5px;
 }
 
@@ -303,4 +304,19 @@ code {
     -webkit-transform: rotate(359deg);
     transform: rotate(359deg);
   }
+}
+
+
+
+
+.breadcrumbs{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs li{
+  float: left;
 }

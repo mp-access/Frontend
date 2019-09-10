@@ -31,8 +31,6 @@ class ExerciseList extends Component {
     render() {
         const { exercises, selectedId, gradedSubmissions } = this.props;
 
-        console.debug(exercises);
-        console.debug(gradedSubmissions);
         const listItems = exercises.map((e, index) => {
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
             const exerciseResult = gradedSub && gradedSub.result ? gradedSub.result : undefined;

@@ -98,7 +98,7 @@ class VersionList extends Component {
                                         rootClose={true}
                                         placement="top"
                                         overlay={this.createPopover((index + 1), item.result, item.result ? item.result.hints : [], outdated)}>
-                            <button className="style-btn ghost">{/*<FontAwesomeIcon icon="info-circle"/>*/}Info</button>
+                            <button className="style-btn ghost">Info</button>
                         </OverlayTrigger>
                         }
                     </div>
