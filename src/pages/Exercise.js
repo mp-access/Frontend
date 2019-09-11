@@ -208,7 +208,7 @@ class Exercise extends Component {
             if (this.state.runButtonState) {
                 runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <><Play size={14}/><span>Run</span></>;
+                runButtonContent = <><Play size={14}/><span>Testrun</span></>;
             }
 
 

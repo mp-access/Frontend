@@ -1,7 +1,9 @@
 .media-viewport{
-    height: 90vh;
+    height: 60vh;
     overflow: auto;
     position: relative;
+    resize: vertical;
+    min-height: 200px;
 }
 
 .media-viewport img{
