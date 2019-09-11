@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
-import { LogIn, LogOut, User } from 'react-feather';
+import { LogIn, LogOut, User, ChevronRight } from 'react-feather';
 
 const Header = ({ history, context }) => {
+    console.log(history.push);
     const { isAuthenticated, login, logout, loadUserInfo } = context;
     const [userInfo, setUserInfo] = useState(null);
+    const list = [{title: "My Courses", url: "/courses"}];//[{title: "My Courses", url: "/courses"}, {title: "Course 1", url: "/course"}, {title: "Assignment 1", url: "/assignment"}, {title: "Exercise 1", url: "/course/exercise"}];
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -13,8 +15,6 @@ const Header = ({ history, context }) => {
                 .catch(error => console.debug(error));
         }
     }, [isAuthenticated]);
-
-    console.log('User info', userInfo);
 
     const name = !!userInfo ? userInfo['preferred_username'] : '';
     return (
@@ -24,8 +24,18 @@ const Header = ({ history, context }) => {
                     <img src="/logo.png" alt="logo"/>
                 </Link>
 
+                <nav>
+                    <ul className="breadcrumbs">
+                        {list.map( (item, index) =>
+                            <li key={index}>
+                                <Link className="nav-link" to={item.url}>{item.title}</Link>
+                            </li>
+                        ).reduce((prev, curr) => [prev, <li><ChevronRight size={14} /></li>, curr])}
+                    </ul>
+                </nav>
+
                 <div className="d-flex">
-                    <Link className="nav-link" to="/profile"><User size={14}/> {name}</Link>
+                    <Link className="nav-link" to="/profile"><User size={16}/>{name}</Link>
                     <span className="p-1"/>
                     <form>
                         <LoginOrLogoutBtn isAuthenticated={isAuthenticated} login={login} logout={logout}

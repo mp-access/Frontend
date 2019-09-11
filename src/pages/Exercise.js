@@ -228,7 +228,7 @@ class Exercise extends Component {
 
         return (
             <div className="row">
-                <div className="col-sm-2">
+                <div className="col-sm-2 d-none d-sm-block">
                     <div className={'panel'}>
                         <h4>Exercise list</h4>
                         <ExerciseList exercises={exercises} selectedId={selectedId}/>
