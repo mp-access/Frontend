@@ -10,19 +10,20 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
             const label = <><h5>{assignment.title}</h5></>;
             const result = results ? results.find(r => r.assignmentId === assignment.id): undefined;
             return (
-                <li key={assignment.id}>
-                    <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}>
-                        <span>Assignment {index + 1} {pastDueDate ? <Lock size={12} /> : ''}</span>
+                <li key={assignment.id} className="h-flex">
+                    <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id} className="flex-grow-1">
+                        <span>Assignment {index + 1} {pastDueDate ? <Lock size={15} /> : ''}</span>
                         {label}
-                        {isAssistant &&
-                            <button className="style-btn float-right"
-                            onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
-                        {result &&
-                            <button className="style-btn ghost float-right">Score:  {result.studentScore} / {result.maxScore}</button>
-                        }
-                        <br />
                         <small><Clock size={12} /> Due date: {Util.timeFormatter(assignment.dueDate)}</small>
                     </Link>
+                    <div>
+                        {isAssistant &&
+                            <button className="style-btn"
+                            onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                        {result &&
+                            <span className="style-btn ghost">Score:  {result.studentScore} / {result.maxScore}</span>
+                        }
+                    </div>
                 </li>
             );
         },

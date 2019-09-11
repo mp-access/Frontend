@@ -36,16 +36,15 @@ class ExerciseList extends Component {
             const exerciseResult = gradedSub && gradedSub.result ? gradedSub.result : undefined;
 
             return (
-                <li key={index} className={selectedId === e.id ? 'active' : ''}>
-                    <Link to={`/exercises/${e.id}`}>
+                <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '')}>
+                    <Link to={`/exercises/${e.id}`} className="flex-grow-1">
                         <strong>Exercise {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
-                        {exerciseResult &&
-                            <button className="style-btn ghost float-right">Score:  {exerciseResult.score} / {exerciseResult.maxScore}</button>
-                        }
-
                         <br/>
                         <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
+                    {exerciseResult &&
+                        <div><span className="style-btn ghost">Score:  {exerciseResult.score} / {exerciseResult.maxScore}</span></div>
+                    }
                 </li>
             );
 

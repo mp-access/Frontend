@@ -4,9 +4,10 @@ import { withAuthAndRouter } from '../auth/AuthProvider';
 import { LogIn, LogOut, User, ChevronRight } from 'react-feather';
 
 const Header = ({ history, context }) => {
+    console.log(history.push);
     const { isAuthenticated, login, logout, loadUserInfo } = context;
     const [userInfo, setUserInfo] = useState(null);
-    const list = [{title: "Course 1", url: "/course"}, {title: "Exercise 1", url: "/course/exercise"}];
+    const list = [{title: "My Courses", url: "/courses"}];//[{title: "My Courses", url: "/courses"}, {title: "Course 1", url: "/course"}, {title: "Assignment 1", url: "/assignment"}, {title: "Exercise 1", url: "/course/exercise"}];
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -25,12 +26,11 @@ const Header = ({ history, context }) => {
 
                 <nav>
                     <ul className="breadcrumbs">
-                        {list.map( (item, index) => <>
+                        {list.map( (item, index) =>
                             <li key={index}>
                                 <Link className="nav-link" to={item.url}>{item.title}</Link>
                             </li>
-                            {(list.length -1) !== index && <li><ChevronRight size={14} /></li>}
-                        </>)}
+                        ).reduce((prev, curr) => [prev, <li><ChevronRight size={14} /></li>, curr])}
                     </ul>
                 </nav>
 
