@@ -88,7 +88,7 @@ class VersionList extends Component {
                     <br/>
                     <div className="two-box">
                         <button
-                            className={'style-btn ' + (outdated ? 'warn' : 'submit')}
+                            className={'style-btn ' + (outdated ? 'warn' : '')}
                             onClick={this.props.changeSubmissionById.bind(this, item.id)}>
                                 <RotateCcw size={14} />Load
                         </button>
@@ -127,7 +127,7 @@ class VersionList extends Component {
                     <strong>{isCodeType ? 'Template Version' : 'Clear Fields'}</strong>
                     <br/>
                     <div className="two-box">
-                        <button className="style-btn submit"
+                        <button className="style-btn"
                                 onClick={this.props.changeSubmissionById.bind(this, -1)}>
                                     <RotateCcw size={14} />Reset
                         </button>
@@ -139,33 +139,39 @@ class VersionList extends Component {
         return (
             <div id={'version-wrapper'}>
                 
+                {(submissions[0] && submissions[0].result) &&
                 <span className="score-board">
                     Score: {submissions.length && <><strong>{submissions[0].result.score}</strong> / {submissions[0].result.maxScore}</>}
                 </span>
+                }
 
                 {!this.state.pastDueDate && 
                     <>
                         <button className="style-btn submit full"
                                     disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
                                     onClick={this.onSubmit}>{submitButtonContent}</button>
-                        <div><strong>{this.state.submissionCount.submissionsRemaining}</strong>{'/' + this.props.exercise.maxSubmits} Submissions available</div>
+                        <div className="text-center mt-1">
+                            <small>
+                                <strong>{this.state.submissionCount.submissionsRemaining}</strong> Submissions available
+                            </small>
+                        </div>
                         <br/>
                     </>
                 }
 
                 {isCodeType ? 
                     <Tabs defaultActiveKey="sibmits" id="uncontrolled-tab-example">
-                        <Tab eventKey="sibmits" title="Submits" >
-                            {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
-                            <ul className="style-list">
-                                {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
-                                {templatePart}
-                            </ul>
-                        </Tab>
                         <Tab eventKey="testruns" title="Testruns">
                             {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
                             <ul className="style-list">
                                 {runs.map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
+                                {templatePart}
+                            </ul>
+                        </Tab>
+                        <Tab eventKey="sibmits" title="Submits" >
+                            {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
+                            <ul className="style-list">
+                                {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
                                 {templatePart}
                             </ul>
                         </Tab>

@@ -21,7 +21,10 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                             <button className="style-btn"
                             onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
                         {result &&
-                            <span className="style-btn ghost">Score:  {result.studentScore} / {result.maxScore}</span>
+                            <>
+                                <span className="p-1"></span>
+                                <span className="style-btn ghost">Score:  {result.studentScore} / {result.maxScore}</span>
+                            </>
                         }
                     </div>
                 </li>
