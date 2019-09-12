@@ -26,13 +26,12 @@ class ChoiceExercise extends Component {
                 });
 
             } else if (this.props.workspace.submission.choices) {
-                console.log(this.props.workspace.submission.choices);
                 this.setState({
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
                     multipleChoiceValue: this.props.workspace.submission.choices.slice()
-                }, () => console.log(this.state));
+                },);
             }
         } catch (e) {
             this.setState({
@@ -40,7 +39,6 @@ class ChoiceExercise extends Component {
                 options: exercise.options,
                 type: exercise.type,
             });
-            console.log(e);
         }
 
     };
@@ -55,7 +53,7 @@ class ChoiceExercise extends Component {
                 }
             }
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     }
 

@@ -6,6 +6,10 @@
     min-height: 200px;
 }
 
+.media-viewport > *{
+    overflow: visible;
+}
+
 .media-viewport img{
     border: 1px solid #dfdfdf;
     margin: 0px auto;

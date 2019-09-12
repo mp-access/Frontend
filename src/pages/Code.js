@@ -39,13 +39,7 @@ class Code extends Component {
 
     //monaco editor
     editorDidMount = (editor, monaco) => {
-        console.log('editorDidMount', editor);
         editor.focus();
-        console.log(monaco);
-    };
-
-    onChange = (newValue, e) => {
-        console.log('onChange', newValue, e);
     };
 
     //setting code editor language within tabs

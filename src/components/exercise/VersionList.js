@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
-import { OverlayTrigger, Popover, Tabs, Tab } from 'react-bootstrap';
-import { Send, RotateCcw } from 'react-feather';
+import { OverlayTrigger, Popover, Tabs, Tab, Modal } from 'react-bootstrap';
+import { Send, RotateCcw, X } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
 import './VersionList.css';
@@ -18,13 +18,24 @@ class VersionList extends Component {
         pastDueDate: false,
         submissionCount: {
             submissionsRemaining: 0
-        }
+        },
+        showModal: false,
     };
 
     onSubmit = () => {
+
+        if(this.state.submissionCount.submissionsRemaining <= 1){
+            this.setShowModal(true);
+        }else{
+            this.confirmSubmit();
+        }
+    };
+
+    confirmSubmit = () => {
+        this.setShowModal(false);
         this.props.submit(true, this.resetSubmitButton);
         this.setState({ submissionState: true });
-    };
+    }
 
     resetSubmitButton = () => {
         this.setState({ submissionState: false });
@@ -108,6 +119,33 @@ class VersionList extends Component {
 
         return(ret_item);
     }
+
+    setShowModal = (show) => {
+        this.setState({showModal: show});
+    }
+
+    lastSubmissionWarning() {
+        const { showModal} = this.state;
+      
+        return (
+          <>
+            <Modal centered show={showModal} onHide={this.setShowModal.bind(this, false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Last Submission</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>This is you last submission for this exercise. Are you sure you want to submit?</Modal.Body>
+              <Modal.Footer>
+                <button className="style-btn" onClick={this.setShowModal.bind(this, false)}>
+                  <X size={14} /> Close
+                </button>
+                <button className="style-btn submit" onClick={this.confirmSubmit}>
+                  <Send size={14} /> Submit
+                </button>
+              </Modal.Footer>
+            </Modal>
+          </>
+        );
+    }
     
 
     render() {
@@ -138,6 +176,7 @@ class VersionList extends Component {
 
         return (
             <div id={'version-wrapper'}>
+                {this.lastSubmissionWarning()}
                 
                 {(submissions[0] && submissions[0].result) &&
                 <span className="score-board">
@@ -164,7 +203,7 @@ class VersionList extends Component {
                         <Tab eventKey="testruns" title="Testruns">
                             {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
                             <ul className="style-list">
-                                {runs.map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
+                                {runs.slice(0, 6).map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
                                 {templatePart}
                             </ul>
                         </Tab>
