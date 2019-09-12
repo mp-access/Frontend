@@ -27,7 +27,7 @@ class AuthProvider extends Component {
             keycloak.onTokenExpired = () => {
                 keycloak
                     .updateToken(10)
-                    .success(refreshed => console.log('Token refreshed:', refreshed));
+                    .success();
             };
 
             keycloak.init({ onLoad: 'check-sso' })
@@ -37,7 +37,7 @@ class AuthProvider extends Component {
                         keycloak: keycloak,
                     });
                 })
-                .error(err => console.log(err));
+                .error(err => console.error(err));
         } else {
             this.setState({ isAuthenticated: true, keycloak: {} });
         }

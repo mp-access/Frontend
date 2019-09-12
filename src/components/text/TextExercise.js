@@ -19,7 +19,7 @@ class TextExercise extends Component {
             this.setState({
                 question: exercise.question,
                 value: this.props.workspace.submission.answer,
-            }, () => console.log(this.state));
+            },);
         } catch (e) {
             this.setState({
                 question: exercise.question,
@@ -34,7 +34,7 @@ class TextExercise extends Component {
                 this.setState({value: this.props.workspace.submission.answer})
             }
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     }
 
