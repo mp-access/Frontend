@@ -22,6 +22,7 @@ class Exercise extends Component {
             workspace: Workspace,
             runButtonState: false,
             isDark: false,
+            currBottomTab: 'console',
         };
         this.exerciseComponentRef = React.createRef();
 
@@ -102,6 +103,10 @@ class Exercise extends Component {
         this.setState({ isDark: !this.state.isDark });
     };
 
+    onBottomTab = (key) => {
+        this.setState({currBottomTab: key});
+    }
+
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
 
@@ -154,6 +159,8 @@ class Exercise extends Component {
                     workspace={workspace}
                     authorizationHeader={this.props.context.authorizationHeader}
                     isDark={this.state.isDark}
+                    onBottomTab={this.onBottomTab}
+                    currBottomTab={this.state.currBottomTab}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -162,6 +169,8 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    onBottomTab={this.onBottomTab}
+                    currBottomTab={this.state.currBottomTab}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -199,7 +208,7 @@ class Exercise extends Component {
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
-                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}/>;
+                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType} isGraded={workspace.submission ? workspace.submission.graded : false }/>;
 
 
         let buttonCluster;

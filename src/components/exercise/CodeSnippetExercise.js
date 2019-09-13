@@ -84,6 +84,8 @@ class CodeSnippetExercise extends Component {
         let consoleLog = <UserConsole
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
             err={outputConsole ? outputConsole.testLog.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            onBottomTab={this.props.onBottomTab}
+            currBottomTab={this.props.currBottomTab}
         />;
 
         return (

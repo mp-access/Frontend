@@ -20,10 +20,10 @@ class VersionList extends Component {
             submissionsRemaining: 0
         },
         showModal: false,
+        currentTab: ''
     };
 
     onSubmit = () => {
-
         if(this.state.submissionCount.submissionsRemaining <= 1){
             this.setShowModal(true);
         }else{
@@ -41,16 +41,22 @@ class VersionList extends Component {
         this.setState({ submissionState: false });
     };
 
+    setCurrentTab = (key) => {
+        this.setState({currentTab: key});
+    }
+
     componentDidMount = async () => {
         const { exercise } = this.props;
 
         this.fetchSubmissions(exercise.id);
+        this.setCurrentTab(this.props.isGraded ? 'submits' : 'testruns');
     };
 
     componentDidUpdate = async (prevProps) => {
         const { exercise, selectedSubmissionId } = this.props;
         if (!equal(exercise, prevProps.exercise) || !equal(selectedSubmissionId, prevProps.selectedSubmissionId)) {
             this.fetchSubmissions(exercise.id);
+            this.setCurrentTab(this.props.isGraded ? 'submits' : 'testruns');
         }
     };
 
@@ -199,7 +205,7 @@ class VersionList extends Component {
                 }
 
                 {isCodeType ? 
-                    <Tabs defaultActiveKey="sibmits" id="uncontrolled-tab-example">
+                    <Tabs activeKey={this.state.currentTab} id="submit-test-tab" onSelect={this.setCurrentTab}>
                         <Tab eventKey="testruns" title="Testruns">
                             {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
                             <ul className="style-list">
@@ -207,7 +213,7 @@ class VersionList extends Component {
                                 {templatePart}
                             </ul>
                         </Tab>
-                        <Tab eventKey="sibmits" title="Submits" >
+                        <Tab eventKey="submits" title="Submits" >
                             {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
                             <ul className="style-list">
                                 {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}

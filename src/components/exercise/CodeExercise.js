@@ -198,6 +198,8 @@ class CodeExercise extends Component {
         let userConsole = <UserConsole
             log={outputConsole ? outputConsole.stdout.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
             err={outputConsole ? outputConsole.testLog.split('\n').map((s, index) => <p key={index}>{s}</p>) : ''}
+            onBottomTab={this.props.onBottomTab}
+            currBottomTab={this.props.currBottomTab}
         />;
 
         return (
@@ -214,7 +216,7 @@ class CodeExercise extends Component {
                             <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark}/>
+                                         isDark={isDark} />
                         </div>
                     </div>
                 </div>
