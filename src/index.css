@@ -347,3 +347,51 @@ code {
   display: flex;
   align-content: center;
 }
+
+
+
+
+
+
+.exercise-layout{
+  display: flex;
+  margin: 0px -10px;
+  flex-direction: row;
+}
+
+.exercise-layout > div{
+  padding: 0px 10px;
+  margin-bottom: 20px;
+}
+
+.exercise-layout .ex-left{
+  min-width: 180px;
+  flex: 1;
+}
+
+.exercise-layout .ex-mid{
+ min-width: 640px;
+  flex: 4;
+}
+
+.exercise-layout .ex-right{
+  min-width: 240px;
+  flex: 1;
+}
+
+
+@media screen and (max-width: 1080px){
+  .exercise-layout .ex-left{
+    display: none;
+  }
+}
+
+@media screen and (max-width: 900px){
+  .exercise-layout{
+    flex-wrap: wrap;
+  }
+
+  .exercise-layout .ex-mid{
+    min-width: 300px;
+  }
+}

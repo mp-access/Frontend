@@ -267,21 +267,21 @@ class Exercise extends Component {
 
         return (
             <>
-                <div className="row">
-                    <div className="col-sm-2 d-none d-sm-block">
+                <div className="exercise-layout">
+                    <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
                             <ExerciseList exercises={exercises} selectedId={selectedId} showScore={false}/>
                         </div>
                     </div>
-                    <div className="col-sm-8">
+                    <div className="ex-mid">
                         <div className={'panel'}>
                             {exercise.invalid && this.createAlert()}
                             {buttonCluster}
                             {content}
                         </div>
                     </div>
-                    <div className="col-sm-2">
+                    <div className="ex-right">
                         <div className={'panel'}>
                             {versionList}
                         </div>
