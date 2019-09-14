@@ -10,7 +10,8 @@ import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 import Spinner from '../components/core/Spinner';
 import { withAuth } from '../auth/AuthProvider';
-import { Play } from 'react-feather';
+import { Play, AlertCircle } from 'react-feather';
+import { OverlayTrigger, Tooltip, Alert } from 'react-bootstrap';
 
 class Exercise extends Component {
 
@@ -22,7 +23,8 @@ class Exercise extends Component {
             workspace: Workspace,
             runButtonState: false,
             isDark: false,
-            currBottomTab: 'console',
+            currBottomTab: 'tests',
+            showToast: true,
         };
         this.exerciseComponentRef = React.createRef();
 
@@ -105,6 +107,24 @@ class Exercise extends Component {
 
     onBottomTab = (key) => {
         this.setState({currBottomTab: key});
+    }
+
+    onShowToast = (show) => {
+        this.setState({showToast: show});
+    }
+
+    createAlert = () => {
+        return(
+            <>
+                <Alert variant="danger" show={this.state.showToast} onClose={this.onShowToast.bind(this, false)} dismissible>
+                    <Alert.Heading>
+                        <AlertCircle className="mr-2" size={25} />                    
+                        <strong className="mr-auto">Outdated Submission!</strong>
+                    </Alert.Heading>
+                    <span>This task has been updated since your last submission. This can lead to issues. Your submision count has been reset. Please resubmit your solutions!</span>
+                </Alert>
+            </>
+        );
     }
 
     submit = async (graded, callback) => {
@@ -217,9 +237,19 @@ class Exercise extends Component {
             if (this.state.runButtonState) {
                 runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <><Play size={14}/><span>Testrun</span></>;
+                runButtonContent = <>    
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                        </Tooltip>
+                    }
+                    >
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
+                </>;
             }
-
 
             buttonCluster = (
                 <div className="row">
@@ -236,25 +266,28 @@ class Exercise extends Component {
         }
 
         return (
-            <div className="row">
-                <div className="col-sm-2 d-none d-sm-block">
-                    <div className={'panel'}>
-                        <h4>Exercise list</h4>
-                        <ExerciseList exercises={exercises} selectedId={selectedId}/>
+            <>
+                <div className="row">
+                    <div className="col-sm-2 d-none d-sm-block">
+                        <div className={'panel'}>
+                            <h4>Task list</h4>
+                            <ExerciseList exercises={exercises} selectedId={selectedId} showScore={false}/>
+                        </div>
+                    </div>
+                    <div className="col-sm-8">
+                        <div className={'panel'}>
+                            {exercise.invalid && this.createAlert()}
+                            {buttonCluster}
+                            {content}
+                        </div>
+                    </div>
+                    <div className="col-sm-2">
+                        <div className={'panel'}>
+                            {versionList}
+                        </div>
                     </div>
                 </div>
-                <div className="col-sm-8">
-                    <div className={'panel'}>
-                        {buttonCluster}
-                        {content}
-                    </div>
-                </div>
-                <div className="col-sm-2">
-                    <div className={'panel'}>
-                        {versionList}
-                    </div>
-                </div>
-            </div>
+            </>
         );
     }
 }

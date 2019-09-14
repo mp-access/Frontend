@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Util from '../utils/Util';
-import { Code, Type, CheckCircle, CheckSquare } from 'react-feather';
+import { Code, Type, CheckCircle, CheckSquare, AlertCircle } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class ExerciseList extends Component {
 
@@ -29,21 +30,41 @@ class ExerciseList extends Component {
     }
 
     render() {
-        const { exercises, selectedId, gradedSubmissions } = this.props;
+        const { exercises, selectedId, gradedSubmissions, showScore } = this.props;
 
         const listItems = exercises.map((e, index) => {
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
-            const exerciseResult = gradedSub && gradedSub.result ? gradedSub.result : undefined;
+
+            const score = gradedSub && gradedSub.result ? gradedSub.result.score : 0;
+            const maxScore = gradedSub && gradedSub.result ? gradedSub.result.maxScore : 1;
 
             return (
                 <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '')}>
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <strong>Exercise {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
+                        <strong>Task {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
                         <br/>
                         <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
-                    {exerciseResult &&
-                        <div><span className="style-btn ghost">Score:  {exerciseResult.score} / {exerciseResult.maxScore}</span></div>
+                    
+                    {showScore &&
+                        <div>
+                            {(gradedSub && gradedSub.invalid) &&
+                                <>
+                                     <OverlayTrigger
+                                        placement="top"
+                                        overlay={
+                                            <Tooltip id="tooltip-outdated">
+                                                This submission is outated!
+                                            </Tooltip>
+                                        }
+                                        >
+                                        <span className="style-btn warn"><AlertCircle size={14} /></span>
+                                    </OverlayTrigger>
+                                    <span className="p-1"></span>
+                                </>
+                            }
+                            <span className="style-btn ghost">Score: {score} / {maxScore}</span>
+                        </div>
                     }
                 </li>
             );

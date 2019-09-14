@@ -12,7 +12,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
             return (
                 <li key={assignment.id} className="h-flex">
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id} className="flex-grow-1">
-                        <span>Assignment {index + 1} {pastDueDate ? <Lock size={15} /> : ''}</span>
+                        <span>Exercise {index + 1} {pastDueDate ? <Lock size={15} /> : ''}</span>
                         {label}
                         <small><Clock size={12} /> Due date: {Util.timeFormatter(assignment.dueDate)}</small>
                     </Link>
