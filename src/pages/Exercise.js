@@ -11,6 +11,7 @@ import SubmissionService from '../utils/SubmissionService';
 import Spinner from '../components/core/Spinner';
 import { withAuth } from '../auth/AuthProvider';
 import { Play } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class Exercise extends Component {
 
@@ -22,7 +23,7 @@ class Exercise extends Component {
             workspace: Workspace,
             runButtonState: false,
             isDark: false,
-            currBottomTab: 'console',
+            currBottomTab: 'tests',
         };
         this.exerciseComponentRef = React.createRef();
 
@@ -217,9 +218,19 @@ class Exercise extends Component {
             if (this.state.runButtonState) {
                 runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <><Play size={14}/><span>Testrun</span></>;
+                runButtonContent = <>    
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                        </Tooltip>
+                    }
+                    >
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
+                </>;
             }
-
 
             buttonCluster = (
                 <div className="row">
@@ -239,8 +250,8 @@ class Exercise extends Component {
             <div className="row">
                 <div className="col-sm-2 d-none d-sm-block">
                     <div className={'panel'}>
-                        <h4>Exercise list</h4>
-                        <ExerciseList exercises={exercises} selectedId={selectedId}/>
+                        <h4>Task list</h4>
+                        <ExerciseList exercises={exercises} selectedId={selectedId} showScore={false}/>
                     </div>
                 </div>
                 <div className="col-sm-8">

@@ -29,21 +29,25 @@ class ExerciseList extends Component {
     }
 
     render() {
-        const { exercises, selectedId, gradedSubmissions } = this.props;
+        const { exercises, selectedId, gradedSubmissions, showScore } = this.props;
 
+        console.log(exercises);
         const listItems = exercises.map((e, index) => {
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
-            const exerciseResult = gradedSub && gradedSub.result ? gradedSub.result : undefined;
+
+            const score = gradedSub && gradedSub.result ? gradedSub.result.score : 0;
+            const maxScore = gradedSub && gradedSub.result ? gradedSub.result.maxScore : 1;
 
             return (
                 <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '')}>
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <strong>Exercise {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
+                        <strong>Task {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
                         <br/>
                         <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
-                    {exerciseResult &&
-                        <div><span className="style-btn ghost">Score:  {exerciseResult.score} / {exerciseResult.maxScore}</span></div>
+                    
+                    {showScore &&
+                        <div><span className="style-btn ghost">Score: {score} / {maxScore}</span></div>
                     }
                 </li>
             );

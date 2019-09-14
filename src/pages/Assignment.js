@@ -53,7 +53,7 @@ class Assignment extends Component {
                     <br />
                     <br />
                     <div>
-                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions} />
+                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions} showScore={true} />
                     </div>
                 </div>
             </div>

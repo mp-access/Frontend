@@ -62,3 +62,14 @@ button[disabled]{
     display: block;
     margin-bottom: 20px;
 }
+
+.nav.nav-tabs{
+    margin: 0px -25px -1px -25px;
+    position: relative;
+    z-index: 1;
+}
+
+.nav.nav-tabs .nav-item.nav-link{
+    flex-grow: 1;
+    text-align: center;
+}

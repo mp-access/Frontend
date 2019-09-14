@@ -58,11 +58,9 @@ class CodeExercise extends Component {
 
 
         pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
-        res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
 
         let files = [questionFile]
             .concat(pub_dir)
-            .concat(res_dir);
 
         if (exercise.solution_files) {
             sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
@@ -71,6 +69,10 @@ class CodeExercise extends Component {
         if (exercise.private_files) {
             priv_dir.children = mapVirtualFilesToTreeStructure(exercise.private_files);
             files = files.concat(priv_dir);
+        }
+        if (exercise.resource_files && exercise.resource_files.length) {
+            res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
+            files = files.concat(res_dir);
         }
 
         const fileExplorerData = files;

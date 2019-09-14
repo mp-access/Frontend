@@ -92,7 +92,7 @@ class VersionList extends Component {
     createSubmissionItem(item, index, isSubmit){
         const active = item.id === this.props.selectedSubmissionId;
         const outdated = item.invalid;
-        const title = (isSubmit ? 'Submission ' : 'Run ') + (index + 1); 
+        const title = (isSubmit ? 'Submission ' : 'Testrun ') + (index + 1); 
 
 
         const ret_item = (
@@ -157,7 +157,9 @@ class VersionList extends Component {
     render() {
         const submissions = this.state.submissions || [];
         const runs = this.state.runs || [];
-        const {isCodeType} = this.props;
+        const {isCodeType, exercise } = this.props;
+        const score = submissions.length && submissions[0] && submissions[0].result && submissions[0].result.score ? submissions[0].result.score : 0;
+        const maxScore = exercise.maxScore ? exercise.maxScore : 1;
 
         let submitButtonContent;
         if (this.state.submissionState)
@@ -184,11 +186,9 @@ class VersionList extends Component {
             <div id={'version-wrapper'}>
                 {this.lastSubmissionWarning()}
                 
-                {(submissions[0] && submissions[0].result) &&
                 <span className="score-board">
-                    Score: {submissions.length && <><strong>{submissions[0].result.score}</strong> / {submissions[0].result.maxScore}</>}
+                    Score: <strong>{score}</strong> / {maxScore}
                 </span>
-                }
 
                 {!this.state.pastDueDate && 
                     <>
@@ -207,7 +207,7 @@ class VersionList extends Component {
                 {isCodeType ? 
                     <Tabs activeKey={this.state.currentTab} id="submit-test-tab" onSelect={this.setCurrentTab}>
                         <Tab eventKey="testruns" title="Testruns">
-                            {runs.length === 0 ? <div className="py-3">No Runs</div> : ''}
+                            {runs.length === 0 ? <div className="py-3">No runs</div> : ''}
                             <ul className="style-list">
                                 {runs.slice(0, 6).map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
                                 {templatePart}

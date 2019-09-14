@@ -25,8 +25,13 @@ class ErrorBoundary extends React.Component {
     }
 
     render() {
+        const errInfo = this.state.errorDetails;
+
         if (this.state.hasError) {
-            return <Redirect to={'/error'}/>;
+            return <Redirect to={{
+                pathname: '/error', 
+                state: {logs: errInfo}
+            }}/>;
         }
 
         return this.props.children;
