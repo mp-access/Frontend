@@ -80,7 +80,7 @@ class VersionList extends Component {
     };
 
     createPopover(version, result, hints, outdated) {
-        const hintlist = hints ? hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>) : '';
+        const hintlist = hints ? (hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>))[0] : '';
         const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
         let score = 'No Score';
         if(result){

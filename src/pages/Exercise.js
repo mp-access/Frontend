@@ -132,9 +132,17 @@ class Exercise extends Component {
 
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
+        
+        let codeResponse;
+        try{
+            codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader);
+        }catch(err) {
+            console.error(err);
+            if (callback !== undefined) callback();
+            return;
+        };
 
-        let codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader)
-            .catch(err => console.error(err));
+
 
         let maxTimeout = 20;    //max timeout in seconds
         let timeoutCounter = 0;
