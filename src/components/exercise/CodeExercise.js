@@ -222,6 +222,7 @@ class CodeExercise extends Component {
                         </div>
                     </div>
                 </div>
+                <div className="p-4"></div>
                 <div className="row">
                     <div className="col-12">
                         {userConsole}

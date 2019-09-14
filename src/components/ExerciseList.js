@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Util from '../utils/Util';
-import { Code, Type, CheckCircle, CheckSquare } from 'react-feather';
+import { Code, Type, CheckCircle, CheckSquare, AlertCircle } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class ExerciseList extends Component {
 
@@ -31,7 +32,6 @@ class ExerciseList extends Component {
     render() {
         const { exercises, selectedId, gradedSubmissions, showScore } = this.props;
 
-        console.log(exercises);
         const listItems = exercises.map((e, index) => {
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
 
@@ -47,7 +47,24 @@ class ExerciseList extends Component {
                     </Link>
                     
                     {showScore &&
-                        <div><span className="style-btn ghost">Score: {score} / {maxScore}</span></div>
+                        <div>
+                            {(gradedSub && gradedSub.invalid) &&
+                                <>
+                                     <OverlayTrigger
+                                        placement="top"
+                                        overlay={
+                                            <Tooltip id="tooltip-outdated">
+                                                This submission is outated!
+                                            </Tooltip>
+                                        }
+                                        >
+                                        <span className="style-btn warn"><AlertCircle size={14} /></span>
+                                    </OverlayTrigger>
+                                    <span className="p-1"></span>
+                                </>
+                            }
+                            <span className="style-btn ghost">Score: {score} / {maxScore}</span>
+                        </div>
                     }
                 </li>
             );

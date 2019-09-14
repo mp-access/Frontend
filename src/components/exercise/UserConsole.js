@@ -35,7 +35,7 @@ class UserConsole extends Component {
                         </div>
                     </Tab>
                     <Tab eventKey="console" title={this.createTooltip(<span>Console Output</span>, "tooltip-console", "The console output of the currently open file")}>
-                        <div id="logger">
+                        <div id="logger" className="mt-4">
                             <div className="logger-section">
                                 <h6><Terminal size={16} /> Console Output</h6><br/>
                                 <span className="log">{this.props.log}</span>

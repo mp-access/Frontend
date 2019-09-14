@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
-import { OverlayTrigger, Popover, Tabs, Tab, Modal } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Tabs, Tab, Modal, Alert } from 'react-bootstrap';
 import { Send, RotateCcw, X } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
@@ -45,6 +45,13 @@ class VersionList extends Component {
         this.setState({currentTab: key});
     }
 
+    lerp3f (start, end, amt){
+        let x = (1-amt)*start.x+amt*end.x; 
+        let y = (1-amt)*start.y+amt*end.y; 
+        let z = (1-amt)*start.z+amt*end.z; 
+        return {x, y, z};
+    }
+
     componentDidMount = async () => {
         const { exercise } = this.props;
 
@@ -73,17 +80,24 @@ class VersionList extends Component {
     };
 
     createPopover(version, result, hints, outdated) {
-        const score = result ? 'Score: ' + result.score + "/" + result.maxScore : 'No score';
-        const hintlist = hints ? hints.map((hint, index) => <small key={index}><br/>{'Hint ' + (index+1) + ": " + hint}</small>) : '';
-        const alert = outdated ? <small><br/>[This Submission is outdated]</small> : '';
+        const hintlist = hints ? hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>) : '';
+        const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
+        let score = 'No Score';
+        if(result){
+            score = <>
+            Your Score: {result.score}
+            <br />
+            Max Points: {result.maxScore}
+            </>
+        }
 
         return (
             <Popover id="popover-basic">
                 <Popover.Title>{'Submission ' + version}</Popover.Title>
                 <Popover.Content>
-                    {score}
-                    {hintlist}
                     {alert}
+                    <pre>{score}</pre>
+                    {hintlist}
                 </Popover.Content>
             </Popover>
         );
@@ -139,7 +153,7 @@ class VersionList extends Component {
               <Modal.Header closeButton>
                 <Modal.Title>Last Submission</Modal.Title>
               </Modal.Header>
-              <Modal.Body>This is you last submission for this exercise. Are you sure you want to submit?</Modal.Body>
+              <Modal.Body>This is you last submission for this task. Are you sure you want to submit?</Modal.Body>
               <Modal.Footer>
                 <button className="style-btn" onClick={this.setShowModal.bind(this, false)}>
                   <X size={14} /> Close
@@ -186,8 +200,9 @@ class VersionList extends Component {
             <div id={'version-wrapper'}>
                 {this.lastSubmissionWarning()}
                 
-                <span className="score-board">
+                <span className="score-board" >
                     Score: <strong>{score}</strong> / {maxScore}
+                    <span className="score-bar" style={{width: (score / maxScore * 100) + "%"}}></span>
                 </span>
 
                 {!this.state.pastDueDate && 
