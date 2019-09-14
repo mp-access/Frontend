@@ -6,6 +6,8 @@
     background: rgb(30, 30, 30);
     color: rgba(299, 299, 299);
     border-radius: 4px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 #logger.light{

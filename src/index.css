@@ -59,7 +59,7 @@ small{
 }
 
 #content{
-  min-height: 80vh;
+  min-height: calc(100vh - calc(83px + 60px));
   padding: 30px 15px;
   background-color: #f2f4f8;
 }
@@ -116,7 +116,6 @@ small{
   color: white !important;
   display: inline-block;
   text-align: center;
-  cursor: pointer;
   transition: 0.3s;
 }
 
