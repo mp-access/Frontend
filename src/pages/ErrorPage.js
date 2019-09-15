@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Collapse } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
 
 class ErrorPage extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             open: false,
@@ -10,43 +11,59 @@ class ErrorPage extends Component {
     }
 
     toggleOpen = () => {
-        this.setState({open: !this.state.open});
-    }
+        this.setState({ open: !this.state.open });
+    };
 
     render() {
-        let logs = {stack: "No details available."};
+        let logs = { stack: 'No details available.' };
 
-        if(this.props.location.state && this.props.location.state.logs)
+        debugger
+        if (this.props.location.state && this.props.location.state.logs)
             logs = this.props.location.state.logs;
 
         return (
             <div className="container">
-            <div className="panel">
-                <div className="heading">
-                    <h2>Error</h2>
-                </div>
-                <p>Sorry, something went wrong. Please refresh the page or try again later.</p>
-                <br />
-                <button className="style-btn ghost"
-                    onClick={this.toggleOpen}
-                    aria-controls="more-info"
-                    aria-expanded={this.state.open}
-                >
-                    Show more info
-                </button>
+                <div className="panel">
+                    <div className="heading">
+                        <h2>Error</h2>
+                    </div>
+                    <p>Sorry, something went wrong. Please refresh the page or try again later.</p>
+                    <br/>
+                    <button className="style-btn ghost"
+                            onClick={this.toggleOpen}
+                            aria-controls="more-info"
+                            aria-expanded={this.state.open}
+                    >
+                        Show more info
+                    </button>
 
-                <Collapse in={this.state.open}>
-                    <div id="more-info">
-                        <br/>
-                        <pre>
+                    <Collapse in={this.state.open}>
+                        <div id="more-info">
+                            <br/>
+                            <pre>
                             {logs.stack}
                         </pre>
-                    </div>
-                </Collapse>
+                        </div>
+                    </Collapse>
+                </div>
             </div>
-        </div>
         );
     }
 }
 
+const ErrorRedirect = ({ logs }) => {
+    return (
+        <Redirect to={{
+            pathname: '/error',
+            state: {
+                logs: {
+                    stack: logs.stack,
+                    message: logs.message,
+                },
+            },
+        }}/>
+    );
+};
+
+export { ErrorRedirect };
 export default ErrorPage;

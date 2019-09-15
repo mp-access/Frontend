@@ -3,8 +3,9 @@ import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import Util from '../utils/Util';
-import ResultService from "../utils/ResultService";
+import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
+import { ErrorRedirect } from './ErrorPage';
 
 class Assignment extends Component {
 
@@ -13,6 +14,7 @@ class Assignment extends Component {
         this.state = {
             assignment: undefined,
             assignmentScore: undefined,
+            isLoadingAssignment: true,
         };
     }
 
@@ -20,23 +22,32 @@ class Assignment extends Component {
         const { context } = this.props;
         const { courseId, assignmentId } = this.props.match.params;
 
-        CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
-            .then(result => this.setState({ assignment: result }))
-            .catch(err => {
-                console.debug('Error:', err.toString());
-            });
+        try {
+            CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
+                .then(result => this.setState({ assignment: result, isLoadingAssignment: false }))
+                .catch(err => {
+                    console.debug('Error:', err.toString());
+                });
 
-        ResultService.getCourseResults(courseId, context.authorizationHeader)
-            .then(result => this.setState({assignmentScore: result.find(r => r.assignmentId === assignmentId)}))
-            .catch(err => {
-                console.debug('Error:', err.toString());
-            });
+            ResultService.getCourseResults(courseId, context.authorizationHeader)
+                .then(result => this.setState({
+                    assignmentScore: result.find(r => r.assignmentId === assignmentId),
+                }))
+                .catch(err => {
+                    console.debug('Error:', err.toString());
+                });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     render() {
-        const { assignment, assignmentScore } = this.state;
+        const { assignment, assignmentScore, isLoadingAssignment } = this.state;
 
         if (!assignment || !assignmentScore) {
+            if (!isLoadingAssignment && !assignment) {
+                return <ErrorRedirect logs={{ stack: 'No assignment found' }}/>;
+            }
             return null;
         }
 
@@ -47,13 +58,16 @@ class Assignment extends Component {
                 <div className="panel">
                     <div className="heading">
                         <h2>{assignment.title}</h2>
-                        <small><Calendar size={12} /> Open from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> - to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
+                        <small><Calendar size={12}/> Open
+                            from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> -
+                            to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
                     </div>
                     <p>{assignment.description}</p>
-                    <br />
-                    <br />
+                    <br/>
+                    <br/>
                     <div>
-                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions} showScore={true} />
+                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions}
+                                      showScore={true}/>
                     </div>
                 </div>
             </div>
