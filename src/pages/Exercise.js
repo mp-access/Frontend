@@ -118,7 +118,7 @@ class Exercise extends Component {
             <>
                 <Alert variant="danger" show={this.state.showToast} onClose={this.onShowToast.bind(this, false)} dismissible>
                     <Alert.Heading>
-                        <AlertCircle className="mr-2" size={25} />                    
+                        <AlertCircle className="mr-2" size={25} />
                         <strong className="mr-auto">Outdated Submission!</strong>
                     </Alert.Heading>
                     <span>This task has been updated since your last submission. This can lead to issues. Your submision count has been reset. Please resubmit your solutions!</span>
@@ -137,6 +137,11 @@ class Exercise extends Component {
             .catch(err => console.error(err));
 
         let maxTimeout = 20;    //max timeout in seconds
+        if (workspace.exercise.type === 'code' && workspace.exercise.executionLimits) {
+            // two times the timeout to account for communication overhead
+            maxTimeout = workspace.exercise.executionLimits.timeout / 1000 * 2;
+        }
+
         let timeoutCounter = 0;
 
         try {
@@ -237,7 +242,7 @@ class Exercise extends Component {
             if (this.state.runButtonState) {
                 runButtonContent = <Spinner text={'Processing'}/>;
             } else {
-                runButtonContent = <>    
+                runButtonContent = <>
                 <OverlayTrigger
                     placement="top"
                     overlay={
