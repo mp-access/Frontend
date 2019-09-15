@@ -29,13 +29,7 @@ class ErrorBoundary extends React.Component {
         const errInfo = this.state.errorDetails;
 
         if (this.state.hasError) {
-            debugger
-            return <ErrorRedirect logs={errInfo} />
-            //
-            // return <Redirect to={{
-            //     pathname: '/error',
-            //     state: {logs: errInfo}
-            // }}/>;
+            return <ErrorRedirect logs={errInfo}/>;
         }
 
         return this.props.children;
