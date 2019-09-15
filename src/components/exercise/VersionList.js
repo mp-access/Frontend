@@ -46,10 +46,10 @@ class VersionList extends Component {
     }
 
     lerp3f (start, end, amt){
-        let x = (1-amt)*start.x+amt*end.x; 
-        let y = (1-amt)*start.y+amt*end.y; 
-        let z = (1-amt)*start.z+amt*end.z; 
-        return {x, y, z};
+        let x = (1-amt)*start[0]+amt*end[0]; 
+        let y = (1-amt)*start[1]+amt*end[1]; 
+        let z = (1-amt)*start[2]+amt*end[2]; 
+        return [x, y, z];
     }
 
     componentDidMount = async () => {
@@ -201,8 +201,11 @@ class VersionList extends Component {
                 {this.lastSubmissionWarning()}
                 
                 <span className="score-board" >
-                    Score: <strong>{score}</strong> / {maxScore}
-                    <span className="score-bar" style={{width: (score / maxScore * 100) + "%"}}></span>
+                    <span>Score: <strong>{score}</strong> / {maxScore}</span>
+                    <span className="score-bar" style={{
+                            width: (score / maxScore * 100) + "%",
+                        }}>
+                    </span>
                 </span>
 
                 {!this.state.pastDueDate && 
