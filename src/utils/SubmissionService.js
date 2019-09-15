@@ -54,7 +54,7 @@ class SubmissionService {
             } else {
                 throw new Error('SubmissionService.js Error submit' + response);
             }
-        }).catch(error => console.error('Error: ', error));
+        });
     }
 
 
