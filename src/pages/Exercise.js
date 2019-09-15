@@ -125,7 +125,7 @@ class Exercise extends Component {
                 </Alert>
             </>
         );
-    }
+    };
 
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
@@ -137,7 +137,7 @@ class Exercise extends Component {
             .catch(err => console.error(err));
 
         let maxTimeout = 20;    //max timeout in seconds
-        if (workspace.exercise.type === 'code' && workspace.exercise.executionLimits) {
+        if (workspace.exercise.type === 'code' && workspace.exercise.type === 'codeSnippet' && workspace.exercise.executionLimits) {
             // two times the timeout to account for communication overhead
             maxTimeout = workspace.exercise.executionLimits.timeout / 1000 * 2;
         }
