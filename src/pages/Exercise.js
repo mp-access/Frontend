@@ -289,7 +289,7 @@ class Exercise extends Component {
                     </div>
                     <div className="ex-mid">
                         <div className={'panel'}>
-                            {exercise.invalid && this.createAlert()}
+                            {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             {buttonCluster}
                             {content}
                         </div>
