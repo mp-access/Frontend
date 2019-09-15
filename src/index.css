@@ -395,3 +395,14 @@ code {
     min-width: 300px;
   }
 }
+
+@media screen and (max-width: 500px){
+
+  #header {
+    padding: 10px 20px;
+  }
+
+  .logo img {
+    height: 35px;
+  }
+}

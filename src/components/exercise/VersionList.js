@@ -45,13 +45,6 @@ class VersionList extends Component {
         this.setState({currentTab: key});
     }
 
-    lerp3f (start, end, amt){
-        let x = (1-amt)*start[0]+amt*end[0]; 
-        let y = (1-amt)*start[1]+amt*end[1]; 
-        let z = (1-amt)*start[2]+amt*end[2]; 
-        return [x, y, z];
-    }
-
     componentDidMount = async () => {
         const { exercise } = this.props;
 
