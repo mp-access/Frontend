@@ -15,9 +15,8 @@ class ChoiceExercise extends Component {
 
     componentDidMount = async () => {
         const {exercise} = this.props;
-
         try {
-            if (this.props.workspace.submission.choice) {
+            if (this.props.workspace.submission.choice || this.props.workspace.submission.choice === null) {
                 this.setState({
                     question: exercise.question,
                     options: exercise.options,
@@ -40,7 +39,6 @@ class ChoiceExercise extends Component {
                 type: exercise.type,
             });
         }
-
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {

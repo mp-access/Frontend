@@ -9,7 +9,11 @@ class CourseDataService {
 
     static async getAssignment(courseId, assignmentId, authHeader) {
         return fetch(utils.courseServiceUrl + '/courses/' + courseId + '/assignments/' + assignmentId, authHeader())
-            .then(result => result.json()).catch(error => console.error('Error: ', error));
+            .then(result => {
+                if (result.ok) {
+                    return result.json()
+                }
+            }).catch(error => console.error('Error: ', error));
     }
 
     static async getExercise(exerciseId, authHeader) {
