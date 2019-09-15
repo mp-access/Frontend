@@ -17,7 +17,6 @@ class ErrorPage extends Component {
     render() {
         let logs = { stack: 'No details available.' };
 
-        debugger
         if (this.props.location.state && this.props.location.state.logs)
             logs = this.props.location.state.logs;
 
