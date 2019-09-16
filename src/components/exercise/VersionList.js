@@ -45,13 +45,6 @@ class VersionList extends Component {
         this.setState({currentTab: key});
     }
 
-    lerp3f (start, end, amt){
-        let x = (1-amt)*start.x+amt*end.x; 
-        let y = (1-amt)*start.y+amt*end.y; 
-        let z = (1-amt)*start.z+amt*end.z; 
-        return {x, y, z};
-    }
-
     componentDidMount = async () => {
         const { exercise } = this.props;
 
@@ -80,7 +73,7 @@ class VersionList extends Component {
     };
 
     createPopover(version, result, hints, outdated) {
-        const hintlist = hints ? hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>) : '';
+        const hintlist = hints ? (hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>))[0] : '';
         const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
         let score = 'No Score';
         if(result){
@@ -201,8 +194,11 @@ class VersionList extends Component {
                 {this.lastSubmissionWarning()}
                 
                 <span className="score-board" >
-                    Score: <strong>{score}</strong> / {maxScore}
-                    <span className="score-bar" style={{width: (score / maxScore * 100) + "%"}}></span>
+                    <span>Score: <strong>{score}</strong> / {maxScore}</span>
+                    <span className="score-bar" style={{
+                            width: (score / maxScore * 100) + "%",
+                        }}>
+                    </span>
                 </span>
 
                 {!this.state.pastDueDate && 
