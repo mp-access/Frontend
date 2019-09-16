@@ -30,10 +30,10 @@ jobs:
 
       # run tests! Add tests! :(
       # - run: yarn test
-
-  deploy:
+  push_to_dockerhub:
     docker:
       - image: circleci/node:lts-jessie-browsers-legacy
+
     working_directory: ~/repo
 
     steps:
@@ -42,8 +42,12 @@ jobs:
       - setup_remote_docker
 
       - run:
+          name: Print Docker image name
+          command: echo "hoal/$FRONTEND_IMAGE_NAME:$(echo $CIRCLE_BRANCH | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]')"
+
+      - run:
           name: Build Docker image
-          command: docker build -t hoal/$FRONTEND_IMAGE_NAME:latest .
+          command: docker build -t hoal/$FRONTEND_IMAGE_NAME:$(echo $CIRCLE_BRANCH | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]') .
 
       - add_ssh_keys:
           fingerprints:
@@ -52,7 +56,14 @@ jobs:
           name: Push Docker image
           command: |
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_USER/$FRONTEND_IMAGE_NAME:latest
+            docker push $DOCKER_USER/$FRONTEND_IMAGE_NAME:$(echo $CIRCLE_BRANCH | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]')
+
+  deploy:
+    docker:
+      - image: circleci/node:lts-jessie-browsers-legacy
+    working_directory: ~/repo
+
+    steps:
       - run:
           name: Deploy app to Digital Ocean Server via Docker
           command: |
@@ -63,9 +74,12 @@ workflows:
   build-and-deploy-master:
     jobs:
       - build
-      - deploy:
+      - push_to_dockerhub:
           requires:
             - build
+      - deploy:
+          requires:
+            - push_to_dockerhub
           filters:
             branches:
               only: master
