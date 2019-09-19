@@ -56,6 +56,8 @@ class ChoiceExercise extends Component {
     }
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
+        this.props.setIsDirty(true);
+        
         if (this.state.type === 'singleChoice') {
             this.setState({singleChoiceValue: parseInt(event.target.value)});
         } else if (this.state.type === 'multipleChoice') {

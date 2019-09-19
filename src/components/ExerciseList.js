@@ -45,24 +45,25 @@ class ExerciseList extends Component {
                         <br/>
                         <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
+
+                    {(gradedSub && gradedSub.invalid) &&
+                        <div>
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={
+                                    <Tooltip id="tooltip-outdated">
+                                        This submission is outated!
+                                    </Tooltip>
+                                }
+                            >
+                                <span className="style-btn warn"><AlertCircle size={14} /></span>
+                            </OverlayTrigger>
+                            <span className="p-1"></span>
+                        </div>
+                    }
                     
                     {showScore &&
                         <div>
-                            {(gradedSub && gradedSub.invalid) &&
-                                <>
-                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={
-                                            <Tooltip id="tooltip-outdated">
-                                                This submission is outated!
-                                            </Tooltip>
-                                        }
-                                        >
-                                        <span className="style-btn warn"><AlertCircle size={14} /></span>
-                                    </OverlayTrigger>
-                                    <span className="p-1"></span>
-                                </>
-                            }
                             <span className="style-btn ghost">Score: {score} / {maxScore}</span>
                         </div>
                     }

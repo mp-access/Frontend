@@ -9,9 +9,9 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 import Spinner from '../components/core/Spinner';
-import { withAuth } from '../auth/AuthProvider';
-import { Play, AlertCircle } from 'react-feather';
-import { OverlayTrigger, Tooltip, Alert } from 'react-bootstrap';
+import { withAuthAndRouter } from '../auth/AuthProvider';
+import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
+import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
 
 class Exercise extends Component {
 
@@ -24,21 +24,50 @@ class Exercise extends Component {
             runButtonState: false,
             isDark: false,
             currBottomTab: 'tests',
-            showToast: true,
+            showAlert: true,
+            isDirty: false,
+            showModal: false,
+            targetLocation: ''
         };
         this.exerciseComponentRef = React.createRef();
-
     }
 
     componentDidMount = async () => {
         this.fetchAll();
+
+        this.unblock = this.props.history.block(targetLocation => {
+            if(this.state.isDirty){
+                this.setState({showModal: true, targetLocation});
+                return false;
+            }
+        });
     };
 
     componentDidUpdate = async (prevProps) => {
         if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
             this.fetchAll();
+
+            this.unblock = this.props.history.block(targetLocation => {
+                if(this.state.isDirty){
+                    this.setState({showModal: true, targetLocation});
+                    return false;
+                }
+            });
         }
     };
+
+    leaveExercise = () => {
+        this.unblock();
+
+        this.setState({
+            isDirty: false,
+            showModal: false,
+            targetLocation: ''
+        });
+
+        this.props.history.push(this.state.targetLocation.pathname);
+    }
+
 
     fetchAll = async () => {
         const exerciseId = this.props.match.params.exerciseId;
@@ -113,10 +142,18 @@ class Exercise extends Component {
         this.setState({showToast: show});
     }
 
+    onShowLeaveModal = (show) => {
+        this.setState({showModal: show});
+    }
+
+    setIsDirty = (dirty) =>{
+        this.setState({isDirty: dirty});
+    }
+
     createAlert = () => {
         return(
             <>
-                <Alert variant="danger" show={this.state.showToast} onClose={this.onShowToast.bind(this, false)} dismissible>
+                <Alert variant="danger" show={this.state.showAlert} onClose={this.onShowToast.bind(this, false)} dismissible>
                     <Alert.Heading>
                         <AlertCircle className="mr-2" size={25} />
                         <strong className="mr-auto">Outdated Submission!</strong>
@@ -124,6 +161,29 @@ class Exercise extends Component {
                     <span>This task has been updated since your last submission. This can lead to issues. Your submision count has been reset. Please resubmit your solutions!</span>
                 </Alert>
             </>
+        );
+    };
+
+    createLeaveOnDirtyModal() {
+        const { showModal} = this.state;
+      
+        return (
+          <>
+            <Modal centered show={showModal} onHide={this.onShowLeaveModal.bind(this, false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Unsaved Changes</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>You have unsaved changes in your exercise! Do you want to leave without saving?</Modal.Body>
+              <Modal.Footer>
+                <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
+                  <X size={14} /> Close
+                </button>
+                <button className="style-btn submit" onClick={this.leaveExercise}>
+                  <ExternalLink size={14} /> Leave
+                </button>
+              </Modal.Footer>
+            </Modal>
+          </>
         );
     };
 
@@ -156,6 +216,7 @@ class Exercise extends Component {
             const intervalId = setInterval(async () => {
                 if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
                     clearInterval(intervalId);
+                    if (callback !== undefined) callback();
                     return;
                 }
                 let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvaluation has a .catch statement already
@@ -168,6 +229,7 @@ class Exercise extends Component {
 
                     this.setState({
                         workspace,
+                        isDirty: false
                     });
                     if (callback !== undefined) callback();
                 }
@@ -194,6 +256,7 @@ class Exercise extends Component {
                     isDark={this.state.isDark}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
+                    setIsDirty={this.setIsDirty}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -204,6 +267,7 @@ class Exercise extends Component {
                     workspace={workspace}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
+                    setIsDirty={this.setIsDirty}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -212,6 +276,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    setIsDirty={this.setIsDirty}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
@@ -220,6 +285,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    setIsDirty={this.setIsDirty}
                 />;
         }
         return content;
@@ -280,6 +346,8 @@ class Exercise extends Component {
 
         return (
             <>
+                {this.state.isDirty && this.createLeaveOnDirtyModal()}
+
                 <div className="exercise-layout">
                     <div className="ex-left">
                         <div className={'panel'}>
@@ -305,4 +373,4 @@ class Exercise extends Component {
     }
 }
 
-export default withAuth(Exercise);
+export default withAuthAndRouter(Exercise);

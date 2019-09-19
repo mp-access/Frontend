@@ -113,6 +113,8 @@ class CodeExercise extends Component {
     onChange = (newValue) => {
         const { selectedFile, fileExplorerData } = this.state;
 
+        this.props.setIsDirty(true);
+
         const updatedSelectedFile = {
             ...selectedFile,
             content: newValue,

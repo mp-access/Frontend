@@ -48,6 +48,7 @@ class CodeSnippetExercise extends Component {
                 content: newValue,
             },
         }));
+        this.props.setIsDirty(true);
     };
 
     editorOptions = (readOnly) => {
