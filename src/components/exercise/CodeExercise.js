@@ -12,7 +12,6 @@ class CodeExercise extends PureComponent {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: undefined,
-            isDirty: false,
         };
     }
 
@@ -112,11 +111,9 @@ class CodeExercise extends PureComponent {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile, fileExplorerData, isDirty } = this.state;
-
-        if (!isDirty) {
-            this.props.setIsDirty(true);
-        }
+        const { selectedFile, fileExplorerData } = this.state;
+        
+        this.props.setIsDirty(true);
 
         const updatedSelectedFile = {
             ...selectedFile,
@@ -139,12 +136,11 @@ class CodeExercise extends PureComponent {
             } else {
                 return folder;
             }
-        });
+        });        
 
         this.setState({
             selectedFile: updatedSelectedFile,
             fileExplorerData: updatedExplorerData,
-            isDirty: true,
         });
     };
 

@@ -147,7 +147,9 @@ class Exercise extends Component {
     }
 
     setIsDirty = (dirty) =>{
-        this.setState({isDirty: dirty});
+        if(this.state.isDirty !== dirty){
+            this.setState({isDirty: dirty});
+        }
     }
 
     createAlert = () => {
