@@ -36,7 +36,7 @@ class ExerciseList extends Component {
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
 
             const score = gradedSub && gradedSub.result ? gradedSub.result.score : 0;
-            const maxScore = gradedSub && gradedSub.result ? gradedSub.result.maxScore : 1;
+            const maxScore = e.maxScore ? e.maxScore : 1;
 
             return (
                 <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '')}>
