@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
-import SubmissionService from '../../utils/SubmissionService';
 import CodeEditor from '../exercise/CodeEditor';
 import UserConsole from './UserConsole.js';
 import './CodeExercise.css';
@@ -15,26 +14,19 @@ class CodeSnippetExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { exercise, workspace } = this.props;
-        const submission = workspace.submission;
-        const publicFiles = (submission ? submission.publicFiles[0] : exercise.public_files[0]);
+        const { workspace } = this.props;
+        const publicFiles = workspace.publicFiles;
 
         this.setState({
             publicFiles,
         });
     };
 
-    fetchLastSubmission = (exerciseId, authHeader) => {
-        return SubmissionService.getLastSubmission(exerciseId, authHeader)
-            .catch(err => console.error(err));
-    };
-
     getPublicFiles = () => {
         const { publicFiles } = this.state;
         return {
             type: 'codeSnippet',
-            publicFiles: [publicFiles],
-            selectedFile: 0,
+            publicFiles: publicFiles,
         };
     };
 
@@ -42,13 +34,20 @@ class CodeSnippetExercise extends Component {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        this.setState(prevState => ({
-            publicFiles: {
-                ...prevState.publicFiles,
-                content: newValue,
-            },
-        }));
         this.props.setIsDirty(true);
+      
+        const { publicFiles } = this.state;
+        const updatedFiles = publicFiles.map((file, index) => {
+            if (index === 0) {
+                const updateFile = Object.assign({}, publicFiles[0]);
+                updateFile.content = newValue;
+                return updateFile;
+            }
+
+            return file;
+        });
+
+        this.setState({ publicFiles: updatedFiles });
     };
 
     editorOptions = (readOnly) => {
@@ -71,13 +70,13 @@ class CodeSnippetExercise extends Component {
         const publicFiles = this.state.publicFiles;
         const workspace = this.props.workspace;
 
-        if (!publicFiles) {
+        if (!publicFiles || publicFiles.length === 0) {
             return null;
         }
 
         const outputConsole = workspace.submission ? workspace.submission.console : undefined;
 
-        const { content, extension } = publicFiles;
+        const { content, extension } = publicFiles[0];
         const language = extensionLanguageMap[extension];
 
         const editorOptions = this.editorOptions(publicFiles.readOnly);
