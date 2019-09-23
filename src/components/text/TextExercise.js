@@ -39,6 +39,8 @@ class TextExercise extends Component {
     }
 
     handleChange(event) {
+        this.props.setIsDirty(true);
+        
         this.setState({value: event.target.value});
     }
 

@@ -34,6 +34,8 @@ class CodeSnippetExercise extends Component {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
+        this.props.setIsDirty(true);
+      
         const { publicFiles } = this.state;
         const updatedFiles = publicFiles.map((file, index) => {
             if (index === 0) {
