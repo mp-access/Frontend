@@ -14,7 +14,7 @@ const Header = ({ history, context }) => {
         }
     }, [isAuthenticated]);
 
-    const name = !!userInfo ? (userInfo['given_name'] + " " + userInfo['family_name']) : '';
+    const name = (!!userInfo && userInfo['given_name'] && userInfo['family_name']) ? (userInfo['given_name'] + " " + userInfo['family_name']) : 'My Profile';
     return (
         <header id={'header'}>
             <div className="h-flex">
