@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, Table } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle = 'Assignment' }) => (
@@ -55,12 +55,14 @@ const toCsv = (assignmentExport) => {
     if (!assignmentExport) {
         return;
     }
-    const { exerciseIds, byStudents } = assignmentExport;
-    let str = `"Student",${exerciseIds.map(id => `"${id}"`)}\n`;
+    const { exerciseIds, byStudents, totalsByStudent } = assignmentExport;
+    let str = `"Student",${exerciseIds.map(id => `"${id}"`)},"total"\n`;
 
     for (let studentEmail of Object.keys(byStudents)) {
         const submissions = byStudents[studentEmail];
-        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => submission.score).join(',') + '\n';
+        const totalScore = totalsByStudent[studentEmail];
+
+        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => submission.score).join(',') + `,${totalScore}\n`;
     }
 
     return 'data:text/csv,' + encodeURIComponent(str);
