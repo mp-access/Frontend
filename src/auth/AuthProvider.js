@@ -115,7 +115,6 @@ class AuthProvider extends Component {
             };
         });
 
-        debugger
         return groups;
     };
 
