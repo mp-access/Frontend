@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover, Tabs, Tab, Modal, Alert } from 'react-bootstrap';
-import { Send, RotateCcw, X } from 'react-feather';
+import { Send, RotateCcw, X, Flag } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
 import './VersionList.css';
@@ -73,7 +73,11 @@ class VersionList extends Component {
     };
 
     createPopover(version, result, hints, outdated) {
-        const hintlist = hints ? (hints.map((hint, index) => <Alert key={index} variant="secondary">{"Hint: " + hint}</Alert>))[0] : '';
+        const hintlist = hints ? (hints.map((hint, index) => 
+            <Alert key={index} variant="warning">
+                <Flag size={14} /> Hint<br />
+                {hint}
+            </Alert>))[0] : '';
         const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
         let score = 'No Score';
         if(result){

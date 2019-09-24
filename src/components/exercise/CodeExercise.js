@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import FileExplorer from './FileExplorer';
 import UserConsole from './UserConsole';
 import MediaViewer from '../MediaViewer';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 
-class CodeExercise extends Component {
+class CodeExercise extends PureComponent {
 
     constructor(props) {
         super(props);
@@ -112,6 +112,8 @@ class CodeExercise extends Component {
      */
     onChange = (newValue) => {
         const { selectedFile, fileExplorerData } = this.state;
+        
+        this.props.setIsDirty(true);
 
         const updatedSelectedFile = {
             ...selectedFile,
@@ -134,7 +136,7 @@ class CodeExercise extends Component {
             } else {
                 return folder;
             }
-        });
+        });        
 
         this.setState({
             selectedFile: updatedSelectedFile,

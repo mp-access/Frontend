@@ -62,8 +62,6 @@ class Course extends Component {
             return null;
         }
 
-        console.log(this.props.context);
-        console.log(this.props);
         const isCourseAssistant = this.props.context.isCourseAssistant(course.id);
 
         return (
