@@ -71,10 +71,19 @@ span.score-board .score-bar {
     height: 4px;
     bottom: -1px;
     left: 0;
-    background-image: linear-gradient(to left, rgb(76, 217, 105), rgb(52, 170, 220), rgb(255, 45, 83));
-    background-size: 200px;
+    
     width: 0%;
     transition: 0.6s;
+}
+
+span.score-board .low {
+    background-image: linear-gradient(to left bottom, #f77167, #fe5196);
+}
+span.score-board .mid {
+    background-image: linear-gradient(to right top, #5886e5, #36d1dc);
+}
+span.score-board .full {
+    background-image: linear-gradient(to left bottom, #38ef7d, #26b57e);
 }
 
 .nav.nav-tabs{
