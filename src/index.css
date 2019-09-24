@@ -375,7 +375,7 @@ code {
 }
 
 .exercise-layout .ex-right{
-  min-width: 240px;
+  min-width: 255px;
   flex: 1;
 }
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 class ChoiceExercise extends Component {
@@ -14,22 +14,22 @@ class ChoiceExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const {exercise} = this.props;
+        const {exercise, workspace} = this.props;
         try {
-            if (this.props.workspace.submission.choice || this.props.workspace.submission.choice === null) {
+            if (workspace.submission.choice || workspace.submission.choice === 0 || workspace.submission.choice === null) {
                 this.setState({
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
-                    singleChoiceValue: parseInt(this.props.workspace.submission.choice)
+                    singleChoiceValue: parseInt(workspace.submission.choice)
                 });
 
-            } else if (this.props.workspace.submission.choices) {
+            } else if (workspace.submission.choices) {
                 this.setState({
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
-                    multipleChoiceValue: this.props.workspace.submission.choices.slice()
+                    multipleChoiceValue: workspace.submission.choices.slice()
                 },);
             }
         } catch (e) {
@@ -57,7 +57,7 @@ class ChoiceExercise extends Component {
 
     handleChange(event) { //add options to array or remove them if option is unchecked again by user
         this.props.setIsDirty(true);
-        
+
         if (this.state.type === 'singleChoice') {
             this.setState({singleChoiceValue: parseInt(event.target.value)});
         } else if (this.state.type === 'multipleChoice') {

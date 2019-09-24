@@ -7,11 +7,15 @@ class CourseBanner extends Component {
         const {course} = this.props;
         return (
             <div className="panel v-flex">
-                <div>
-                    <h3>{course.title}</h3>
-                    <p>{course.description}</p>
+                <div className="row">
+                    <div className="col-9">
+                        <h3>{course.title}</h3>
+                        <p>{course.description}</p>
+                    </div>
+                    <div className="col-3 h-flex">
+                        <Link className="style-btn full" to={`/courses/${course.id}`}>Take Course</Link>
+                    </div>
                 </div>
-                <Link className="style-btn" to={`/courses/${course.id}`}>Take Course</Link>
             </div>
         );
     }

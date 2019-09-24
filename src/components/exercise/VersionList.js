@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
 import { OverlayTrigger, Popover, Tabs, Tab, Modal, Alert } from 'react-bootstrap';
-import { Send, RotateCcw, X, Flag } from 'react-feather';
+import { Send, RotateCcw, X, Flag, Info } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
 import './VersionList.css';
@@ -126,7 +126,7 @@ class VersionList extends Component {
                                         rootClose={true}
                                         placement="top"
                                         overlay={this.createPopover((index + 1), item.result, item.result ? item.result.hints : [], outdated)}>
-                            <button className="style-btn ghost">Info</button>
+                            <button className="style-btn ghost"><Info size={14} />Info</button>
                         </OverlayTrigger>
                         }
                     </div>
@@ -171,6 +171,16 @@ class VersionList extends Component {
         const {isCodeType, exercise } = this.props;
         const score = submissions.length && submissions[0] && submissions[0].result && submissions[0].result.score ? submissions[0].result.score : 0;
         const maxScore = exercise.maxScore ? exercise.maxScore : 1;
+        const scorePercent = (score / maxScore * 100);
+        
+        let scoreProgress = "low";
+        
+        if(scorePercent > 75) {
+            scoreProgress = "full";
+        }else if(scorePercent >= 50) {
+            scoreProgress = "mid";
+        }
+
 
         let submitButtonContent;
         if (this.state.submissionState)
@@ -199,8 +209,8 @@ class VersionList extends Component {
                 
                 <span className="score-board" >
                     <span>Score: <strong>{score}</strong> / {maxScore}</span>
-                    <span className="score-bar" style={{
-                            width: (score / maxScore * 100) + "%",
+                    <span className={"score-bar " + scoreProgress} style={{
+                            width: scorePercent + "%"
                         }}>
                     </span>
                 </span>
