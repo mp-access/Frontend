@@ -163,7 +163,7 @@ class Exercise extends Component {
                     <span>
                         This task has been updated since your last submission. This can lead to issues. Your submission count has been reset. Please reset to template and resubmit your solutions!
                         <br/>
-                        IMPORTANT: If there is no new submission until the deadline, we will re-avaluate your outdated submission, which might affect your final score.
+                        IMPORTANT: If there is no new submission until the deadline, we will re-evaluate your outdated submission, which might affect your final score.
                     </span>
                 </Alert>
             </>
