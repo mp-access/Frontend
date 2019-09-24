@@ -8,16 +8,16 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
             <Modal.Title>'{assignmentTitle}' results</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <ResultTable assignmentExport={assignmentExport}/>
+            <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} json/>
+            <br/>
+            <br/>
+            <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
+            <br/>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
                 Close
             </Button>
-
-            <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} json/>
-            <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
-
         </Modal.Footer>
     </Modal>
 );
@@ -41,37 +41,6 @@ const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv =
                 Export to {extension}
             </Button>
         </a>
-    );
-};
-
-const ResultTable = ({ assignmentExport }) => {
-    if (!assignmentExport) {
-        return;
-    }
-
-    const { exerciseIds, byStudents } = assignmentExport;
-
-    return (
-        <Table striped bordered hover size="sm">
-            <thead>
-            <tr>
-                <th>Student</th>
-                {exerciseIds.map(id => <th key={id}>{id}</th>)}
-            </tr>
-            </thead>
-            <tbody>
-            {Object.keys(byStudents).map(studentEmail => {
-                const submissions = byStudents[studentEmail];
-                return (
-                    <tr key={studentEmail}>
-                        <td>{studentEmail}</td>
-                        {Object.values(submissions).map((submission, index) => <td
-                            key={studentEmail + '-' + index}>{submission.score}</td>)}
-                    </tr>
-                );
-            })}
-            </tbody>
-        </Table>
     );
 };
 
@@ -104,8 +73,4 @@ ExportModal.propTypes = {
     assignmentTitle: PropTypes.string.isRequired,
 };
 
-ResultTable.propTypes = {
-    assignmentExport: PropTypes.object.isRequired,
-};
-
-export { ExportModal, ResultTable };
+export { ExportModal };
