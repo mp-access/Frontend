@@ -103,15 +103,15 @@ class AuthProvider extends Component {
         groupStrings.forEach(course => {
             groups[course[0]] = {
                 group: course[1],
-                isAdmin: course[1] === 'authors',
+                isAdmin: course[1].includes('authors'),
             };
         });
 
         return groups;
     };
 
-    isCourseAssistant = (courseTitle) => {
-        const courseAccess = this.allowedAccessToCourses()[courseTitle];
+    isCourseAssistant = (courseId) => {
+        const courseAccess = this.allowedAccessToCourses()[courseId];
         return !!courseAccess && courseAccess.isAdmin;
     };
 
