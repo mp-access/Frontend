@@ -101,12 +101,21 @@ class AuthProvider extends Component {
 
         const groups = {};
         groupStrings.forEach(course => {
+            // does token include author grant?
+            let isAdmin = course[1].includes('authors');
+
+            // Have we already parsed this course once? Might happen in case a user is both student and author in the same course
+            if (!!groups[course[0]]) {
+                isAdmin = isAdmin || groups[course[0]].isAdmin;
+            }
+
             groups[course[0]] = {
                 group: course[1],
-                isAdmin: course[1].includes('authors'),
+                isAdmin: isAdmin,
             };
         });
 
+        debugger
         return groups;
     };
 
