@@ -138,8 +138,8 @@ class Exercise extends Component {
         this.setState({currBottomTab: key});
     }
 
-    onShowToast = (show) => {
-        this.setState({showToast: show});
+    setShowAlert = (show) => {
+        this.setState({showAlert: show});
     }
 
     onShowLeaveModal = (show) => {
@@ -155,15 +155,15 @@ class Exercise extends Component {
     createAlert = () => {
         return(
             <>
-                <Alert variant="danger" show={this.state.showAlert} onClose={this.onShowToast.bind(this, false)} dismissible>
+                <Alert variant="danger" show={this.state.showAlert} onClose={this.setShowAlert.bind(this, false)} dismissible>
                     <Alert.Heading>
                         <AlertCircle className="mr-2" size={25} />
                         <strong className="mr-auto">Outdated Submission!</strong>
                     </Alert.Heading>
                     <span>
-                        This task has been updated since your last submission. This can lead to issues. Your submission count has been reset. Please reset to template and resubmit your solutions!
-                        <br/>
-                        IMPORTANT: If there is no new submission until the deadline, we will re-evaluate your outdated submission, which might affect your final score.
+                    This task has been updated since your last submission, e.g., by providing a more precise description or a new test case in the private test suite, which might affect the grading. We have reset your submission count to give you the chance to update your solution. Please reset your code to the template and create a new solution. You can always copy & paste your old code, of course, but make sure that you check for changes in the provided files, you should especially check whether your solution still satisfies the new public test suite.
+                    <br />
+                    Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline.
                     </span>
                 </Alert>
             </>
