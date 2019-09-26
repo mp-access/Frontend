@@ -151,9 +151,7 @@ class ChoiceExercise extends Component {
                         <ReactMarkdown source={this.state.question}/>
                     </div>
                     <div className="col-12">
-                        <form>
-                            {options}
-                        </form>
+                        {options}
                     </div>
                 </div>
             </>

@@ -60,14 +60,12 @@ class TextExercise extends Component {
                         <ReactMarkdown source={this.state.question}/>
                     </div>
                     <div className="col-12">
-                        <form onSubmit={this.handleSubmit}>
-                            <label>
-                                Answer:
-                                <br/>
-                                <input type="text" value={this.state.value}
-                                       onChange={this.handleChange}/>
-                            </label>
-                        </form>
+                        <label>
+                            Answer:
+                            <br/>
+                            <input type="text" value={this.state.value}
+                                    onChange={this.handleChange}/>
+                        </label>
                     </div>
                 </div>
             </>
