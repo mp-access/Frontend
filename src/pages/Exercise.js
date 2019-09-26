@@ -161,9 +161,11 @@ class Exercise extends Component {
                         <strong className="mr-auto">Outdated Submission!</strong>
                     </Alert.Heading>
                     <span>
-                    This task has been updated since your last submission, e.g., by providing a more precise description or a new test case in the private test suite, which might affect the grading. We have reset your submission count to give you the chance to update your solution. Please reset your code to the template and create a new solution. You can always copy & paste your old code, of course, but make sure that you check for changes in the provided files, you should especially check whether your solution still satisfies the new public test suite.
-                    <br />
-                    Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline.
+                        This task has been updated since your last submission. This might affect your grade, so we allow further submissions. Please reset your code to the template to make sure that you have all up-to-date information. 
+                        <br />
+                        Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline. 
+                        <br />
+                        You will find more information in the <a target="_blank" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
                     </span>
                 </Alert>
             </>

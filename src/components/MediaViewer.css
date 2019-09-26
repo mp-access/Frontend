@@ -11,7 +11,7 @@
 }
 
 .media-viewport img{
-    border: 1px solid #dfdfdf;
+    /*border: 1px solid #dfdfdf;*/
     margin: 0px auto;
     display: block;
     max-width: 100%;
