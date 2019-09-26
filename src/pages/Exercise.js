@@ -138,8 +138,8 @@ class Exercise extends Component {
         this.setState({currBottomTab: key});
     }
 
-    onShowToast = (show) => {
-        this.setState({showToast: show});
+    setShowAlert = (show) => {
+        this.setState({showAlert: show});
     }
 
     onShowLeaveModal = (show) => {
@@ -155,15 +155,17 @@ class Exercise extends Component {
     createAlert = () => {
         return(
             <>
-                <Alert variant="danger" show={this.state.showAlert} onClose={this.onShowToast.bind(this, false)} dismissible>
+                <Alert variant="danger" show={this.state.showAlert} onClose={this.setShowAlert.bind(this, false)} dismissible>
                     <Alert.Heading>
                         <AlertCircle className="mr-2" size={25} />
                         <strong className="mr-auto">Outdated Submission!</strong>
                     </Alert.Heading>
                     <span>
-                        This task has been updated since your last submission. This can lead to issues. Your submission count has been reset. Please reset to template and resubmit your solutions!
-                        <br/>
-                        IMPORTANT: If there is no new submission until the deadline, we will re-avaluate your outdated submission, which might affect your final score.
+                        This task has been updated since your last submission. This might affect your grade, so we allow further submissions. Please reset your code to the template to make sure that you have all up-to-date information. 
+                        <br />
+                        Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline. 
+                        <br />
+                        You will find more information in the <a target="_blank" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
                     </span>
                 </Alert>
             </>
