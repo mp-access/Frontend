@@ -1,43 +1,42 @@
 import React, { Component } from 'react';
-import ReactMarkdown from 'react-markdown';
 import CodeEditor from './exercise/CodeEditor';
 import CourseDataService from '../utils/CourseDataService';
-import Spinner from './core/Spinner'
+import Spinner from './core/Spinner';
 import './MediaViewer.css';
+import MarkdownViewer from './MarkdownViewer';
 
 class MediaViewer extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            mediaBlob: undefined
+            mediaBlob: undefined,
         };
     }
 
-    componentDidMount = async () =>{
+    componentDidMount = async () => {
         this.loadMediaFile();
-    }
+    };
 
     componentDidUpdate = async (prevProps) => {
         if (prevProps.selectedFile !== this.props.selectedFile) {
-            this.loadMediaFile();   
+            this.loadMediaFile();
         }
-    }
+    };
 
-    loadMediaFile = async () =>{
+    loadMediaFile = async () => {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
         const showQuestion = selectedFile.title === 'Question.md';
         const mediaType = mediaTypeMap[selectedFile.extension];
 
-        
-        if(!showQuestion && mediaType !== 'code'){
-            const blob = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
 
+        if (!showQuestion && mediaType !== 'code') {
+            const blob = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
             this.setState({
-                mediaBlob: URL.createObjectURL(blob)
+                mediaBlob: URL.createObjectURL(blob),
             });
         }
-    }
+    };
 
     fetchExerciseFile = async (exerciseId, fileId, authHeader) => {
         return await CourseDataService.getExerciseFile(exerciseId, fileId, authHeader)
@@ -62,7 +61,7 @@ class MediaViewer extends Component {
 
     render() {
         const mediaBlob = this.state.mediaBlob;
-        const { selectedFile, workspace, onChange, isDark } = this.props;
+        const { selectedFile, workspace, onChange, isDark, authorizationHeader } = this.props;
 
         const { content, title, extension, readOnly } = selectedFile;
         const mediaType = mediaTypeMap[extension];
@@ -72,15 +71,17 @@ class MediaViewer extends Component {
 
         let viewport;
 
-        if(showQuestion){
-            viewport = <ReactMarkdown source={workspace.question}/>
-        }else{
-            if(mediaType === 'code'){
-                viewport = <CodeEditor content={content} language={language} options={editorOptions} onChange={onChange} isDark={isDark}/>
-            }else if(mediaType === 'img'){
-                if(mediaBlob !== undefined){
-                    viewport = <img src={mediaBlob} alt={title}/>
-                }else{
+        if (showQuestion) {
+            viewport = <MarkdownViewer markdown={workspace.question} authHeader={authorizationHeader}
+                                       exerciseId={workspace.exerciseId}/>;
+        } else {
+            if (mediaType === 'code') {
+                viewport = <CodeEditor content={content} language={language} options={editorOptions} onChange={onChange}
+                                       isDark={isDark}/>;
+            } else if (mediaType === 'img') {
+                if (mediaBlob !== undefined) {
+                    viewport = <img src={mediaBlob} alt={title}/>;
+                } else {
                     viewport = <div className="loading-box"><Spinner text={'Loading...'}/></div>;
                 }
             }
@@ -93,7 +94,6 @@ class MediaViewer extends Component {
         );
     }
 }
-
 
 const mediaTypeMap = {
     'py': 'code',
@@ -120,10 +120,10 @@ const extensionLanguageMap = {
     'css': 'css',
     'json': 'json',
     'md': 'markdown',
-    'c' : 'c',
-    'cpp' : 'cpp',
-    'h' : 'cpp',
-    'txt' : 'text',
+    'c': 'c',
+    'cpp': 'cpp',
+    'h': 'cpp',
+    'txt': 'text',
     'java': 'java',
 };
 

@@ -11,7 +11,7 @@ class CourseDataService {
         return fetch(utils.courseServiceUrl + '/courses/' + courseId + '/assignments/' + assignmentId, authHeader())
             .then(result => {
                 if (result.ok) {
-                    return result.json()
+                    return result.json();
                 }
             }).catch(error => console.error('Error: ', error));
     }
@@ -26,8 +26,19 @@ class CourseDataService {
     }
 
     static async getExerciseFile(exerciseId, fileId, authHeader) {
-        return fetch(utils.courseServiceUrl + '/exercises/' + exerciseId + "/files/" + fileId, authHeader())
+        return fetch(utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/' + fileId, authHeader())
             .then(result => result.blob()).catch(error => console.error('Error: ', error));
+    }
+
+    static async getExerciseFileByName(exerciseId, name, authHeader) {
+        const url = utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/search' ;
+        return fetch(url, {
+            method: 'POST',
+            headers: authHeader().headers,
+            body: JSON.stringify({ 'filename': name }),
+        })
+            .then(result => result.blob())
+            .catch(error => console.error('Error: ', error));
     }
 
 }
