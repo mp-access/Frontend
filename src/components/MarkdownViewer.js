@@ -47,9 +47,7 @@ class MarkdownViewer extends Component {
 
     isAbsoluteUrl = (url) => {
         const pat = /^https?:\/\//i;
-        const isAbsolute = pat.test(url);
-        debugger;
-        return isAbsolute;
+        return pat.test(url);
     };
 
 
