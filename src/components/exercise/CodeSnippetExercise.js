@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import ReactMarkdown from 'react-markdown';
 import CodeEditor from '../exercise/CodeEditor';
 import UserConsole from './UserConsole.js';
 import './CodeExercise.css';
+import MarkdownViewer from '../MarkdownViewer';
 
 class CodeSnippetExercise extends Component {
 
@@ -35,7 +35,7 @@ class CodeSnippetExercise extends Component {
      */
     onChange = (newValue) => {
         this.props.setIsDirty(true);
-      
+
         const { publicFiles } = this.state;
         const updatedFiles = publicFiles.map((file, index) => {
             if (index === 0) {
@@ -68,7 +68,7 @@ class CodeSnippetExercise extends Component {
 
     render() {
         const publicFiles = this.state.publicFiles;
-        const workspace = this.props.workspace;
+        const { workspace, authorizationHeader } = this.props;
 
         if (!publicFiles || publicFiles.length === 0) {
             return null;
@@ -93,7 +93,10 @@ class CodeSnippetExercise extends Component {
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
-                            <ReactMarkdown source={workspace.question}/>
+                            <MarkdownViewer
+                                markdown={workspace.question}
+                                exerciseId={workspace.exerciseId}
+                                authHeader={authorizationHeader}/>
                         </div>
                     </div>
                 </div>

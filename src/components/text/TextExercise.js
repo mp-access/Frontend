@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import ReactMarkdown from 'react-markdown';
+import React, { Component } from 'react';
+import MarkdownViewer from '../MarkdownViewer';
 
 class TextExercise extends Component {
 
@@ -14,12 +14,12 @@ class TextExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const {exercise} = this.props;
+        const { exercise } = this.props;
         try {
             this.setState({
                 question: exercise.question,
                 value: this.props.workspace.submission.answer,
-            },);
+            });
         } catch (e) {
             this.setState({
                 question: exercise.question,
@@ -31,7 +31,7 @@ class TextExercise extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         try {
             if (prevProps.workspace !== this.props.workspace) {
-                this.setState({value: this.props.workspace.submission.answer})
+                this.setState({ value: this.props.workspace.submission.answer });
             }
         } catch (e) {
             console.error(e);
@@ -40,31 +40,36 @@ class TextExercise extends Component {
 
     handleChange(event) {
         this.props.setIsDirty(true);
-        
-        this.setState({value: event.target.value});
+
+        this.setState({ value: event.target.value });
     }
 
     getPublicFiles = () => {
-        let type = "text";
+        let type = 'text';
         return {
             type: type,
-            value: this.state.value
+            value: this.state.value,
         };
     };
 
     render() {
+        const { workspace, authorizationHeader } = this.props;
+
         return (
             <>
                 <div className="row">
                     <div className="col-12">
-                        <ReactMarkdown source={this.state.question}/>
+                        <MarkdownViewer
+                            markdown={workspace.question}
+                            exerciseId={workspace.exerciseId}
+                            authHeader={authorizationHeader}/>
                     </div>
                     <div className="col-12">
                         <label>
                             Answer:
                             <br/>
                             <input type="text" value={this.state.value}
-                                    onChange={this.handleChange}/>
+                                   onChange={this.handleChange}/>
                         </label>
                     </div>
                 </div>
