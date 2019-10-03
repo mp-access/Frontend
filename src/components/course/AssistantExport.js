@@ -6,7 +6,7 @@ import axios from 'axios'
 const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
     <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-            <Modal.Title>'{assignmentTitle}' results</Modal.Title>
+            <Modal.Title>{assignmentTitle}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} json/>
