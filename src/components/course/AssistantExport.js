@@ -53,17 +53,13 @@ function handleClick(assignmentExport, courseId) {
         return Promise.reject(error);
     });
 
-
-    // the actual post
-    axios.post(
-        '/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate',
-        {},
-        {headers: {'Content-Type': 'application/json'}}
-    ).then((response) => {
-        console.log(response);
-    }, (error) => {
-        console.log(error);
-    });
+    axios.get('/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
 }
 
