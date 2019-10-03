@@ -28,31 +28,6 @@ const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assign
 );
 
 function handleClick(assignmentExport, courseId) {
-    // declare a request interceptor
-    // examine and change HTTP requests from frontend to backend and vice versa
-    // useful for a variety of implicit tasks, such as logging and authentication
-    axios.interceptors.request.use(config => {
-        // perform a task before the request is sent
-        console.log('Request was sent');
-
-        return config;
-    }, error => {
-        // handle the error
-        return Promise.reject(error);
-    });
-
-    // declare a response interceptor
-    // allows transform of the responses from a server on their way back to the application
-    axios.interceptors.response.use((response) => {
-        // do something with the response data
-        console.log('Response was received');
-
-        return response;
-    }, error => {
-        // handle the response error
-        return Promise.reject(error);
-    });
-
     //get request
     //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
     axios.get('/api/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
