@@ -15,9 +15,9 @@ const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assign
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
             <br/>
-            <Button variant="primary" className='style-btn warn' onClick={() => {handleClick({assignmentExport}, courseId)}}>
+            <button variant="primary" className='style-btn warn' onClick={() => {handleClick({assignmentExport}, courseId)}}>
                 Re-Evaluation (CARE!)
-            </Button>
+            </button>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
