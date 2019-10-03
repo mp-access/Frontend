@@ -42,7 +42,7 @@ class Course extends Component {
     onAssignmentExportClick = (assignment) => {
         this.setState({
             showModal: true,
-            modalAssignmentTitle: assignment.label,
+            modalAssignmentTitle: assignment.title,
         });
 
         const assignmentId = assignment.id;
