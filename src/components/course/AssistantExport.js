@@ -28,11 +28,47 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
 );
 
 function handleClick() {
-    axios.get('https://api.github.com/users/phhofm')
-        .then(response => console.log(response));
+    // declare a request interceptor
+    // examine and change HTTP requests from frontend to backend and vice versa
+    // useful for a variety of implicit tasks, such as logging and authentication
+    axios.interceptors.request.use(config => {
+        // perform a task before the request is sent
+        console.log('Request was sent');
+
+        return config;
+    }, error => {
+        // handle the error
+        return Promise.reject(error);
+    });
+
+    // declare a response interceptor
+    // allows transform of the responses from a server on their way back to the application
+    axios.interceptors.response.use((response) => {
+        // do something with the response data
+        console.log('Response was received');
+
+        return response;
+    }, error => {
+        // handle the response error
+        return Promise.reject(error);
+    });
+
+
+    // the actual post
+    //TODO get the current {courseId} and {assignmentId} from somewhere
+    axios.post(
+        '/admins/courses/{courseId}/assignments/{assignmentId}/reevaluate',
+        {example: 'data'},
+        {headers: {'Content-Type': 'application/json'}}
+    ).then((response) => {
+        console.log(response);
+    }, (error) => {
+        console.log(error);
+    });
+    //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
 }
 
-const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv = false }) => {
+ const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv = false }) => {
     const filename = encodeURIComponent(assignmentTitle.replace(/ /g, '_'));
     let extension = '';
     let content = '';
