@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import axios from 'axios'
 
 const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle = 'Assignment' }) => (
     <Modal show={showModal} onHide={handleClose}>
@@ -13,6 +14,10 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
             <br/>
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
+            <br/>
+            <button className='button' onClick={handleClick}>
+                Rerun all submissions that have the Outdated flag
+            </button>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -21,6 +26,11 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
         </Modal.Footer>
     </Modal>
 );
+
+function handleClick() {
+    axios.get('https://api.github.com/users/phhofm')
+        .then(response => console.log(response));
+}
 
 const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv = false }) => {
     const filename = encodeURIComponent(assignmentTitle.replace(/ /g, '_'));
