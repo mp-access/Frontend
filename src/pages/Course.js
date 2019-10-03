@@ -84,6 +84,7 @@ class Course extends Component {
                     </div>
 
                     {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
+                                                      courseId={this.state.course.id}
                                                     assignmentExport={assignmentExport}
                                                     showModal={showModal && !!assignmentExport}
                                                     handleClose={this.closeModal}/>
