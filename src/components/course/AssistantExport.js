@@ -55,7 +55,7 @@ function handleClick(assignmentExport, courseId) {
 
     //get request
     //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
-    axios.get('/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
+    axios.get('/api/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
         .then((response) => {
             return response;
         })
