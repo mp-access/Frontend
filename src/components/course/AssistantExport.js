@@ -15,9 +15,9 @@ const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assign
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
             <br/>
-            <button className='button' onClick={() => {handleClick({assignmentExport}, courseId)}}>
-                Rerun all submissions that have the Outdated flag
-            </button>
+            <Button variant="primary" className='button' onClick={() => {handleClick({assignmentExport}, courseId)}}>
+                Re-Evaluation (CARE!)
+            </Button>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -53,6 +53,8 @@ function handleClick(assignmentExport, courseId) {
         return Promise.reject(error);
     });
 
+    //get request
+    //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
     axios.get('/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
         .then((response) => {
             return response;
@@ -60,7 +62,6 @@ function handleClick(assignmentExport, courseId) {
         .catch((error) => {
             console.log(error);
         });
-    //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
 }
 
 const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {
