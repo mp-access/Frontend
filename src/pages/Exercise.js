@@ -56,6 +56,10 @@ class Exercise extends Component {
         }
     };
 
+    componentWillUnmount() {
+        this.props.crumbs.setBreadCrumbs([]);
+    }
+
     leaveExercise = () => {
         this.unblock();
 
@@ -79,8 +83,8 @@ class Exercise extends Component {
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
-        console.log(this.props.context);
-        this.props.context.setBreadCrumbs(exercise.breadCrumbs);
+        
+        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
 
         this.setState({
             exercise,

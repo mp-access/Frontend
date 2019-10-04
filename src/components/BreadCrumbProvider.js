@@ -40,12 +40,12 @@ class BreadCrumbProvider extends Component {
 const withBreadCrumbs = Component => {
     return props => (
         <BreadCrumbContext.Consumer>
-            {context => <Component {...props} context={context}/>}
+            {context => <Component {...props} crumbs={context}/>}
         </BreadCrumbContext.Consumer>
     );
 };
 
-const withBreadCrumbsAndAuthAndRouter = Component => withBreadCrumbs(withAuth(withRouter(Component)));
-const withBreadCrumbsAndAuth = Component => withBreadCrumbs(withAuth(Component));
+const withBreadCrumbsAndAuthAndRouter = Component => withAuth(withRouter(withBreadCrumbs(Component)));
+const withBreadCrumbsAndAuth = Component => withAuth(withBreadCrumbs(Component));
 
 export { withBreadCrumbs, BreadCrumbProvider, withBreadCrumbsAndAuthAndRouter, withBreadCrumbsAndAuth };

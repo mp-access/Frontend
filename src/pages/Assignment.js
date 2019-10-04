@@ -22,14 +22,11 @@ class Assignment extends Component {
         const { context } = this.props;
         const { courseId, assignmentId } = this.props.match.params;
 
-        console.log("Start loading");
         try {
             CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
                 .then(result => {
                         this.setState({ assignment: result, isLoadingAssignment: false })
-                        
-                        console.log(this.props.context);
-                        this.props.context.setBreadCrumbs(result.breadCrumbs);
+                        this.props.crumbs.setBreadCrumbs(result.breadCrumbs);
                     }
                 )
                 .catch(err => {
@@ -46,6 +43,10 @@ class Assignment extends Component {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    componentWillUnmount() {
+        this.props.crumbs.setBreadCrumbs([]);
     }
 
     render() {
