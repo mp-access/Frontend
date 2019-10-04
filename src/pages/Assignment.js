@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import Util from '../utils/Util';
 import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
+import { withBreadCrumbsAndAuthr } from '../components/BreadCrumbs';
 
 class Assignment extends Component {
 
@@ -22,9 +22,16 @@ class Assignment extends Component {
         const { context } = this.props;
         const { courseId, assignmentId } = this.props.match.params;
 
+        console.log("Start loading");
         try {
             CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
-                .then(result => this.setState({ assignment: result, isLoadingAssignment: false }))
+                .then(result => {
+                        this.setState({ assignment: result, isLoadingAssignment: false })
+                        
+                        console.log(this.props.context);
+                        this.props.context.setBreadCrumbs(result.breadCrumbs);
+                    }
+                )
                 .catch(err => {
                     console.debug('Error:', err.toString());
                 });
@@ -75,4 +82,4 @@ class Assignment extends Component {
     }
 }
 
-export default withAuth(Assignment);
+export default withBreadCrumbsAndAuthr(Assignment);

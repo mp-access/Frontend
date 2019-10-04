@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
-import { LogIn, LogOut, User /*, ChevronRight*/ } from 'react-feather';
+import { LogIn, LogOut, User, ChevronRight} from 'react-feather';
+import { withBreadCrumbsAndAuthAndRouter } from './BreadCrumbs';
+import utils from '../utils';
 
 const Header = ({ history, context }) => {
-    const { isAuthenticated, login, logout, loadUserInfo } = context;
+    const { isAuthenticated, login, logout, loadUserInfo, breadCrumbs } = context;
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
@@ -22,15 +24,17 @@ const Header = ({ history, context }) => {
                     <img src="/logo.png" alt="logo"/>
                 </Link>
 
+                {breadCrumbs && 
                 <nav>
                     <ul className="breadcrumbs">
-                        {/*list.map( (item, index) =>
+                        {breadCrumbs.map( (item, index) =>
                             <li key={index}>
-                                <Link className="nav-link" to={item.url}>{item.title}</Link>
+                                <Link className="nav-link" to={utils.courseServiceUrl + "/" + item.url}>{item.title}</Link>
                             </li>
-                        ).reduce((prev, curr) => [prev, <li><ChevronRight size={14} /></li>, curr])*/}
+                        ).reduce((prev, curr) => [prev, <li><ChevronRight size={14} /></li>, curr])}
                     </ul>
                 </nav>
+                }
 
                 <div className="d-flex">
                     <Link className="nav-link" to="/profile"><User size={16}/>{name}</Link>
@@ -73,4 +77,4 @@ const LogoutBtn = ({ onLogoutClick, history }) => (
     </button>
 );
 
-export default withAuthAndRouter(Header);
+export default withBreadCrumbsAndAuthAndRouter(Header);

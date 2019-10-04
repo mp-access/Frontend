@@ -9,9 +9,9 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 import Spinner from '../components/core/Spinner';
-import { withAuthAndRouter } from '../auth/AuthProvider';
 import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
 import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
+import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbs';
 
 class Exercise extends Component {
 
@@ -78,6 +78,9 @@ class Exercise extends Component {
 
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
+
+        console.log(this.props.context);
+        this.props.context.setBreadCrumbs(exercise.breadCrumbs);
 
         this.setState({
             exercise,
@@ -381,4 +384,4 @@ class Exercise extends Component {
     }
 }
 
-export default withAuthAndRouter(Exercise);
+export default withBreadCrumbsAndAuthAndRouter(Exercise);
