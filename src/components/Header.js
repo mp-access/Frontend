@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
 import { LogIn, LogOut, User, ChevronRight} from 'react-feather';
 import { withBreadCrumbsAndAuthAndRouter } from './BreadCrumbProvider';
-import utils from '../utils';
 
 const Header = ({ history, context, crumbs }) => {
     const { isAuthenticated, login, logout, loadUserInfo } = context;
