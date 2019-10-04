@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import AssignmentList from '../components/AssignmentList';
 import Util from '../utils/Util';
@@ -7,6 +6,7 @@ import AdminService from '../utils/AdminService';
 import { ExportModal } from '../components/course/AssistantExport';
 import ResultService from "../utils/ResultService";
 import { Calendar } from 'react-feather';
+import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 
 class Course extends Component {
 
@@ -26,7 +26,11 @@ class Course extends Component {
         const { context } = this.props;
 
         CourseDataService.getCourses(context.authorizationHeader)
-            .then(result => this.setState({ course: result.find(c => c.id === courseId) }))
+            .then(result => {
+                const course = result.find(c => c.id === courseId);
+                this.setState({ course:  course});
+                this.props.crumbs.setBreadCrumbs(course.breadCrumbs);
+            })
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
@@ -37,6 +41,10 @@ class Course extends Component {
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
+    }
+
+    componentWillUnmount() {
+        this.props.crumbs.setBreadCrumbs([]);
     }
 
     onAssignmentExportClick = (assignment) => {
@@ -94,4 +102,4 @@ class Course extends Component {
     }
 }
 
-export default withAuth(Course);
+export default withBreadCrumbsAndAuth(Course);
