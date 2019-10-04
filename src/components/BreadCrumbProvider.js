@@ -6,7 +6,7 @@ const BreadCrumbContext = React.createContext({
     breadCrumbs: [],
 });
 
-class BreadCrumbs extends Component {
+class BreadCrumbProvider extends Component {
 
     constructor(props) {
         super(props);
@@ -46,6 +46,6 @@ const withBreadCrumbs = Component => {
 };
 
 const withBreadCrumbsAndAuthAndRouter = Component => withBreadCrumbs(withAuth(withRouter(Component)));
-const withBreadCrumbsAndAuthr = Component => withBreadCrumbs(withAuth(Component));
+const withBreadCrumbsAndAuth = Component => withBreadCrumbs(withAuth(Component));
 
-export { withBreadCrumbs, BreadCrumbs, withBreadCrumbsAndAuthAndRouter, withBreadCrumbsAndAuthr };
+export { withBreadCrumbs, BreadCrumbProvider, withBreadCrumbsAndAuthAndRouter, withBreadCrumbsAndAuth };

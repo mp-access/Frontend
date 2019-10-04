@@ -5,7 +5,7 @@ import Util from '../utils/Util';
 import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
-import { withBreadCrumbsAndAuthr } from '../components/BreadCrumbs';
+import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 
 class Assignment extends Component {
 
@@ -82,4 +82,4 @@ class Assignment extends Component {
     }
 }
 
-export default withBreadCrumbsAndAuthr(Assignment);
+export default withBreadCrumbsAndAuth(Assignment);

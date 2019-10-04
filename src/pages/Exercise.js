@@ -11,7 +11,7 @@ import SubmissionService from '../utils/SubmissionService';
 import Spinner from '../components/core/Spinner';
 import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
 import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
-import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbs';
+import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 
 class Exercise extends Component {
 
