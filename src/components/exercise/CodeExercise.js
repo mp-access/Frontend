@@ -22,8 +22,8 @@ class CodeExercise extends PureComponent {
 
         const questionFile = {
             id: 'question',
-            name: 'Question',
-            title: 'Question.md',
+            name: 'description',
+            title: 'description.md',
             content: exercise.question,
             extension: 'md',
             readOnly: true,
@@ -32,26 +32,26 @@ class CodeExercise extends PureComponent {
         // folders
         const pub_dir = {
             id: 'public_files',
-            title: 'Public Files',
+            title: 'public_files',
             isDirectory: true,
             expanded: true,
             children: [],
         };
         const priv_dir = {
             id: 'private_files',
-            title: 'Private Files',
+            title: 'private_files',
             isDirectory: true,
             children: [],
         };
         const sol_dir = {
             id: 'solution_files',
-            title: 'Solution Files',
+            title: 'solution_files',
             isDirectory: true,
             children: [],
         };
         const res_dir = {
             id: 'resource_files',
-            title: 'Resource Files',
+            title: 'resource_files',
             isDirectory: true,
             children: [],
         };
