@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { withAuth } from '../auth/AuthProvider';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import Util from '../utils/Util';
 import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
+import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 
 class Assignment extends Component {
 
@@ -24,7 +24,11 @@ class Assignment extends Component {
 
         try {
             CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
-                .then(result => this.setState({ assignment: result, isLoadingAssignment: false }))
+                .then(result => {
+                        this.setState({ assignment: result, isLoadingAssignment: false })
+                        this.props.crumbs.setBreadCrumbs(result.breadCrumbs);
+                    }
+                )
                 .catch(err => {
                     console.debug('Error:', err.toString());
                 });
@@ -39,6 +43,10 @@ class Assignment extends Component {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    componentWillUnmount() {
+        this.props.crumbs.setBreadCrumbs([]);
     }
 
     render() {
@@ -75,4 +83,4 @@ class Assignment extends Component {
     }
 }
 
-export default withAuth(Assignment);
+export default withBreadCrumbsAndAuth(Assignment);
