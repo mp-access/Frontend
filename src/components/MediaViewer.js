@@ -26,7 +26,7 @@ class MediaViewer extends Component {
 
     loadMediaFile = async () => {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
-        const showQuestion = selectedFile.title === 'Question.md';
+        const showQuestion = selectedFile.title === 'description.md';
         const mediaType = mediaTypeMap[selectedFile.extension];
 
 
@@ -66,7 +66,7 @@ class MediaViewer extends Component {
         const { content, title, extension, readOnly } = selectedFile;
         const mediaType = mediaTypeMap[extension];
         const language = extensionLanguageMap[extension];
-        const showQuestion = title === 'Question.md';
+        const showQuestion = title === 'description.md';
         const editorOptions = this.editorOptions(readOnly);
 
         let viewport;
