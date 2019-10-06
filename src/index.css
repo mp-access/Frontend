@@ -220,6 +220,10 @@ code {
   opacity: 1;
 }
 
+.style-list li.fresh{
+  background: white;
+}
+
 .style-list li > *{
   padding: 12px 25px;
   display: block;
@@ -340,6 +344,12 @@ code {
 
 .breadcrumbs li{
   float: left;
+  padding: 2px 8px;
+}
+
+.breadcrumbs li a small{
+  margin-top: -2px;
+  display: block;
 }
 
 

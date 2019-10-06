@@ -280,6 +280,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    authorizationHeader={this.props.context.authorizationHeader}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
@@ -290,8 +291,9 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
-                    workspace={workspace}
                     setIsDirty={this.setIsDirty}
+                    authorizationHeader={this.props.context.authorizationHeader}
+                    workspace={workspace}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
@@ -300,6 +302,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    authorizationHeader={this.props.context.authorizationHeader}
                     setIsDirty={this.setIsDirty}
                 />;
         }
@@ -346,16 +349,14 @@ class Exercise extends Component {
             }
 
             buttonCluster = (
-                <div className="row">
-                    <div className="col-sm-12">
-                        <div className="code-panel">
-                            {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                            </button>*/}
-                            <button className="style-btn" disabled={this.state.runButtonState}
-                                    onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                        </div>
+                <>
+                    <div className="code-panel float-right">
+                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                        </button>*/}
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
-                </div>
+                </>
             );
         }
 
@@ -373,7 +374,9 @@ class Exercise extends Component {
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
+                            <h1 className="float-left">{this.state.exercise.longTitle}</h1>
                             {buttonCluster}
+                            <div className="clearfix"></div>
                             {content}
                         </div>
                     </div>
