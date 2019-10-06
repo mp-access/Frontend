@@ -4,6 +4,7 @@ import UserConsole from './UserConsole';
 import MediaViewer from '../MediaViewer';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
+import JSZip from 'jszip';
 
 class CodeExercise extends PureComponent {
 
@@ -60,7 +61,7 @@ class CodeExercise extends PureComponent {
         pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
 
         let files = [questionFile]
-            .concat(pub_dir)
+            .concat(pub_dir);
 
         if (exercise.solution_files) {
             sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
@@ -112,7 +113,7 @@ class CodeExercise extends PureComponent {
      */
     onChange = (newValue) => {
         const { selectedFile, fileExplorerData } = this.state;
-        
+
         this.props.setIsDirty(true);
 
         const updatedSelectedFile = {
@@ -136,7 +137,7 @@ class CodeExercise extends PureComponent {
             } else {
                 return folder;
             }
-        });        
+        });
 
         this.setState({
             selectedFile: updatedSelectedFile,
@@ -217,9 +218,10 @@ class CodeExercise extends PureComponent {
                     </div>
                     <div className="col-10">
                         <div>
+                            <button onClick={this.downloadWorkspace}>Download workspace</button>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark} />
+                                         isDark={isDark}/>
                         </div>
                     </div>
                 </div>
@@ -232,6 +234,28 @@ class CodeExercise extends PureComponent {
             </>
         );
     }
+
+    downloadWorkspace = () => {
+        const zip = new JSZip();
+        const { fileExplorerData } = this.state;
+
+        const workspace = zip.folder('workspace');
+        for (const f of fileExplorerData) {
+            debugger
+            if (f.isDirectory) {
+                const folder = workspace.folder(f.title);
+                for (const file of f.children) {
+                    folder.file(file.nameWithExtension, file.content);
+                }
+            } else {
+                workspace.file(f.title, f.content);
+            }
+        }
+
+        zip.generateAsync({ type: 'base64' }).then(function(content) {
+            window.location.href = 'data:application/zip;base64,' + content;
+        });
+    };
 }
 
 /**
