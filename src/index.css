@@ -220,8 +220,8 @@ code {
   opacity: 1;
 }
 
-.style-list li.fresh{
-  background: white;
+.score-display .style-btn.ghost{
+  width: 130px;
 }
 
 .style-list li > *{
@@ -348,7 +348,7 @@ code {
 }
 
 .breadcrumbs li a small{
-  margin-top: -2px;
+  margin-top: -4px;
   display: block;
 }
 
@@ -414,5 +414,9 @@ code {
 
   .logo img {
     height: 35px;
+  }
+
+  .breadcrumbs{
+    display: none;
   }
 }

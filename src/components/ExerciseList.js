@@ -63,7 +63,7 @@ class ExerciseList extends Component {
                     }
                     
                     {showScore &&
-                        <div>
+                        <div className="score-display">
                             <span className="style-btn ghost">Score: {score} / {maxScore}</span>
                         </div>
                     }
