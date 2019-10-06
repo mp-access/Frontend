@@ -4,7 +4,7 @@ import CourseDataService from '../utils/CourseDataService';
 import Spinner from './core/Spinner';
 import './MediaViewer.css';
 import MarkdownViewer from './MarkdownViewer';
-import { Download } from 'react-feather';
+import { Download, File } from 'react-feather';
 
 class MediaViewer extends Component {
 
@@ -39,6 +39,7 @@ class MediaViewer extends Component {
 
         this.setState({
             mediaBlob: URL.createObjectURL(content),
+            blobSizeKb: content.size / 1000,
         });
     };
 
@@ -68,7 +69,7 @@ class MediaViewer extends Component {
     };
 
     render() {
-        const mediaBlob = this.state.mediaBlob;
+        const { mediaBlob, blobSizeKb } = this.state;
         const { selectedFile, workspace, onChange, isDark, authorizationHeader } = this.props;
 
         const { content, title, extension, readOnly } = selectedFile;
@@ -101,7 +102,17 @@ class MediaViewer extends Component {
                     viewport = <div className="loading-box"><Spinner text={'Loading...'}/></div>;
                 }
             } else {
-                viewport = undefined;
+                viewport = (
+                    <div className={'media-viewer-unsupported'}>
+                        <File size={100}/>
+                        <p>
+                            <strong>.{extension}</strong> files can't be previewed
+                        </p>
+                        <p>
+                            <small>{title} - {blobSizeKb} KB</small>
+                        </p>
+                    </div>
+                );
             }
         }
 

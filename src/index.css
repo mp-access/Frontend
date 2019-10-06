@@ -171,6 +171,10 @@ small{
   margin-right: 5px;
 }
 
+.media-viewer-unsupported {
+  text-align: center;
+}
+
 svg{
   vertical-align: -0.2em !important;
 }
