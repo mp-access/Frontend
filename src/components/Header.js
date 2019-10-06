@@ -29,7 +29,10 @@ const Header = ({ history, context, crumbs }) => {
                     <ul className="breadcrumbs">
                         {breadCrumbs.map( (item, index) =>
                             <li key={index}>
-                                <Link className="nav-link" to={"/" + item.url}>{item.title}</Link>
+                                <Link className="nav-link" to={"/" + item.url}>
+                                    <div>{item.title}</div>
+                                    <small>{getBreadCrumbLevel(index)}</small>
+                                </Link>
                             </li>
                         ).reduce((prev, curr, index) => [prev, <li key={index * 20}><ChevronRight size={14} /></li>, curr])}
                     </ul>
@@ -47,6 +50,19 @@ const Header = ({ history, context, crumbs }) => {
             </div>
         </header>
     );
+};
+
+const getBreadCrumbLevel = (index) =>{
+    switch (index) {
+        case 0:
+            return "Course";
+        case 1:
+            return "Exercise";
+        case 2:
+            return "Task";
+        default:
+            return "";
+    }
 };
 
 const LoginOrLogoutBtn = withAuthAndRouter(({ isAuthenticated, login, logout, history }) => {
