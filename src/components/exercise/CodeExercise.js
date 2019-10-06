@@ -5,6 +5,7 @@ import MediaViewer from '../MediaViewer';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import JSZip from 'jszip';
+import CourseDataService from '../../utils/CourseDataService';
 
 class CodeExercise extends PureComponent {
 
@@ -235,17 +236,25 @@ class CodeExercise extends PureComponent {
         );
     }
 
-    downloadWorkspace = () => {
+    downloadWorkspace = async () => {
         const zip = new JSZip();
         const { fileExplorerData } = this.state;
+        const { exercise, authorizationHeader } = this.props;
+        const exerciseId = exercise.id;
 
         const workspace = zip.folder('workspace');
+
         for (const f of fileExplorerData) {
-            debugger
             if (f.isDirectory) {
                 const folder = workspace.folder(f.title);
                 for (const file of f.children) {
-                    folder.file(file.nameWithExtension, file.content);
+                    const mediaType = mediaTypeMap[file.extension];
+                    if (mediaType === 'code') {
+                        folder.file(file.nameWithExtension, file.content);
+                    } else {
+                        const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
+                        folder.file(file.nameWithExtension, content);
+                    }
                 }
             } else {
                 workspace.file(f.title, f.content);
@@ -257,6 +266,25 @@ class CodeExercise extends PureComponent {
         });
     };
 }
+
+const mediaTypeMap = {
+    'py': 'code',
+    'js': 'code',
+    'css': 'code',
+    'json': 'code',
+    'md': 'code',
+    'c': 'code',
+    'cpp': 'code',
+    'h': 'code',
+    'java': 'code',
+    'txt': 'code',
+
+    'png': 'img',
+    'jpg': 'img',
+    'jpeg': 'img',
+    'gif': 'img',
+    'svg': 'img',
+};
 
 /**
  * Maps backend virtual files to frontend tree structure.
