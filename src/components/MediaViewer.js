@@ -4,6 +4,7 @@ import CourseDataService from '../utils/CourseDataService';
 import Spinner from './core/Spinner';
 import './MediaViewer.css';
 import MarkdownViewer from './MarkdownViewer';
+import { Download } from 'react-feather';
 
 class MediaViewer extends Component {
 
@@ -28,14 +29,21 @@ class MediaViewer extends Component {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
         const showQuestion = selectedFile.title === 'description.md';
         const mediaType = mediaTypeMap[selectedFile.extension];
+        let content;
 
-
-        if (!showQuestion && mediaType !== 'code') {
-            const blob = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
-            this.setState({
-                mediaBlob: URL.createObjectURL(blob),
-            });
+        if (this.isResourceFile(showQuestion, mediaType)) {
+            content = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
+        } else {
+            content = new Blob([selectedFile.content], { type: 'plain/text' });
         }
+
+        this.setState({
+            mediaBlob: URL.createObjectURL(content),
+        });
+    };
+
+    isResourceFile = (isQuestion, mediaType) => {
+        return !isQuestion && mediaType !== 'code';
     };
 
     fetchExerciseFile = async (exerciseId, fileId, authHeader) => {
@@ -68,6 +76,14 @@ class MediaViewer extends Component {
         const language = extensionLanguageMap[extension];
         const showQuestion = title === 'description.md';
         const editorOptions = this.editorOptions(readOnly);
+        const exportFile = (
+            <a href={mediaBlob}
+               download={title}>
+                <button className="style-btn download">
+                    <Download size={14}/>
+                </button>
+            </a>
+        );
 
         let viewport;
 
@@ -84,13 +100,23 @@ class MediaViewer extends Component {
                 } else {
                     viewport = <div className="loading-box"><Spinner text={'Loading...'}/></div>;
                 }
+            } else {
+                viewport = undefined;
             }
         }
 
         return (
-            <div className="media-viewport">
-                {viewport}
-            </div>
+            <>
+                <h4>
+                    {selectedFile.name + '.' + selectedFile.extension}
+                    <span style={{ marginLeft: '15px', fontSize: 15 }}>
+                        {exportFile}
+                    </span>
+                </h4>
+                <div className="media-viewport">
+                    {viewport}
+                </div>
+            </>
         );
     }
 }

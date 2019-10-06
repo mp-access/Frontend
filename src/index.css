@@ -119,6 +119,10 @@ small{
   transition: 0.3s;
 }
 
+.style-btn.download{
+  background-image: linear-gradient(to right top, #97989b, #dfe0e1);
+}
+
 .style-btn:hover{
   /*background: #66a1ff;*/
   box-shadow: 0px 0px 10px rgba(59, 134, 255, 0.4);
