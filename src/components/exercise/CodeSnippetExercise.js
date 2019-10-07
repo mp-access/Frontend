@@ -6,7 +6,7 @@ import MarkdownViewer from '../MarkdownViewer';
 import Spinner from '../core/Spinner';
 import JSZip from 'jszip';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { Play, Download } from 'react-feather';
+import { Download, Play } from 'react-feather';
 import Util from '../../utils/Util';
 import CourseDataService from '../../utils/CourseDataService';
 
@@ -16,7 +16,7 @@ class CodeSnippetExercise extends Component {
         super(props);
         this.state = {
             publicFiles: undefined,
-            runButtonState: false
+            runButtonState: false,
         };
     }
 
@@ -90,20 +90,13 @@ class CodeSnippetExercise extends Component {
 
         const workspace = zip.folder('workspace');
 
-        for (const f of publicFiles) {
-            if (f.isDirectory) {
-                const folder = workspace.folder(f.title);
-                for (const file of f.children) {
-                    const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
-                    if (mediaType === 'code') {
-                        folder.file(file.nameWithExtension, file.content);
-                    } else {
-                        const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
-                        folder.file(file.nameWithExtension, content);
-                    }
-                }
+        for (const file of publicFiles) {
+            const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
+            if (mediaType === 'code') {
+                workspace.file(file.nameWithExtension, file.content);
             } else {
-                workspace.file(f.title, f.content);
+                const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
+                workspace.file(file.nameWithExtension, content);
             }
         }
 
@@ -139,16 +132,17 @@ class CodeSnippetExercise extends Component {
             runButtonContent = <Spinner text={'Processing'}/>;
         } else {
             runButtonContent = <>
-            <OverlayTrigger
-                placement="top"
-                overlay={
-                    <Tooltip id="testrun-tooltip">
-                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                    </Tooltip>
-                }
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
+                            code
+                        </Tooltip>
+                    }
                 >
-                <span><Play size={14}/>Test & Run</span>
-            </OverlayTrigger>
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
             </>;
         }
 
@@ -158,7 +152,9 @@ class CodeSnippetExercise extends Component {
                     <div className="code-panel">
                         {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
                         </button>*/}
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
+                            Task
+                        </button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
@@ -168,7 +164,7 @@ class CodeSnippetExercise extends Component {
 
         return (
             <>
-                {buttonCluster}  
+                {buttonCluster}
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
