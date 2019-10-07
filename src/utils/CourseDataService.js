@@ -29,9 +29,9 @@ class CourseDataService {
         return fetch(utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/' + fileId, authHeader())
             .then(result => {
                 if (result.ok) {
-                    result.blob();
+                    return result.blob();
                 } else {
-                    console.log('Failed to fetch file', fileId);
+                    console.error('Failed to fetch file', fileId, result);
                 }
             }).catch(error => console.error('Error: ', error));
     }
