@@ -220,7 +220,8 @@ class CodeExercise extends PureComponent {
                             <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark} />
+                                         isDark={isDark} submitCode={this.props.submitCode}
+                            />
                         </div>
                     </div>
                 </div>

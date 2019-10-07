@@ -272,6 +272,7 @@ class Exercise extends Component {
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submitCode={this.onCodeSubmit}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -284,6 +285,7 @@ class Exercise extends Component {
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submitCode={this.onCodeSubmit}
                 />;
         } else if (exercise.type === 'text') {
             content =

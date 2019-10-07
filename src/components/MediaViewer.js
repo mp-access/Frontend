@@ -77,7 +77,7 @@ class MediaViewer extends Component {
         } else {
             if (mediaType === 'code') {
                 viewport = <CodeEditor content={content} language={language} options={editorOptions} onChange={onChange}
-                                       isDark={isDark}/>;
+                                       isDark={isDark} submitCode={this.props.submitCode}/>;
             } else if (mediaType === 'img') {
                 if (mediaBlob !== undefined) {
                     viewport = <img src={mediaBlob} alt={title}/>;
