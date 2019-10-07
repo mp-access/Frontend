@@ -3,6 +3,12 @@ import CodeEditor from '../exercise/CodeEditor';
 import UserConsole from './UserConsole.js';
 import './CodeExercise.css';
 import MarkdownViewer from '../MarkdownViewer';
+import Spinner from '../core/Spinner';
+import JSZip from 'jszip';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Play, Download } from 'react-feather';
+import Util from '../../utils/Util';
+import CourseDataService from '../../utils/CourseDataService';
 
 class CodeSnippetExercise extends Component {
 
@@ -10,6 +16,7 @@ class CodeSnippetExercise extends Component {
         super(props);
         this.state = {
             publicFiles: undefined,
+            runButtonState: false
         };
     }
 
@@ -28,6 +35,15 @@ class CodeSnippetExercise extends Component {
             type: 'codeSnippet',
             publicFiles: publicFiles,
         };
+    };
+
+    onCodeSubmit = () => {
+        this.props.submit(false, this.resetRunButton);
+        this.setState({ runButtonState: true });
+    };
+
+    resetRunButton = () => {
+        this.setState({ runButtonState: false });
     };
 
     /**
@@ -66,6 +82,36 @@ class CodeSnippetExercise extends Component {
         };
     };
 
+    downloadWorkspace = async () => {
+        const zip = new JSZip();
+        const { publicFiles } = this.state;
+        const { exercise, authorizationHeader } = this.props;
+        const exerciseId = exercise.id;
+
+        const workspace = zip.folder('workspace');
+
+        for (const f of publicFiles) {
+            if (f.isDirectory) {
+                const folder = workspace.folder(f.title);
+                for (const file of f.children) {
+                    const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
+                    if (mediaType === 'code') {
+                        folder.file(file.nameWithExtension, file.content);
+                    } else {
+                        const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
+                        folder.file(file.nameWithExtension, content);
+                    }
+                }
+            } else {
+                workspace.file(f.title, f.content);
+            }
+        }
+
+        zip.generateAsync({ type: 'base64' }).then(function(content) {
+            window.location.href = 'data:application/zip;base64,' + content;
+        });
+    };
+
     render() {
         const publicFiles = this.state.publicFiles;
         const { workspace, authorizationHeader } = this.props;
@@ -88,8 +134,41 @@ class CodeSnippetExercise extends Component {
             currBottomTab={this.props.currBottomTab}
         />;
 
+        let runButtonContent;
+        if (this.state.runButtonState) {
+            runButtonContent = <Spinner text={'Processing'}/>;
+        } else {
+            runButtonContent = <>
+            <OverlayTrigger
+                placement="top"
+                overlay={
+                    <Tooltip id="testrun-tooltip">
+                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                    </Tooltip>
+                }
+                >
+                <span><Play size={14}/>Test & Run</span>
+            </OverlayTrigger>
+            </>;
+        }
+
+        const buttonCluster = (
+            <div className="row">
+                <div className="col-sm-12">
+                    <div className="code-panel">
+                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                        </button>*/}
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <>
+                {buttonCluster}  
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">

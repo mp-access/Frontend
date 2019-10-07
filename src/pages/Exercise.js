@@ -8,9 +8,8 @@ import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
-import Spinner from '../components/core/Spinner';
-import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
-import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
+import { AlertCircle, X, ExternalLink } from 'react-feather';
+import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 
 class Exercise extends Component {
@@ -21,7 +20,6 @@ class Exercise extends Component {
             exercise: undefined,
             exercises: [],
             workspace: Workspace,
-            runButtonState: false,
             isDark: false,
             currBottomTab: 'tests',
             showAlert: true,
@@ -126,15 +124,6 @@ class Exercise extends Component {
         const workspace = new Workspace(exercise, submission);
 
         this.setState({ workspace});
-    };
-
-    onCodeSubmit = () => {
-        this.submit(false, this.resetRunButton);
-        this.setState({ runButtonState: true });
-    };
-
-    resetRunButton = () => {
-        this.setState({ runButtonState: false });
     };
 
     onIsDark = () => {
@@ -272,6 +261,7 @@ class Exercise extends Component {
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -283,6 +273,7 @@ class Exercise extends Component {
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -324,41 +315,6 @@ class Exercise extends Component {
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType} isGraded={workspace.submission ? workspace.submission.graded : false }/>;
 
-
-        let buttonCluster;
-        if (isCodeType) {
-            let runButtonContent;
-            if (this.state.runButtonState) {
-                runButtonContent = <Spinner text={'Processing'}/>;
-            } else {
-                runButtonContent = <>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={
-                        <Tooltip id="testrun-tooltip">
-                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                        </Tooltip>
-                    }
-                    >
-                    <span><Play size={14}/>Test & Run</span>
-                </OverlayTrigger>
-                </>;
-            }
-
-            buttonCluster = (
-                <div className="row">
-                    <div className="col-sm-12">
-                        <div className="code-panel">
-                            {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                            </button>*/}
-                            <button className="style-btn" disabled={this.state.runButtonState}
-                                    onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
         return (
             <>
                 {this.state.isDirty && this.createLeaveOnDirtyModal()}
@@ -373,7 +329,6 @@ class Exercise extends Component {
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
-                            {buttonCluster}
                             {content}
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap');
-
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 
 /* ----------- THEME ------------- */
 
@@ -182,8 +182,7 @@ svg{
 
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: 'Source Code Pro', monospace;
 }
 
 

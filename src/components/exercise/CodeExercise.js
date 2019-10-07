@@ -6,6 +6,10 @@ import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import JSZip from 'jszip';
 import CourseDataService from '../../utils/CourseDataService';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Play, Download } from 'react-feather';
+import Spinner from '../core/Spinner';
+import Util from '../../utils/Util';
 
 class CodeExercise extends PureComponent {
 
@@ -14,6 +18,7 @@ class CodeExercise extends PureComponent {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: undefined,
+            runButtonState: false,
         };
     }
 
@@ -107,6 +112,15 @@ class CodeExercise extends PureComponent {
             publicFiles: publicFiles,
             selectedFile: selectedFileIndex,
         };
+    };
+
+    onCodeSubmit = () => {
+        this.props.submit(false, this.resetRunButton);
+        this.setState({ runButtonState: true });
+    };
+
+    resetRunButton = () => {
+        this.setState({ runButtonState: false });
     };
 
     /**
@@ -208,8 +222,43 @@ class CodeExercise extends PureComponent {
             currBottomTab={this.props.currBottomTab}
         />;
 
+
+
+        let runButtonContent;
+        if (this.state.runButtonState) {
+            runButtonContent = <Spinner text={'Processing'}/>;
+        } else {
+            runButtonContent = <>
+            <OverlayTrigger
+                placement="top"
+                overlay={
+                    <Tooltip id="testrun-tooltip">
+                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                    </Tooltip>
+                }
+                >
+                <span><Play size={14}/>Test & Run</span>
+            </OverlayTrigger>
+            </>;
+        }
+
+        const buttonCluster = (
+            <div className="row">
+                <div className="col-sm-12">
+                    <div className="code-panel">
+                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
+                        </button>*/}
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <>
+                {buttonCluster}  
                 <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
@@ -219,7 +268,6 @@ class CodeExercise extends PureComponent {
                     </div>
                     <div className="col-10">
                         <div>
-                            <button onClick={this.downloadWorkspace}>Download workspace</button>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
                                          isDark={isDark}/>
@@ -248,7 +296,7 @@ class CodeExercise extends PureComponent {
             if (f.isDirectory) {
                 const folder = workspace.folder(f.title);
                 for (const file of f.children) {
-                    const mediaType = mediaTypeMap[file.extension];
+                    const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
                     if (mediaType === 'code') {
                         folder.file(file.nameWithExtension, file.content);
                     } else {
@@ -266,25 +314,6 @@ class CodeExercise extends PureComponent {
         });
     };
 }
-
-const mediaTypeMap = {
-    'py': 'code',
-    'js': 'code',
-    'css': 'code',
-    'json': 'code',
-    'md': 'code',
-    'c': 'code',
-    'cpp': 'code',
-    'h': 'code',
-    'java': 'code',
-    'txt': 'code',
-
-    'png': 'img',
-    'jpg': 'img',
-    'jpeg': 'img',
-    'gif': 'img',
-    'svg': 'img',
-};
 
 /**
  * Maps backend virtual files to frontend tree structure.

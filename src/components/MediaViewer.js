@@ -80,8 +80,8 @@ class MediaViewer extends Component {
         const exportFile = (
             <a href={mediaBlob}
                download={title}>
-                <button className="style-btn download">
-                    <Download size={14}/>
+                <button className="style-btn ghost">
+                    <Download size={14}/>Download File
                 </button>
             </a>
         );
@@ -104,13 +104,12 @@ class MediaViewer extends Component {
             } else {
                 viewport = (
                     <div className={'media-viewer-unsupported'}>
-                        <File size={100}/>
-                        <p>
-                            <strong>.{extension}</strong> files can't be previewed
-                        </p>
+                        <div className="my-3"><File size={80}/></div>
+                        <strong>.{extension}</strong> files can't be previewed
                         <p>
                             <small>{title} - {blobSizeKb} KB</small>
                         </p>
+                        {exportFile}
                     </div>
                 );
             }
@@ -120,9 +119,6 @@ class MediaViewer extends Component {
             <>
                 <h4>
                     {selectedFile.name + '.' + selectedFile.extension}
-                    <span style={{ marginLeft: '15px', fontSize: 15 }}>
-                        {exportFile}
-                    </span>
                 </h4>
                 <div className="media-viewport">
                     {viewport}
