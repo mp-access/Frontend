@@ -165,6 +165,7 @@ class CodeSnippetExercise extends Component {
         return (
             <>
                 {buttonCluster}
+                <div className="clearfix"></div> 
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">

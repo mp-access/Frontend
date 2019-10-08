@@ -258,7 +258,8 @@ class CodeExercise extends PureComponent {
 
         return (
             <>
-                {buttonCluster}  
+                {buttonCluster} 
+                <div className="clearfix"></div> 
                 <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
