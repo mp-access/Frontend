@@ -282,8 +282,9 @@ class Exercise extends Component {
                     key={key}
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
-                    workspace={workspace}
                     setIsDirty={this.setIsDirty}
+                    authorizationHeader={this.props.context.authorizationHeader}
+                    workspace={workspace}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
@@ -292,6 +293,7 @@ class Exercise extends Component {
                     ref={this.exerciseComponentRef}
                     exercise={exercise}
                     workspace={workspace}
+                    authorizationHeader={this.props.context.authorizationHeader}
                     setIsDirty={this.setIsDirty}
                 />;
         }
@@ -330,6 +332,7 @@ class Exercise extends Component {
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
+                            <h1 className="float-left">{this.state.exercise.longTitle}</h1>
                             {content}
                         </div>
                     </div>

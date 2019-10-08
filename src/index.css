@@ -227,6 +227,10 @@ code {
   opacity: 1;
 }
 
+.score-display .style-btn.ghost{
+  width: 130px;
+}
+
 .style-list li > *{
   padding: 12px 25px;
   display: block;
@@ -347,6 +351,12 @@ code {
 
 .breadcrumbs li{
   float: left;
+  padding: 2px 8px;
+}
+
+.breadcrumbs li a small{
+  margin-top: -4px;
+  display: block;
 }
 
 
@@ -411,5 +421,9 @@ code {
 
   .logo img {
     height: 35px;
+  }
+
+  .breadcrumbs{
+    display: none;
   }
 }
