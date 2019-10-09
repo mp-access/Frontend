@@ -89,6 +89,7 @@ class CodeSnippetExercise extends Component {
         const exerciseId = exercise.id;
 
         const workspace = zip.folder('workspace');
+        workspace.file('description.md', exercise.question);
 
         for (const file of publicFiles) {
             const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
