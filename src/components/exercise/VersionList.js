@@ -103,8 +103,8 @@ class VersionList extends Component {
     createSubmissionItem(item, index, isSubmit){
         const active = item.id === this.props.selectedSubmissionId;
         const outdated = item.invalid;
-        const title = (isSubmit ? 'Submission ' : 'Testrun ') + (index + 1); 
-
+        const triggeredReSubmission = item.triggeredReSubmission;
+        const title = (triggeredReSubmission? 'Generated Submission' : (isSubmit ? 'Submission ' : 'Testrun ') + (index + 1) );
 
         const ret_item = (
             <li key={item.id} className={ active ? 'active' : ''}>
