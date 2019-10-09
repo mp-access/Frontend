@@ -35,7 +35,7 @@ class VersionList extends Component {
         this.setShowModal(false);
         this.props.submit(true, this.resetSubmitButton);
         this.setState({submissionState: true});
-    }
+    };
 
     resetSubmitButton = () => {
         this.setState({submissionState: false});
@@ -43,7 +43,7 @@ class VersionList extends Component {
 
     setCurrentTab = (key) => {
         this.setState({currentTab: key});
-    }
+    };
 
     componentDidMount = async () => {
         const {exercise} = this.props;
@@ -80,7 +80,7 @@ class VersionList extends Component {
             </Alert>))[0] : '';
         const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
         const triggered = triggeredReSubmission ?
-            <Alert variant="primary">This is an automatically triggered Submission by the System</Alert> : '';
+            <Alert variant="primary">This is an automatically triggered submission by the system</Alert> : '';
         let score = 'No Score';
         if (result) {
             score = <>
@@ -144,7 +144,7 @@ class VersionList extends Component {
 
     setShowModal = (show) => {
         this.setState({showModal: show});
-    }
+    };
 
     lastSubmissionWarning() {
         const {showModal} = this.state;
