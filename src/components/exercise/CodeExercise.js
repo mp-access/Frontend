@@ -271,7 +271,7 @@ class CodeExercise extends PureComponent {
                         <div>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         submitCode={this.props.submitCode}
+                                         submitCode={this.onCodeSubmit}
                             />
                         </div>
                     </div>

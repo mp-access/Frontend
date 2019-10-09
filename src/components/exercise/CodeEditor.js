@@ -18,7 +18,7 @@ const CodeEditor = ({ content, language, options, onChange, submitCode }) => {
     );
 };
 
-const onMount = (editor, monaco, codeSubmit) => {
+const onMount = (editor, monaco, submitCode) => {
     const testAndRunBindings = [
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_B,
         monaco.KeyMod.WinCtrl | monaco.KeyCode.KEY_B,
@@ -33,7 +33,7 @@ const onMount = (editor, monaco, codeSubmit) => {
 
     darkModeBinding.forEach(binding => editor.addCommand(binding, () => toggleDarkMode(monaco)));
 
-    testAndRunBindings.forEach(binding => editor.addCommand(binding, codeSubmit));
+    testAndRunBindings.forEach(binding => editor.addCommand(binding, submitCode));
 };
 
 const toggleDarkMode = (monaco) => monaco.editor.setTheme(setTheme(Util.toggleAndThenGetIsDark()));

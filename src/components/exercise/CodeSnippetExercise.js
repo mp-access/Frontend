@@ -165,7 +165,7 @@ class CodeSnippetExercise extends Component {
         return (
             <>
                 {buttonCluster}
-                <div className="clearfix"></div> 
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
@@ -181,7 +181,7 @@ class CodeSnippetExercise extends Component {
                     <div className="col-12">
                         <div className="media-viewport">
                             <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} submitCode={this.props.submitCode} height="300px"
+                                        onChange={this.onChange} submitCode={this.onCodeSubmit} height="300px"
                             />
                         </div>
                     </div>
