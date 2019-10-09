@@ -16,7 +16,7 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
             <br/>
             <br/>
             <button variant="primary" className='style-btn warn' onClick={() => {
-                handleClick({assignmentExport}, courseId, authorization)
+                handleClick(assignmentExport, courseId, authorization)
             }}>
                 Re-Evaluation (CARE!)
             </button>
@@ -30,7 +30,7 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
 );
 
 function handleClick(assignmentExport, courseId, authorization) {
-    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentExport.assignmentId, authorization)
+    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentId, authorization)
         .catch(error => console.log(error));
 }
 
