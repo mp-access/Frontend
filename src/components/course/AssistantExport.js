@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Modal} from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import axios from 'axios'
+import AdminService from '../../utils/AdminService';
 
 const ExportModal = ({showModal, handleClose, authorization, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
     <Modal show={showModal} onHide={handleClose}>
@@ -15,7 +15,9 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
             <br/>
-            <button variant="primary" className='style-btn warn' onClick={() => {handleClick({assignmentExport}, courseId,authorization)}}>
+            <button variant="primary" className='style-btn warn' onClick={() => {
+                handleClick({assignmentExport}, courseId, authorization)
+            }}>
                 Re-Evaluation (CARE!)
             </button>
         </Modal.Body>
@@ -27,17 +29,8 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
     </Modal>
 );
 
-function handleClick(assignmentExport, courseId,authorization) {
-    fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate'
-        , authorization())
-        .then(response => {
-            if (response.ok) {
-                return response;
-            } else {
-                return Promise.reject({ status: response.status, statusText: response.statusText });
-            }
-        })
-        .catch(error => console.log('Error, with message:', error.statusText));
+function handleClick(assignmentExport, courseId, authorization) {
+    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentExport.assignmentId, authorization);
 }
 
 const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {
