@@ -70,7 +70,7 @@ class Course extends Component {
             return null;
         }
 
-        const isCourseAssistant = this.props.context.isCourseAssistant(course.id);
+        const isCourseAdmin = this.props.context.isCourseAdmin(course.id);
 
         return (
             <div className="container">
@@ -85,7 +85,7 @@ class Course extends Component {
                     <br/>
                     <div>
                         <AssignmentList courseId={course.id} assignments={course.assignments}
-                                        isAssistant={isCourseAssistant}
+                                        isAdmin={isCourseAdmin}
                                         onAssignmentExportClick={this.onAssignmentExportClick}
                                         results={courseResults}
                         />

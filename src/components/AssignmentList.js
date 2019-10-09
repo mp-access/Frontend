@@ -4,7 +4,7 @@ import Util from '../utils/Util';
 import PropTypes from 'prop-types';
 import { Lock, Clock } from 'react-feather';
 
-const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
+const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
             const pastDueDate = new Date(assignment.dueDate) < (new Date());
             const label = <><h5>{assignment.title}</h5></>;
@@ -17,7 +17,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                         <small><Clock size={12} /> Due date: {Util.timeFormatter(assignment.dueDate)}</small>
                     </Link>
                     <div>
-                        {isAssistant &&
+                        {isAdmin &&
                             <button className="style-btn"
                             onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
                         {result &&
@@ -42,7 +42,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
 AssignmentList.propTypes = {
     courseId: PropTypes.string.isRequired,
     assignments: PropTypes.array.isRequired,
-    isAssistant: PropTypes.bool.isRequired,
+    isAdmin: PropTypes.bool.isRequired,
     result: PropTypes.array,
 };
 
