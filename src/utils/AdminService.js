@@ -7,17 +7,8 @@ class AdminService {
             .then(result => result.json()).catch(error => console.error('Error: ', error));
     }
 
-    static async reEvaluteSubmissions(courseId, assignmentId, authHeader){
-        fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentId + '/reevaluate'
-            , authHeader())
-            .then(response => {
-                if (response.ok) {
-                    return response;
-                } else {
-                    return Promise.reject({ status: response.status, statusText: response.statusText });
-                }
-            })
-            .catch(error => console.log('Error, with message:', error.statusText));
+    static async reEvaluteSubmissions(courseId, assignmentId, authHeader) {
+        fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentId + '/reevaluate', authHeader())
     };
 
 }

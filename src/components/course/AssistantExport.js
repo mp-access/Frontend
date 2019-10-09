@@ -30,7 +30,8 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
 );
 
 function handleClick(assignmentExport, courseId, authorization) {
-    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentExport.assignmentId, authorization);
+    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentExport.assignmentId, authorization)
+        .catch(error => console.log(error));
 }
 
 const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {
