@@ -50,7 +50,7 @@ class Course extends Component {
     onAssignmentExportClick = (assignment) => {
         this.setState({
             showModal: true,
-            modalAssignmentTitle: assignment.label,
+            modalAssignmentTitle: assignment.title,
         });
 
         const assignmentId = assignment.id;
@@ -92,8 +92,10 @@ class Course extends Component {
                     </div>
 
                     {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
+                                                      courseId={this.state.course.id}
                                                     assignmentExport={assignmentExport}
                                                     showModal={showModal && !!assignmentExport}
+                                                    authorization={this.props.context.authorizationHeader}
                                                     handleClose={this.closeModal}/>
                     }
                 </div>

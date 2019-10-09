@@ -146,6 +146,7 @@ class ChoiceExercise extends Component {
         const { workspace, authorizationHeader } = this.props;
         return (
             <>
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-12">
                         <MarkdownViewer markdown={workspace.question} exerciseId={workspace.exerciseId}

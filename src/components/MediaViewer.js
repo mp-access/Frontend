@@ -4,6 +4,7 @@ import CourseDataService from '../utils/CourseDataService';
 import Spinner from './core/Spinner';
 import './MediaViewer.css';
 import MarkdownViewer from './MarkdownViewer';
+import { Download, File } from 'react-feather';
 
 class MediaViewer extends Component {
 
@@ -28,14 +29,22 @@ class MediaViewer extends Component {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
         const showQuestion = selectedFile.title === 'description.md';
         const mediaType = mediaTypeMap[selectedFile.extension];
+        let content;
 
-
-        if (!showQuestion && mediaType !== 'code') {
-            const blob = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
-            this.setState({
-                mediaBlob: URL.createObjectURL(blob),
-            });
+        if (this.isResourceFile(showQuestion, mediaType)) {
+            content = await this.fetchExerciseFile(exerciseId, selectedFile.id, authorizationHeader);
+        } else {
+            content = new Blob([selectedFile.content], { type: 'plain/text' });
         }
+
+        this.setState({
+            mediaBlob: URL.createObjectURL(content),
+            blobSizeKb: content.size / 1000,
+        });
+    };
+
+    isResourceFile = (isQuestion, mediaType) => {
+        return !isQuestion && mediaType !== 'code';
     };
 
     fetchExerciseFile = async (exerciseId, fileId, authHeader) => {
@@ -60,7 +69,7 @@ class MediaViewer extends Component {
     };
 
     render() {
-        const mediaBlob = this.state.mediaBlob;
+        const { mediaBlob, blobSizeKb } = this.state;
         const { selectedFile, workspace, onChange, authorizationHeader } = this.props;
 
         const { content, title, extension, readOnly } = selectedFile;
@@ -68,6 +77,14 @@ class MediaViewer extends Component {
         const language = extensionLanguageMap[extension];
         const showQuestion = title === 'description.md';
         const editorOptions = this.editorOptions(readOnly);
+        const exportFile = (
+            <a href={mediaBlob}
+               download={title}>
+                <button className="style-btn ghost">
+                    <Download size={14}/>Download File
+                </button>
+            </a>
+        );
 
         let viewport;
 
@@ -84,13 +101,29 @@ class MediaViewer extends Component {
                 } else {
                     viewport = <div className="loading-box"><Spinner text={'Loading...'}/></div>;
                 }
+            } else {
+                viewport = (
+                    <div className={'media-viewer-unsupported'}>
+                        <div className="my-3"><File size={80}/></div>
+                        <strong>.{extension}</strong> files can't be previewed
+                        <p>
+                            <small>{title} - {blobSizeKb} KB</small>
+                        </p>
+                        {exportFile}
+                    </div>
+                );
             }
         }
 
         return (
-            <div className="media-viewport">
-                {viewport}
-            </div>
+            <>
+                <h4>
+                    {selectedFile.name + '.' + selectedFile.extension}
+                </h4>
+                <div className="media-viewport">
+                    {viewport}
+                </div>
+            </>
         );
     }
 }

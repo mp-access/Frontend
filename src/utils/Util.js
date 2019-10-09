@@ -36,6 +36,27 @@ class Util{
         localStorage.setItem('isDarkMode', !isDark + '');
         return !isDark;
     };
+
+    static MEDIA_TYPE_MAP = {
+        // Code
+        'py':   'code',
+        'js':   'code',
+        'css':  'code',
+        'json': 'code',
+        'md':   'code',
+        'c':    'code',
+        'cpp':  'code',
+        'h':    'code',
+        'java': 'code',
+        'txt':  'code',
+
+        // Image
+        'png':  'img',
+        'jpg':  'img',
+        'jpeg': 'img',
+        'gif':  'img',
+        'svg':  'img',
+    };
 }
 
 export default Util;

@@ -27,11 +27,17 @@ class CourseDataService {
 
     static async getExerciseFile(exerciseId, fileId, authHeader) {
         return fetch(utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/' + fileId, authHeader())
-            .then(result => result.blob()).catch(error => console.error('Error: ', error));
+            .then(result => {
+                if (result.ok) {
+                    return result.blob();
+                } else {
+                    console.error('Failed to fetch file', fileId, result);
+                }
+            }).catch(error => console.error('Error: ', error));
     }
 
     static async getExerciseFileByName(exerciseId, name, authHeader) {
-        const url = utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/search' ;
+        const url = utils.courseServiceUrl + '/exercises/' + exerciseId + '/files/search';
         return fetch(url, {
             method: 'POST',
             headers: authHeader().headers,

@@ -8,9 +8,8 @@ import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
-import Spinner from '../components/core/Spinner';
-import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
-import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
+import { AlertCircle, X, ExternalLink } from 'react-feather';
+import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 
 class Exercise extends Component {
@@ -267,6 +266,7 @@ class Exercise extends Component {
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
                     submitCode={this.onCodeSubmit}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -280,6 +280,7 @@ class Exercise extends Component {
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
                     submitCode={this.onCodeSubmit}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -323,39 +324,6 @@ class Exercise extends Component {
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType} isGraded={workspace.submission ? workspace.submission.graded : false }/>;
 
-
-        let buttonCluster;
-        if (isCodeType) {
-            let runButtonContent;
-            if (this.state.runButtonState) {
-                runButtonContent = <Spinner text={'Processing'}/>;
-            } else {
-                runButtonContent = <>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={
-                        <Tooltip id="testrun-tooltip">
-                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                        </Tooltip>
-                    }
-                    >
-                    <span><Play size={14}/>Test & Run</span>
-                </OverlayTrigger>
-                </>;
-            }
-
-            buttonCluster = (
-                <>
-                    <div className="code-panel float-right">
-                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                        </button>*/}
-                        <button className="style-btn" disabled={this.state.runButtonState}
-                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                    </div>
-                </>
-            );
-        }
-
         return (
             <>
                 {this.state.isDirty && this.createLeaveOnDirtyModal()}
@@ -371,8 +339,6 @@ class Exercise extends Component {
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
-                            {buttonCluster}
-                            <div className="clearfix"></div>
                             {content}
                         </div>
                     </div>

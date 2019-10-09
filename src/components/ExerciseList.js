@@ -52,7 +52,7 @@ class ExerciseList extends Component {
                                 placement="top"
                                 overlay={
                                     <Tooltip id="tooltip-outdated">
-                                        This submission is outated!
+                                        This submission is outdated!
                                     </Tooltip>
                                 }
                             >
