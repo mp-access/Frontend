@@ -3,7 +3,7 @@ import {Button, Modal} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios'
 
-const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
+const ExportModal = ({showModal, handleClose, authorization, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
     <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
             <Modal.Title>{assignmentTitle}</Modal.Title>
@@ -15,7 +15,7 @@ const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assign
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
             <br/>
-            <button variant="primary" className='style-btn warn' onClick={() => {handleClick({assignmentExport}, courseId)}}>
+            <button variant="primary" className='style-btn warn' onClick={() => {handleClick({assignmentExport}, courseId,authorization)}}>
                 Re-Evaluation (CARE!)
             </button>
         </Modal.Body>
@@ -27,16 +27,17 @@ const ExportModal = ({showModal, handleClose, courseId, assignmentExport, assign
     </Modal>
 );
 
-function handleClick(assignmentExport, courseId) {
-    //get request
-    //axios is promise based, we could make a fire&forget out of it? Does backend return anything?
-    axios.get('/api/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate')
-        .then((response) => {
-            return response;
+function handleClick(assignmentExport, courseId,authorization) {
+    fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentExport.assignmentExport.assignmentId + '/reevaluate'
+        , authorization())
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                return Promise.reject({ status: response.status, statusText: response.statusText });
+            }
         })
-        .catch((error) => {
-            console.log(error);
-        });
+        .catch(error => console.log('Error, with message:', error.statusText));
 }
 
 const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {

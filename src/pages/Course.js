@@ -87,6 +87,7 @@ class Course extends Component {
                                                       courseId={this.state.course.id}
                                                     assignmentExport={assignmentExport}
                                                     showModal={showModal && !!assignmentExport}
+                                                    authorization={this.props.context.authorizationHeader}
                                                     handleClose={this.closeModal}/>
                     }
                 </div>
