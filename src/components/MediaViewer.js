@@ -61,7 +61,7 @@ class MediaViewer extends Component {
 
     render() {
         const mediaBlob = this.state.mediaBlob;
-        const { selectedFile, workspace, onChange, isDark, authorizationHeader } = this.props;
+        const { selectedFile, workspace, onChange, authorizationHeader } = this.props;
 
         const { content, title, extension, readOnly } = selectedFile;
         const mediaType = mediaTypeMap[extension];
@@ -77,7 +77,7 @@ class MediaViewer extends Component {
         } else {
             if (mediaType === 'code') {
                 viewport = <CodeEditor content={content} language={language} options={editorOptions} onChange={onChange}
-                                       isDark={isDark} submitCode={this.props.submitCode}/>;
+                                       submitCode={this.props.submitCode}/>;
             } else if (mediaType === 'img') {
                 if (mediaBlob !== undefined) {
                     viewport = <img src={mediaBlob} alt={title}/>;

@@ -60,7 +60,7 @@ class CodeExercise extends PureComponent {
         pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
 
         let files = [questionFile]
-            .concat(pub_dir)
+            .concat(pub_dir);
 
         if (exercise.solution_files) {
             sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
@@ -112,7 +112,7 @@ class CodeExercise extends PureComponent {
      */
     onChange = (newValue) => {
         const { selectedFile, fileExplorerData } = this.state;
-        
+
         this.props.setIsDirty(true);
 
         const updatedSelectedFile = {
@@ -136,7 +136,7 @@ class CodeExercise extends PureComponent {
             } else {
                 return folder;
             }
-        });        
+        });
 
         this.setState({
             selectedFile: updatedSelectedFile,
@@ -187,7 +187,7 @@ class CodeExercise extends PureComponent {
     }
 
     render() {
-        const { workspace, isDark, authorizationHeader } = this.props;
+        const { workspace, authorizationHeader } = this.props;
         const { selectedFile, fileExplorerData } = this.state;
         const exerciseId = this.props.exercise.id;
 
@@ -220,7 +220,7 @@ class CodeExercise extends PureComponent {
                             <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark} submitCode={this.props.submitCode}
+                                         submitCode={this.props.submitCode}
                             />
                         </div>
                     </div>

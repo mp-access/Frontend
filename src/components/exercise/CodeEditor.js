@@ -1,18 +1,22 @@
 import MonacoEditor from 'react-monaco-editor';
 import React from 'react';
+import Util from '../../utils/Util';
 
-const CodeEditor = ({ content, language, options, onChange, isDark, submitCode }) => (
-    <>
-        <MonacoEditor
-            language={language}
-            value={content}
-            options={options}
-            onChange={onChange}
-            theme={isDark ? 'vs-dark' : 'vs-light'}
-            editorDidMount={(editor, monaco) => onMount(editor, monaco, submitCode)}
-        />
-    </>
-);
+const CodeEditor = ({ content, language, options, onChange, submitCode }) => {
+    const isDark = Util.getIsDarkFromLocalStorage();
+    return (
+        <>
+            <MonacoEditor
+                language={language}
+                value={content}
+                options={options}
+                onChange={onChange}
+                theme={setTheme(isDark)}
+                editorDidMount={(editor, monaco) => onMount(editor, monaco, submitCode)}
+            />
+        </>
+    );
+};
 
 const onMount = (editor, monaco, codeSubmit) => {
     const testAndRunBindings = [
@@ -22,7 +26,18 @@ const onMount = (editor, monaco, codeSubmit) => {
         monaco.KeyMod.WinCtrl | monaco.KeyCode.KEY_S,
     ];
 
-    testAndRunBindings.forEach(binding => editor.addCommand(binding, () => codeSubmit()));
+    const darkModeBinding = [
+        monaco.KeyMod.WinCtrl | monaco.KeyCode.KEY_P,
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_P,
+    ];
+
+    darkModeBinding.forEach(binding => editor.addCommand(binding, () => toggleDarkMode(monaco)));
+
+    testAndRunBindings.forEach(binding => editor.addCommand(binding, codeSubmit));
 };
+
+const toggleDarkMode = (monaco) => monaco.editor.setTheme(setTheme(Util.toggleAndThenGetIsDark()));
+
+const setTheme = (isDark) => isDark ? 'vs-dark' : 'vs-light';
 
 export default CodeEditor;

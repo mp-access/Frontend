@@ -20,6 +20,22 @@ class Util{
             .replace(/([a-z])([A-Z])/, function(m) { return m[0] + " " + m[1]; })
             .replace(/^[a-z]/, function(m) { return m.toUpperCase(); });
     }
+
+    static getIsDarkFromLocalStorage() {
+        let isDark = localStorage.getItem('isDarkMode') || false;
+        if (!!isDark) {
+            isDark = isDark === 'true';
+        } else {
+            localStorage.setItem('isDarkMode', isDark + '');
+        }
+        return isDark;
+    };
+
+    static toggleAndThenGetIsDark() {
+        const isDark = Util.getIsDarkFromLocalStorage();
+        localStorage.setItem('isDarkMode', !isDark + '');
+        return !isDark;
+    };
 }
 
 export default Util;

@@ -22,7 +22,6 @@ class Exercise extends Component {
             exercises: [],
             workspace: Workspace,
             runButtonState: false,
-            isDark: false,
             currBottomTab: 'tests',
             showAlert: true,
             isDirty: false,
@@ -135,10 +134,6 @@ class Exercise extends Component {
 
     resetRunButton = () => {
         this.setState({ runButtonState: false });
-    };
-
-    onIsDark = () => {
-        this.setState({ isDark: !this.state.isDark });
     };
 
     onBottomTab = (key) => {
@@ -268,7 +263,6 @@ class Exercise extends Component {
                     exercise={exercise}
                     workspace={workspace}
                     authorizationHeader={this.props.context.authorizationHeader}
-                    isDark={this.state.isDark}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
