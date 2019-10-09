@@ -8,7 +8,7 @@ import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
-import { AlertCircle, X, ExternalLink } from 'react-feather';
+import { AlertCircle, ExternalLink, X } from 'react-feather';
 import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 
@@ -20,7 +20,7 @@ class Exercise extends Component {
             exercise: undefined,
             exercises: [],
             workspace: Workspace,
-            isDark: false,
+            runButtonState: false,
             currBottomTab: 'tests',
             showAlert: true,
             isDirty: false,
@@ -81,7 +81,7 @@ class Exercise extends Component {
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
-        
+
         this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
 
         this.setState({
@@ -126,10 +126,6 @@ class Exercise extends Component {
         this.setState({ workspace});
     };
 
-    onIsDark = () => {
-        this.setState({ isDark: !this.state.isDark });
-    };
-
     onBottomTab = (key) => {
         this.setState({currBottomTab: key});
     }
@@ -170,7 +166,7 @@ class Exercise extends Component {
 
     createLeaveOnDirtyModal() {
         const { showModal} = this.state;
-      
+
         return (
           <>
             <Modal centered show={showModal} onHide={this.onShowLeaveModal.bind(this, false)}>
@@ -196,7 +192,7 @@ class Exercise extends Component {
 
         let { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
-        
+
         let codeResponse;
         try{
             codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader);
@@ -257,7 +253,6 @@ class Exercise extends Component {
                     exercise={exercise}
                     workspace={workspace}
                     authorizationHeader={this.props.context.authorizationHeader}
-                    isDark={this.state.isDark}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}

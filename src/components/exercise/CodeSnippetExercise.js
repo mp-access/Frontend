@@ -89,6 +89,7 @@ class CodeSnippetExercise extends Component {
         const exerciseId = exercise.id;
 
         const workspace = zip.folder('workspace');
+        workspace.file('description.md', exercise.question);
 
         for (const file of publicFiles) {
             const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
@@ -165,7 +166,7 @@ class CodeSnippetExercise extends Component {
         return (
             <>
                 {buttonCluster}
-                <div className="clearfix"></div> 
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
@@ -181,7 +182,8 @@ class CodeSnippetExercise extends Component {
                     <div className="col-12">
                         <div className="media-viewport">
                             <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                                        onChange={this.onChange} submitCode={this.onCodeSubmit} height="300px"
+                            />
                         </div>
                     </div>
                 </div>

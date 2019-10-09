@@ -258,8 +258,8 @@ class CodeExercise extends PureComponent {
 
         return (
             <>
-                {buttonCluster} 
-                <div className="clearfix"></div> 
+                {buttonCluster}
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
@@ -271,7 +271,8 @@ class CodeExercise extends PureComponent {
                         <div>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark}/>
+                                         submitCode={this.onCodeSubmit}
+                            />
                         </div>
                     </div>
                 </div>

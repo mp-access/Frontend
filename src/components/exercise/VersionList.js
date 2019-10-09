@@ -109,8 +109,6 @@ class VersionList extends Component {
         const triggeredReSubmission = item.triggeredReSubmission;
         const title = (triggeredReSubmission ? 'Automatic Submission' : (isSubmit ? 'Submission ' : 'Testrun ') + (index + 1));
 
-        console.log(item);
-
         const ret_item = (
             <li key={item.id} className={active ? 'active' : ''}>
                 <div id={item.id}
