@@ -115,7 +115,7 @@ class VersionList extends Component {
                      className={'submission-item ' + (outdated ? 'outdated' : '')}>
                     <strong>{title}{item.result && <span className="float-right">({item.result.score}P)</span>}</strong>
                     <br/>
-                    <small>{Util.dateTimeFormatter(item.timestamp)}</small>
+                    <small>{Util.dateTimeFormatter(item.timestamp, true)}</small>
                     <br/>
                     <div className="two-box">
                         <button

@@ -6,6 +6,7 @@ import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class Assignment extends Component {
 
@@ -25,9 +26,9 @@ class Assignment extends Component {
         try {
             CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
                 .then(result => {
-                        this.setState({ assignment: result, isLoadingAssignment: false })
+                        this.setState({ assignment: result, isLoadingAssignment: false });
                         this.props.crumbs.setBreadCrumbs(result.breadCrumbs);
-                    }
+                    },
                 )
                 .catch(err => {
                     console.debug('Error:', err.toString());
@@ -60,15 +61,26 @@ class Assignment extends Component {
         }
 
         let gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
+        const publishDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(assignment.publishDate, false);
+        const dueDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(assignment.dueDate, true);
 
         return (
             <div className="container">
                 <div className="panel">
                     <div className="heading">
                         <h2>{assignment.title}</h2>
-                        <small><Calendar size={12}/> Open
-                            from: <strong>{Util.dateTimeFormatter(assignment.publishDate)}</strong> -
-                            to: <strong>{Util.dateTimeFormatter(assignment.dueDate)}</strong></small>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={
+                                <Tooltip>
+                                    {publishDateInServerLocalDateTime + ' to ' + dueDateInServerLocalDateTime}
+                                </Tooltip>
+                            }
+                        >
+                            <small><Calendar size={12}/> Open
+                                from: <strong>{Util.dateTimeFormatter(assignment.publishDate, false)}</strong> -
+                                to: <strong>{Util.dateTimeFormatter(assignment.dueDate, true)}</strong></small>
+                        </OverlayTrigger>
                     </div>
                     <p>{assignment.description}</p>
                     <br/>

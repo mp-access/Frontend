@@ -4,9 +4,10 @@ import AssignmentList from '../components/AssignmentList';
 import Util from '../utils/Util';
 import AdminService from '../utils/AdminService';
 import { ExportModal } from '../components/course/AssistantExport';
-import ResultService from "../utils/ResultService";
+import ResultService from '../utils/ResultService';
 import { Calendar } from 'react-feather';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class Course extends Component {
 
@@ -28,16 +29,16 @@ class Course extends Component {
         CourseDataService.getCourses(context.authorizationHeader)
             .then(result => {
                 const course = result.find(c => c.id === courseId);
-                this.setState({ course:  course});
+                this.setState({ course: course });
                 this.props.crumbs.setBreadCrumbs(course.breadCrumbs);
             })
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
 
-         ResultService.getCourseResults(courseId, context.authorizationHeader)
-            .then(result => this.setState({courseResults: result}))
-           //  .then(result => console.warn(result))
+        ResultService.getCourseResults(courseId, context.authorizationHeader)
+            .then(result => this.setState({ courseResults: result }))
+            //  .then(result => console.warn(result))
             .catch(err => {
                 console.debug('Error:', err.toString());
             });
@@ -71,14 +72,26 @@ class Course extends Component {
         }
 
         const isCourseAssistant = this.props.context.isCourseAssistant(course.id);
+        const startDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(course.startDate, false);
+        const endDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(course.endDate, true);
 
         return (
             <div className="container">
                 <div className="panel">
                     <div className="heading">
                         <h2>{course.title}</h2>
-                        <small><Calendar size={12} /> Open from: <strong>{Util.dateTimeFormatter(course.startDate)}</strong> -
-                            to: <strong>{Util.dateTimeFormatter(course.endDate)}</strong></small>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={
+                                <Tooltip>
+                                    {startDateInServerLocalDateTime + ' to ' + endDateInServerLocalDateTime}
+                                </Tooltip>
+                            }
+                        >
+                            <small><Calendar size={12}/> Open
+                                from: <strong>{Util.dateTimeFormatter(course.startDate, false)}</strong> -
+                                to: <strong>{Util.dateTimeFormatter(course.endDate, true)}</strong></small>
+                        </OverlayTrigger>
                     </div>
                     <p>{course.description}</p>
                     <br/>
@@ -93,10 +106,10 @@ class Course extends Component {
 
                     {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
                                                       courseId={this.state.course.id}
-                                                    assignmentExport={assignmentExport}
-                                                    showModal={showModal && !!assignmentExport}
-                                                    authorization={this.props.context.authorizationHeader}
-                                                    handleClose={this.closeModal}/>
+                                                      assignmentExport={assignmentExport}
+                                                      showModal={showModal && !!assignmentExport}
+                                                      authorization={this.props.context.authorizationHeader}
+                                                      handleClose={this.closeModal}/>
                     }
                 </div>
             </div>
