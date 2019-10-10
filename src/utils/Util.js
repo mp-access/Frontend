@@ -1,24 +1,90 @@
+import ServerInfo from '../models/ServerInfo';
 
-class Util{
-    static timeFormatter(time){
-        var t = new Date(time);
-        return t.getDate() + "." + (t.getMonth() + 1) + "." + t.getFullYear() + " " + this.paddZero(t.getHours()) + ":" + this.paddZero(t.getMinutes());
-        //return ret.setSeconds(0,0).toLocaleString().replace(",", "");
+class Util {
+
+    /**
+     * Formats and converts a dateTime using the given zoneId.
+     * If no zoneId is given, then uses the client system's configured zoneId.
+     * @param dateTime
+     * @param zoneId
+     * @param appendTZ whether to append the timezone to the formatted string
+     * @returns {string}
+     */
+    static dateTimeFormatter(dateTime, appendTZ, zoneId) {
+        zoneId = zoneId || this.clientTimezone();
+        const options = {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit',
+            timeZone: zoneId ? zoneId : this.clientTimezone(),
+        };
+
+        const formatter = new Intl.DateTimeFormat('de-CH', options);
+        const startingDate = new Date(dateTime);
+
+        const formattedDate = formatter.format(startingDate);
+        if (appendTZ) {
+            return formattedDate + ' ' + zoneId;
+        }
+        return formattedDate;
     }
 
-    static paddZero(n){
-        if(n <= 9){
-          return "0" + n;
-        }
-        return n
-      }
+    static clientTimezone() {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
+
+    static serverInfo() {
+        return new ServerInfo(JSON.parse(localStorage.getItem('serverInfo')));
+    }
+
+    /**
+     * Converts a dateTime to server local time
+     * @param dateTime
+     * @param appendTZ whether to append the timezone to the formatted string
+     * @returns {string}
+     */
+    static dateTimeInServerLocalTime(dateTime, appendTZ) {
+        const zoneId = Util.serverInfo().zoneId;
+        return this.dateTimeFormatter(dateTime, appendTZ, zoneId);
+    }
+
+    static timeFormatter(date, zoneId) {
+        const options = {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit',
+            timeZone: zoneId,
+        };
+        const formatter = new Intl.DateTimeFormat('de-CH', options);
+        const startingDate = new Date(date);
+
+        return formatter.format(startingDate) + ' ' + zoneId;
+    }
+
+    static fetchServerInfo() {
+        fetch('/api/info').then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.statusText);
+            }
+        }).then(body => {
+            console.debug('Server information', body);
+            const serverInfo = new ServerInfo(body);
+            localStorage.setItem('serverInfo', serverInfo.toString());
+        }).catch(error => {
+            console.error('Failed to get response from server', error);
+        });
+    }
 
     static humanize(str) {
         return str
             .replace(/^[\s_]+|[\s_]+$/g, '')
             .replace(/[_\s]+/g, ' ')
-            .replace(/([a-z])([A-Z])/, function(m) { return m[0] + " " + m[1]; })
-            .replace(/^[a-z]/, function(m) { return m.toUpperCase(); });
+            .replace(/([a-z])([A-Z])/, function(m) {
+                return m[0] + ' ' + m[1];
+            })
+            .replace(/^[a-z]/, function(m) {
+                return m.toUpperCase();
+            });
     }
 
     static getIsDarkFromLocalStorage() {
@@ -39,23 +105,23 @@ class Util{
 
     static MEDIA_TYPE_MAP = {
         // Code
-        'py':   'code',
-        'js':   'code',
-        'css':  'code',
+        'py': 'code',
+        'js': 'code',
+        'css': 'code',
         'json': 'code',
-        'md':   'code',
-        'c':    'code',
-        'cpp':  'code',
-        'h':    'code',
+        'md': 'code',
+        'c': 'code',
+        'cpp': 'code',
+        'h': 'code',
         'java': 'code',
-        'txt':  'code',
+        'txt': 'code',
 
         // Image
-        'png':  'img',
-        'jpg':  'img',
+        'png': 'img',
+        'jpg': 'img',
         'jpeg': 'img',
-        'gif':  'img',
-        'svg':  'img',
+        'gif': 'img',
+        'svg': 'img',
     };
 }
 

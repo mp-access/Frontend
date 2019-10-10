@@ -67,8 +67,8 @@ class Assignment extends Component {
                     <div className="heading">
                         <h2>{assignment.title}</h2>
                         <small><Calendar size={12}/> Open
-                            from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> -
-                            to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
+                            from: <strong>{Util.dateTimeFormatter(assignment.publishDate)}</strong> -
+                            to: <strong>{Util.dateTimeFormatter(assignment.dueDate)}</strong></small>
                     </div>
                     <p>{assignment.description}</p>
                     <br/>

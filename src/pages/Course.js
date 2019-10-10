@@ -77,8 +77,8 @@ class Course extends Component {
                 <div className="panel">
                     <div className="heading">
                         <h2>{course.title}</h2>
-                        <small><Calendar size={12} /> Open from: <strong>{Util.timeFormatter(course.startDate)}</strong> -
-                            to: <strong>{Util.timeFormatter(course.endDate)}</strong></small>
+                        <small><Calendar size={12} /> Open from: <strong>{Util.dateTimeFormatter(course.startDate)}</strong> -
+                            to: <strong>{Util.dateTimeFormatter(course.endDate)}</strong></small>
                     </div>
                     <p>{course.description}</p>
                     <br/>
