@@ -6,8 +6,8 @@ import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import JSZip from 'jszip';
 import CourseDataService from '../../utils/CourseDataService';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { Play, Download } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Download, Play } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
 
@@ -223,22 +223,22 @@ class CodeExercise extends PureComponent {
         />;
 
 
-
         let runButtonContent;
         if (this.state.runButtonState) {
             runButtonContent = <Spinner text={'Processing'}/>;
         } else {
             runButtonContent = <>
-            <OverlayTrigger
-                placement="top"
-                overlay={
-                    <Tooltip id="testrun-tooltip">
-                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                    </Tooltip>
-                }
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
+                            code
+                        </Tooltip>
+                    }
                 >
-                <span><Play size={14}/>Test & Run</span>
-            </OverlayTrigger>
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
             </>;
         }
 
@@ -248,7 +248,9 @@ class CodeExercise extends PureComponent {
                     <div className="code-panel">
                         {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
                         </button>*/}
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
+                            Task
+                        </button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
@@ -290,13 +292,14 @@ class CodeExercise extends PureComponent {
         const zip = new JSZip();
         const { fileExplorerData } = this.state;
         const { exercise, authorizationHeader } = this.props;
-        const exerciseId = exercise.id;
+        const { id: exerciseId, title } = exercise;
 
         const workspace = zip.folder('workspace');
 
         for (const f of fileExplorerData) {
             if (f.isDirectory) {
                 const folder = workspace.folder(f.title);
+
                 for (const file of f.children) {
                     const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
                     if (mediaType === 'code') {
@@ -311,8 +314,13 @@ class CodeExercise extends PureComponent {
             }
         }
 
-        zip.generateAsync({ type: 'base64' }).then(function(content) {
-            window.location.href = 'data:application/zip;base64,' + content;
+        zip.generateAsync({ type: 'base64' }).then(content => {
+            const link = document.createElement('a');
+            //Firefox requires the link to be in the body
+            document.body.appendChild(link);
+            link.download = title.replace(' ', '_') + '.zip';
+            link.href = 'data:application/zip;base64,' + content;
+            link.click();
         });
     };
 }
