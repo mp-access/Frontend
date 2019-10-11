@@ -1,16 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Util from '../utils/Util';
 import PropTypes from 'prop-types';
-import { Clock, Lock } from 'react-feather';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Lock } from 'react-feather';
+import { DueDateTime } from './DateTime';
 
 const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
             const pastDueDate = assignment.pastDueDate;
             const label = <><h5>{assignment.title}</h5></>;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
-            const dueDateInServerLocalTime = Util.dateTimeInServerLocalTime(assignment.dueDate, true);
 
             return (
                 <li key={assignment.id} className="h-flex">
@@ -18,17 +16,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                           className="flex-grow-1">
                         <span>Exercise {index + 1} {pastDueDate ? <Lock size={15}/> : ''}</span>
                         {label}
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={
-                                <Tooltip id="tooltip-outdated">
-                                    {dueDateInServerLocalTime}
-                                </Tooltip>
-                            }
-                        >
-                            <small><Clock size={12}/> Due date: {Util.dateTimeFormatter(assignment.dueDate, true)}
-                            </small>
-                        </OverlayTrigger>
+                        <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
                     <div>
                         {isAssistant &&

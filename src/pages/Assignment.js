@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
-import Util from '../utils/Util';
 import ResultService from '../utils/ResultService';
-import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FromToDateTime } from '../components/DateTime';
+
 
 class Assignment extends Component {
 
@@ -61,26 +60,15 @@ class Assignment extends Component {
         }
 
         let gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
-        const publishDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(assignment.publishDate, false);
-        const dueDateInServerLocalDateTime = Util.dateTimeInServerLocalTime(assignment.dueDate, true);
 
         return (
             <div className="container">
                 <div className="panel">
                     <div className="heading">
                         <h2>{assignment.title}</h2>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={
-                                <Tooltip>
-                                    {publishDateInServerLocalDateTime + ' to ' + dueDateInServerLocalDateTime}
-                                </Tooltip>
-                            }
-                        >
-                            <small><Calendar size={12}/> Open
-                                from: <strong>{Util.dateTimeFormatter(assignment.publishDate, false)}</strong> -
-                                to: <strong>{Util.dateTimeFormatter(assignment.dueDate, true)}</strong></small>
-                        </OverlayTrigger>
+                        <FromToDateTime fromDateTime={assignment.publishDate}
+                                        toDateTime={assignment.dueDate}
+                                        toAppend={true}/>
                     </div>
                     <p>{assignment.description}</p>
                     <br/>

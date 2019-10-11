@@ -36,6 +36,10 @@ class Util {
         return new ServerInfo(JSON.parse(localStorage.getItem('serverInfo')));
     }
 
+    static isClientAndServerTZEquals() {
+        return this.clientTimezone() === this.serverInfo().zoneId;
+    }
+
     /**
      * Converts a dateTime to server local time
      * @param dateTime

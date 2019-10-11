@@ -1,10 +1,10 @@
 import SubmissionService from '../../utils/SubmissionService';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import equal from 'fast-deep-equal';
 import Util from '../../utils/Util';
-import {OverlayTrigger, Popover, Tabs, Tab, Modal, Alert} from 'react-bootstrap';
-import {Send, RotateCcw, X, Flag, Info} from 'react-feather';
+import { Alert, Modal, OverlayTrigger, Popover, Tab, Tabs } from 'react-bootstrap';
+import { Flag, Info, RotateCcw, Send, X } from 'react-feather';
 import PropTypes from 'prop-types';
 import Spinner from '../core/Spinner';
 import './VersionList.css';
@@ -17,10 +17,10 @@ class VersionList extends Component {
         submissionState: false,
         pastDueDate: false,
         submissionCount: {
-            submissionsRemaining: 0
+            submissionsRemaining: 0,
         },
         showModal: false,
-        currentTab: ''
+        currentTab: '',
     };
 
     onSubmit = () => {
@@ -34,26 +34,26 @@ class VersionList extends Component {
     confirmSubmit = () => {
         this.setShowModal(false);
         this.props.submit(true, this.resetSubmitButton);
-        this.setState({submissionState: true});
+        this.setState({ submissionState: true });
     };
 
     resetSubmitButton = () => {
-        this.setState({submissionState: false});
+        this.setState({ submissionState: false });
     };
 
     setCurrentTab = (key) => {
-        this.setState({currentTab: key});
+        this.setState({ currentTab: key });
     };
 
     componentDidMount = async () => {
-        const {exercise} = this.props;
+        const { exercise } = this.props;
 
         this.fetchSubmissions(exercise.id);
         this.setCurrentTab(this.props.isGraded ? 'submits' : 'testruns');
     };
 
     componentDidUpdate = async (prevProps) => {
-        const {exercise, selectedSubmissionId} = this.props;
+        const { exercise, selectedSubmissionId } = this.props;
         if (!equal(exercise, prevProps.exercise) || !equal(selectedSubmissionId, prevProps.selectedSubmissionId)) {
             this.fetchSubmissions(exercise.id);
             this.setCurrentTab(this.props.isGraded ? 'submits' : 'testruns');
@@ -61,14 +61,14 @@ class VersionList extends Component {
     };
 
     fetchSubmissions = async (exerciseId) => {
-        const {authorizationHeader} = this.props;
-        const {submissions, runs, submissionCount, pastDueDate} = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
+        const { authorizationHeader } = this.props;
+        const { submissions, runs, submissionCount, pastDueDate } = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader);
 
         this.setState({
             submissions,
             runs,
             pastDueDate,
-            submissionCount: submissionCount
+            submissionCount: submissionCount,
         });
     };
 
@@ -87,7 +87,7 @@ class VersionList extends Component {
                 Your Score: {result.score}
                 <br/>
                 Max Points: {result.maxScore}
-            </>
+            </>;
         }
 
         return (
@@ -115,7 +115,7 @@ class VersionList extends Component {
                      className={'submission-item ' + (outdated ? 'outdated' : '')}>
                     <strong>{title}{item.result && <span className="float-right">({item.result.score}P)</span>}</strong>
                     <br/>
-                    <small>{Util.dateTimeFormatter(item.timestamp, true)}</small>
+                    <small>{Util.dateTimeFormatter(item.timestamp, !Util.isClientAndServerTZEquals())}</small>
                     <br/>
                     <div className="two-box">
                         <button
@@ -141,11 +141,11 @@ class VersionList extends Component {
     }
 
     setShowModal = (show) => {
-        this.setState({showModal: show});
+        this.setState({ showModal: show });
     };
 
     lastSubmissionWarning() {
-        const {showModal} = this.state;
+        const { showModal } = this.state;
 
         return (
             <>
@@ -171,17 +171,17 @@ class VersionList extends Component {
     render() {
         const submissions = this.state.submissions || [];
         const runs = this.state.runs || [];
-        const {isCodeType, exercise} = this.props;
+        const { isCodeType, exercise } = this.props;
         const score = submissions.length && submissions[0] && submissions[0].result && submissions[0].result.score ? submissions[0].result.score : 0;
         const maxScore = exercise.maxScore ? exercise.maxScore : 1;
         const scorePercent = (score / maxScore * 100);
 
-        let scoreProgress = "low";
+        let scoreProgress = 'low';
 
         if (scorePercent > 75) {
-            scoreProgress = "full";
+            scoreProgress = 'full';
         } else if (scorePercent >= 50) {
-            scoreProgress = "mid";
+            scoreProgress = 'mid';
         }
 
 
@@ -212,8 +212,8 @@ class VersionList extends Component {
 
                 <span className="score-board">
                     <span>Score: <strong>{score}</strong> / {maxScore}</span>
-                    <span className={"score-bar " + scoreProgress} style={{
-                        width: scorePercent + "%"
+                    <span className={'score-bar ' + scoreProgress} style={{
+                        width: scorePercent + '%',
                     }}>
                     </span>
                 </span>
@@ -237,14 +237,14 @@ class VersionList extends Component {
                         <Tab eventKey="testruns" title="Testruns">
                             {runs.length === 0 ? <div className="py-3">No runs</div> : ''}
                             <ul className="style-list">
-                                {runs.slice(0, 6).map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false),)}
+                                {runs.slice(0, 6).map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false))}
                                 {templatePart}
                             </ul>
                         </Tab>
                         <Tab eventKey="submits" title="Submits">
                             {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
                             <ul className="style-list">
-                                {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
+                                {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true))}
                                 {templatePart}
                             </ul>
                         </Tab>
@@ -254,7 +254,7 @@ class VersionList extends Component {
                         <h4>Submissions</h4>
                         <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
                         <ul className="style-list">
-                            {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true),)}
+                            {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true))}
                             {templatePart}
                         </ul>
                     </>
