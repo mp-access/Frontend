@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
-import Util from '../utils/Util';
 import ResultService from '../utils/ResultService';
-import { Calendar } from 'react-feather';
 import { ErrorRedirect } from './ErrorPage';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
+import { FromToDateTime } from '../components/DateTime';
+
 
 class Assignment extends Component {
 
@@ -25,9 +25,9 @@ class Assignment extends Component {
         try {
             CourseDataService.getAssignment(courseId, assignmentId, context.authorizationHeader)
                 .then(result => {
-                        this.setState({ assignment: result, isLoadingAssignment: false })
+                        this.setState({ assignment: result, isLoadingAssignment: false });
                         this.props.crumbs.setBreadCrumbs(result.breadCrumbs);
-                    }
+                    },
                 )
                 .catch(err => {
                     console.debug('Error:', err.toString());
@@ -66,9 +66,9 @@ class Assignment extends Component {
                 <div className="panel">
                     <div className="heading">
                         <h2>{assignment.title}</h2>
-                        <small><Calendar size={12}/> Open
-                            from: <strong>{Util.timeFormatter(assignment.publishDate)}</strong> -
-                            to: <strong>{Util.timeFormatter(assignment.dueDate)}</strong></small>
+                        <FromToDateTime fromDateTime={assignment.publishDate}
+                                        toDateTime={assignment.dueDate}
+                                        toAppend={true}/>
                     </div>
                     <p>{assignment.description}</p>
                     <br/>
