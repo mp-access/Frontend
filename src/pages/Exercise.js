@@ -157,7 +157,7 @@ class Exercise extends Component {
                         <br />
                         Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline. 
                         <br />
-                        You will find more information in the <a target="_blank" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
+                        You will find more information in the <a target="_blank" rel="noopener noreferrer" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
                     </span>
                 </Alert>
             </>
