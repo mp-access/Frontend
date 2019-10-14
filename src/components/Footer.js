@@ -9,7 +9,7 @@ const Footer = () => (
                 <div className="col-6">
                     <small>© 2019 ACCESS</small>
                     <br/>
-                    <small>With <span role="img">❤️</span> by <a target="_blank" rel="noopener noreferrer" href="https://github.com/mp-access">ACCESS-Team</a></small>
+                    <small>With <span role="img" aria-label="Heart">❤️</span> by <a target="_blank" rel="noopener noreferrer" href="https://github.com/mp-access">ACCESS-Team</a></small>
                 </div>
                 <div className="col-6">
                     <div className="float-right">
