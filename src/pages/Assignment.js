@@ -59,7 +59,7 @@ class Assignment extends Component {
             return null;
         }
 
-        let gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
+        const gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
 
         return (
             <div className="container">

@@ -120,7 +120,7 @@ class MediaViewer extends Component {
                 <h4>
                     {selectedFile.name + '.' + selectedFile.extension}
                 </h4>
-                <div className="media-viewport">
+                <div className={"media-viewport" + (!showQuestion && mediaType === 'code' ? ' no-scroll' : '') }>
                     {viewport}
                 </div>
             </>

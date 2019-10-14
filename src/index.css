@@ -241,8 +241,22 @@ code {
   color: black;
 }
 
+.style-list li.fresh,
 .style-list li:hover{
   background: white;
+}
+
+
+.style-list li.fresh:after{
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  background-image: linear-gradient(to right top, #5886e5, #36d1dc);
+  top: 8px; 
+  right: 10px;
 }
 
 .two-box,
