@@ -33,6 +33,14 @@ class ExerciseList extends Component {
         const { exercises, selectedId, gradedSubmissions, showScore } = this.props;
 
         const listItems = exercises.map((e, index) => {
+
+            let longTitle;
+            if (e.longTile){
+                longTitle = <small>{e.longTile}</small>;
+              } else {
+                longTitle = <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>;
+            }
+
             const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
 
             const score = gradedSub && gradedSub.result ? gradedSub.result.score : 0;
@@ -41,9 +49,10 @@ class ExerciseList extends Component {
             return (
                 <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '') + (gradedSub ? '' : ' fresh')}>
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <span>Task {index + 1}</span>
-                        <h5>{e.title}{!e.isGraded ? ' (Bonus)' : ''}</h5>
-                        <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
+                        <span>{e.title ? e.title : 'Task ' + (index+1)}</span>
+                        <p>{!e.isGraded ? ' (Bonus)' : ''}</p>
+                        {longTitle}
+                        <div align="right"><small>{score} / {maxScore}</small></div>
                     </Link>
 
                     {(gradedSub && gradedSub.invalid) &&
