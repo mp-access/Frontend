@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
-import { LogIn, LogOut, User /*, ChevronRight*/ } from 'react-feather';
+import { LogIn, LogOut, User, ChevronRight} from 'react-feather';
+import { withBreadCrumbsAndAuthAndRouter } from './BreadCrumbProvider';
 
-const Header = ({ history, context }) => {
+const Header = ({ history, context, crumbs }) => {
     const { isAuthenticated, login, logout, loadUserInfo } = context;
+    const breadCrumbs = crumbs.breadCrumbs;
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
@@ -22,15 +24,20 @@ const Header = ({ history, context }) => {
                     <img src="/logo.png" alt="logo"/>
                 </Link>
 
+                {(breadCrumbs && breadCrumbs.length > 0 ) &&
                 <nav>
                     <ul className="breadcrumbs">
-                        {/*list.map( (item, index) =>
+                        {breadCrumbs.map( (item, index) =>
                             <li key={index}>
-                                <Link className="nav-link" to={item.url}>{item.title}</Link>
+                                <Link className="nav-link" to={"/" + item.url}>
+                                    <div>{item.title}</div>
+                                    <small>{getBreadCrumbLevel(index)}</small>
+                                </Link>
                             </li>
-                        ).reduce((prev, curr) => [prev, <li><ChevronRight size={14} /></li>, curr])*/}
+                        ).reduce((prev, curr, index) => [prev, <li key={index * 20}><ChevronRight size={14} /></li>, curr])}
                     </ul>
                 </nav>
+                }
 
                 <div className="d-flex">
                     <Link className="nav-link" to="/profile"><User size={16}/>{name}</Link>
@@ -43,6 +50,19 @@ const Header = ({ history, context }) => {
             </div>
         </header>
     );
+};
+
+const getBreadCrumbLevel = (index) =>{
+    switch (index) {
+        case 0:
+            return "Course";
+        case 1:
+            return "Exercise";
+        case 2:
+            return "Task";
+        default:
+            return "";
+    }
 };
 
 const LoginOrLogoutBtn = withAuthAndRouter(({ isAuthenticated, login, logout, history }) => {
@@ -73,4 +93,4 @@ const LogoutBtn = ({ onLogoutClick, history }) => (
     </button>
 );
 
-export default withAuthAndRouter(Header);
+export default withBreadCrumbsAndAuthAndRouter(Header);

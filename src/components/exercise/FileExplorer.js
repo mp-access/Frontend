@@ -9,10 +9,11 @@ const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
         <div className={'row'}>
             <div className={'col'}>
                 <small className="explorer-label">
-                    EXPLORER
+                    File Explorer
                 </small>
             </div>
         </div>
+        
         <SortableTree
             className="file-explorer"
             treeData={data}

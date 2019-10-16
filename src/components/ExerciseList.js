@@ -39,10 +39,10 @@ class ExerciseList extends Component {
             const maxScore = e.maxScore ? e.maxScore : 1;
 
             return (
-                <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '')}>
+                <li key={index} className={"h-flex" + (selectedId === e.id ? ' active' : '') + (gradedSub ? '' : ' fresh')}>
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <strong>Task {index + 1}{!e.isGraded ? ' (Bonus)' : ''}</strong>
-                        <br/>
+                        <span>Task {index + 1}</span>
+                        <h5>{e.title}{!e.isGraded ? ' (Bonus)' : ''}</h5>
                         <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>
                     </Link>
 
@@ -52,7 +52,7 @@ class ExerciseList extends Component {
                                 placement="top"
                                 overlay={
                                     <Tooltip id="tooltip-outdated">
-                                        This submission is outated!
+                                        This submission is outdated!
                                     </Tooltip>
                                 }
                             >
@@ -63,7 +63,7 @@ class ExerciseList extends Component {
                     }
                     
                     {showScore &&
-                        <div>
+                        <div className="score-display">
                             <span className="style-btn ghost">Score: {score} / {maxScore}</span>
                         </div>
                     }

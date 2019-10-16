@@ -4,6 +4,12 @@ import UserConsole from './UserConsole';
 import MediaViewer from '../MediaViewer';
 import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
+import JSZip from 'jszip';
+import CourseDataService from '../../utils/CourseDataService';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Play, Download } from 'react-feather';
+import Spinner from '../core/Spinner';
+import Util from '../../utils/Util';
 
 class CodeExercise extends PureComponent {
 
@@ -12,6 +18,7 @@ class CodeExercise extends PureComponent {
         this.state = {
             selectedFile: undefined,
             fileExplorerData: undefined,
+            runButtonState: false,
         };
     }
 
@@ -22,8 +29,8 @@ class CodeExercise extends PureComponent {
 
         const questionFile = {
             id: 'question',
-            name: 'Question',
-            title: 'Question.md',
+            name: 'description',
+            title: 'description.md',
             content: exercise.question,
             extension: 'md',
             readOnly: true,
@@ -32,26 +39,26 @@ class CodeExercise extends PureComponent {
         // folders
         const pub_dir = {
             id: 'public_files',
-            title: 'Public Files',
+            title: 'public',
             isDirectory: true,
             expanded: true,
             children: [],
         };
         const priv_dir = {
             id: 'private_files',
-            title: 'Private Files',
+            title: 'private',
             isDirectory: true,
             children: [],
         };
         const sol_dir = {
             id: 'solution_files',
-            title: 'Solution Files',
+            title: 'solution',
             isDirectory: true,
             children: [],
         };
         const res_dir = {
             id: 'resource_files',
-            title: 'Resource Files',
+            title: 'resource',
             isDirectory: true,
             children: [],
         };
@@ -60,7 +67,7 @@ class CodeExercise extends PureComponent {
         pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
 
         let files = [questionFile]
-            .concat(pub_dir)
+            .concat(pub_dir);
 
         if (exercise.solution_files) {
             sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
@@ -107,12 +114,21 @@ class CodeExercise extends PureComponent {
         };
     };
 
+    onCodeSubmit = () => {
+        this.props.submit(false, this.resetRunButton);
+        this.setState({ runButtonState: true });
+    };
+
+    resetRunButton = () => {
+        this.setState({ runButtonState: false });
+    };
+
     /**
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
         const { selectedFile, fileExplorerData } = this.state;
-        
+
         this.props.setIsDirty(true);
 
         const updatedSelectedFile = {
@@ -136,7 +152,7 @@ class CodeExercise extends PureComponent {
             } else {
                 return folder;
             }
-        });        
+        });
 
         this.setState({
             selectedFile: updatedSelectedFile,
@@ -187,7 +203,7 @@ class CodeExercise extends PureComponent {
     }
 
     render() {
-        const { workspace, isDark, authorizationHeader } = this.props;
+        const { workspace, authorizationHeader } = this.props;
         const { selectedFile, fileExplorerData } = this.state;
         const exerciseId = this.props.exercise.id;
 
@@ -206,8 +222,42 @@ class CodeExercise extends PureComponent {
             currBottomTab={this.props.currBottomTab}
         />;
 
+
+
+        let runButtonContent;
+        if (this.state.runButtonState) {
+            runButtonContent = <Spinner text={'Processing'}/>;
+        } else {
+            runButtonContent = <>
+            <OverlayTrigger
+                placement="top"
+                overlay={
+                    <Tooltip id="testrun-tooltip">
+                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                    </Tooltip>
+                }
+                >
+                <span><Play size={14}/>Test & Run</span>
+            </OverlayTrigger>
+            </>;
+        }
+
+        const buttonCluster = (
+            <div className="row">
+                <div className="col-sm-12">
+                    <div className="code-panel">
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <>
+                {buttonCluster}
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileExplorerData} selectedFile={selectedFile}
@@ -217,10 +267,10 @@ class CodeExercise extends PureComponent {
                     </div>
                     <div className="col-10">
                         <div>
-                            <h4>{selectedFile.name + '.' + selectedFile.extension}</h4>
                             <MediaViewer exerciseId={exerciseId} selectedFile={selectedFile} workspace={workspace}
                                          onChange={this.onChange} authorizationHeader={authorizationHeader}
-                                         isDark={isDark} />
+                                         submitCode={this.onCodeSubmit}
+                            />
                         </div>
                     </div>
                 </div>
@@ -233,6 +283,36 @@ class CodeExercise extends PureComponent {
             </>
         );
     }
+
+    downloadWorkspace = async () => {
+        const zip = new JSZip();
+        const { fileExplorerData } = this.state;
+        const { exercise, authorizationHeader } = this.props;
+        const exerciseId = exercise.id;
+
+        const workspace = zip.folder('workspace');
+
+        for (const f of fileExplorerData) {
+            if (f.isDirectory) {
+                const folder = workspace.folder(f.title);
+                for (const file of f.children) {
+                    const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
+                    if (mediaType === 'code') {
+                        folder.file(file.nameWithExtension, file.content);
+                    } else {
+                        const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
+                        folder.file(file.nameWithExtension, content);
+                    }
+                }
+            } else {
+                workspace.file(f.title, f.content);
+            }
+        }
+
+        zip.generateAsync({ type: 'base64' }).then(function(content) {
+            window.location.href = 'data:application/zip;base64,' + content;
+        });
+    };
 }
 
 /**

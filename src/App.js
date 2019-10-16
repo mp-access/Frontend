@@ -5,21 +5,24 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import {AuthProvider} from './auth/AuthProvider';
 import AppNavigation from './Navigation/AppNavigation';
+import { BreadCrumbProvider } from './components/BreadCrumbProvider';
 
 
 class App extends Component {
     render() {
         return (
                 <BrowserRouter>
-                    <AuthProvider>
-                        <main>
-                            <Header/>
-                            <div id="content" className="container-fluid">
-                                <AppNavigation/>
-                            </div>
-                            <Footer/>
-                        </main>
-                    </AuthProvider>
+                    <BreadCrumbProvider>
+                        <AuthProvider>
+                            <main>
+                                <Header/>
+                                <div id="content" className="container-fluid">
+                                    <AppNavigation/>
+                                </div>
+                                <Footer/>
+                            </main>
+                        </AuthProvider>
+                    </BreadCrumbProvider>
                 </BrowserRouter>
         );
     }

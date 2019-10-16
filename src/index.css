@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap');
-
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 
 /* ----------- THEME ------------- */
 
@@ -119,6 +119,10 @@ small{
   transition: 0.3s;
 }
 
+.style-btn.download{
+  background-image: linear-gradient(to right top, #97989b, #dfe0e1);
+}
+
 .style-btn:hover{
   /*background: #66a1ff;*/
   box-shadow: 0px 0px 10px rgba(59, 134, 255, 0.4);
@@ -167,6 +171,10 @@ small{
   margin-right: 5px;
 }
 
+.media-viewer-unsupported {
+  text-align: center;
+}
+
 svg{
   vertical-align: -0.2em !important;
 }
@@ -174,8 +182,7 @@ svg{
 
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: 'Source Code Pro', monospace;
 }
 
 
@@ -220,6 +227,10 @@ code {
   opacity: 1;
 }
 
+.score-display .style-btn.ghost{
+  width: 130px;
+}
+
 .style-list li > *{
   padding: 12px 25px;
   display: block;
@@ -230,8 +241,22 @@ code {
   color: black;
 }
 
+.style-list li.fresh,
 .style-list li:hover{
   background: white;
+}
+
+
+.style-list li.fresh:after{
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  background-image: linear-gradient(to right top, #5886e5, #36d1dc);
+  top: 8px; 
+  right: 10px;
 }
 
 .two-box,
@@ -340,6 +365,12 @@ code {
 
 .breadcrumbs li{
   float: left;
+  padding: 2px 8px;
+}
+
+.breadcrumbs li a small{
+  margin-top: -4px;
+  display: block;
 }
 
 
@@ -404,5 +435,9 @@ code {
 
   .logo img {
     height: 35px;
+  }
+
+  .breadcrumbs{
+    display: none;
   }
 }
