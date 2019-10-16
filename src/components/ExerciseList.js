@@ -52,7 +52,7 @@ class ExerciseList extends Component {
                         <span>{e.title ? e.title : 'Task ' + (index+1)}</span>
                         <p>{!e.isGraded ? ' (Bonus)' : ''}</p>
                         {longTitle}
-                        <div align="right"><small>{score} / {maxScore}</small></div>
+                        {showScore ? '' : <div align="right"><small>{score} / {maxScore}</small></div>}
                     </Link>
 
                     {(gradedSub && gradedSub.invalid) &&
