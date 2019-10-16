@@ -6,12 +6,19 @@
     min-height: 200px;
 }
 
+.media-viewport.no-scroll{
+    overflow: hidden;
+}
+
 .media-viewport > *{
     overflow: visible;
 }
 
+.media-viewport em{
+    margin-right: 0.1em;
+}
+
 .media-viewport img{
-    /*border: 1px solid #dfdfdf;*/
     margin: 0px auto;
     display: block;
     max-width: 100%;

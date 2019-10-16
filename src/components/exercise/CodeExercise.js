@@ -203,7 +203,7 @@ class CodeExercise extends PureComponent {
     }
 
     render() {
-        const { workspace, isDark, authorizationHeader } = this.props;
+        const { workspace, authorizationHeader } = this.props;
         const { selectedFile, fileExplorerData } = this.state;
         const exerciseId = this.props.exercise.id;
 
@@ -246,8 +246,6 @@ class CodeExercise extends PureComponent {
             <div className="row">
                 <div className="col-sm-12">
                     <div className="code-panel">
-                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                        </button>*/}
                         <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download Task</button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
