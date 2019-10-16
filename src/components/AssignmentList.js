@@ -16,10 +16,11 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                         <h5>{assignment.title} {pastDueDate ? <Lock size={15}/> : ''}</h5>
                         <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
-                    <div>
+
                         {isAssistant &&
                         <button className="style-btn"
                                 onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                    <div>
                         {result &&
                         <div className="score-display">
                             <span className="p-1"></span>
