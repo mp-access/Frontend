@@ -1,6 +1,6 @@
 {
   "name": "access-frontend",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
