@@ -1,8 +1,7 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import Util from '../utils/Util';
-import {Code, Type, CheckCircle, CheckSquare, AlertCircle} from 'react-feather';
-import {OverlayTrigger, Tooltip} from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { AlertCircle, CheckCircle, CheckSquare, Code, Type } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class ExerciseList extends Component {
 
@@ -45,8 +44,7 @@ class ExerciseList extends Component {
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
                         <span>{e.title ? e.title : 'Task ' + (index + 1)}</span>
                         <p>{!e.isGraded ? ' (Bonus)' : ''}</p>
-                        {/*  <small>{this.getIcon(e.type)} {Util.humanize(e.type)} {(e.type === 'code' || e.type === 'codeSnippet') ? '(' + Util.humanize(e.language) + ')' : ''}</small>  */}
-                        <small>{'Task ' + (index + 1)}</small>
+                        <small>{this.getIcon(e.type)} {'Task ' + (index + 1)}</small>
                         {showScore ? '' : <div align="right"><small>{score} / {maxScore}</small></div>}
                     </Link>
 
