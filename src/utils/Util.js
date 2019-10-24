@@ -119,6 +119,9 @@ class Util {
         'h': 'code',
         'java': 'code',
         'txt': 'code',
+        'csv': 'code',
+        'tsv': 'code',
+        'html': 'code',
 
         // Image
         'png': 'img',
