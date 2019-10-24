@@ -28,7 +28,7 @@ class MediaViewer extends Component {
     loadMediaFile = async () => {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
         const showQuestion = selectedFile.title === 'description.md';
-        const mediaType = mediaTypeMap[selectedFile.extension];
+        const mediaType = mediaTypeMap[selectedFile.extension] || unknownMediaType;
         let content;
 
         if (this.isResourceFile(showQuestion, mediaType)) {
@@ -44,7 +44,7 @@ class MediaViewer extends Component {
     };
 
     isResourceFile = (isQuestion, mediaType) => {
-        return !isQuestion && mediaType !== 'code';
+        return (!isQuestion && mediaType !== 'code') || mediaType === unknownMediaType;
     };
 
     fetchExerciseFile = async (exerciseId, fileId, authHeader) => {
@@ -128,6 +128,8 @@ class MediaViewer extends Component {
     }
 }
 
+const unknownMediaType = 'unknown';
+
 const mediaTypeMap = {
     'py': 'code',
     'js': 'code',
@@ -139,6 +141,9 @@ const mediaTypeMap = {
     'h': 'code',
     'java': 'code',
     'txt': 'code',
+    'csv': 'code',
+    'tsv': 'code',
+    'html': 'code',
 
     'png': 'img',
     'jpg': 'img',
