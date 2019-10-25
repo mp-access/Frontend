@@ -5,6 +5,7 @@ import Spinner from './core/Spinner';
 import './MediaViewer.css';
 import MarkdownViewer from './MarkdownViewer';
 import { Download, File } from 'react-feather';
+import Util from '../utils/Util';
 
 class MediaViewer extends Component {
 
@@ -28,7 +29,7 @@ class MediaViewer extends Component {
     loadMediaFile = async () => {
         const { exerciseId, selectedFile, authorizationHeader } = this.props;
         const showQuestion = selectedFile.title === 'description.md';
-        const mediaType = mediaTypeMap[selectedFile.extension];
+        const mediaType = Util.MEDIA_TYPE_MAP[selectedFile.extension] || unknownMediaType;
         let content;
 
         if (this.isResourceFile(showQuestion, mediaType)) {
@@ -44,7 +45,7 @@ class MediaViewer extends Component {
     };
 
     isResourceFile = (isQuestion, mediaType) => {
-        return !isQuestion && mediaType !== 'code';
+        return (!isQuestion && mediaType !== 'code') || mediaType === unknownMediaType;
     };
 
     fetchExerciseFile = async (exerciseId, fileId, authHeader) => {
@@ -73,8 +74,8 @@ class MediaViewer extends Component {
         const { selectedFile, workspace, onChange, authorizationHeader } = this.props;
 
         const { content, title, extension, readOnly } = selectedFile;
-        const mediaType = mediaTypeMap[extension];
-        const language = extensionLanguageMap[extension];
+        const mediaType = Util.MEDIA_TYPE_MAP[extension];
+        const language = Util.EXTENSION_LANGUAGE_MAP[extension];
         const showQuestion = title === 'description.md';
         const editorOptions = this.editorOptions(readOnly);
         const exportFile = (
@@ -128,36 +129,6 @@ class MediaViewer extends Component {
     }
 }
 
-const mediaTypeMap = {
-    'py': 'code',
-    'js': 'code',
-    'css': 'code',
-    'json': 'code',
-    'md': 'code',
-    'c': 'code',
-    'cpp': 'code',
-    'h': 'code',
-    'java': 'code',
-    'txt': 'code',
-
-    'png': 'img',
-    'jpg': 'img',
-    'jpeg': 'img',
-    'gif': 'img',
-    'svg': 'img',
-};
-
-const extensionLanguageMap = {
-    'py': 'python',
-    'js': 'javascript',
-    'css': 'css',
-    'json': 'json',
-    'md': 'markdown',
-    'c': 'c',
-    'cpp': 'cpp',
-    'h': 'cpp',
-    'txt': 'text',
-    'java': 'java',
-};
+const unknownMediaType = 'unknown';
 
 export default MediaViewer;
