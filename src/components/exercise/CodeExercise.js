@@ -17,22 +17,20 @@ class CodeExercise extends PureComponent {
         super(props);
         this.state = {
             selectedFile: undefined,
-            //fileExplorerData: undefined,
             runButtonState: false,
-            fileMap: new Map()
+            fileIndex: new Map(),
+            fileStructure: [],
         };
     }
 
     componentDidMount = async () => {
         const { exercise, workspace } = this.props;
-        const {fileMap} = this.state;
+        
         const submission = workspace.submission;
         const publicFiles = (submission ? submission.publicFiles : exercise.public_files) || [];
 
         const questionFile = {
-            id: 'description.md',
-            name: 'description',
-            title: 'description.md',
+            nameWithExtension: 'description.md',
             path: '\\description.md',
             content: exercise.question,
             extension: 'md',
@@ -41,84 +39,63 @@ class CodeExercise extends PureComponent {
 
         // folders
         const pub_dir = {
-            id: 'public',
             title: 'public',
             path: '\\public',
             isDirectory: true,
-            expanded: true,
-            children: [],
         };
         const priv_dir = {
-            id: 'private',
             title: 'private',
             path: '\\private',
             isDirectory: true,
-            children: [],
         };
         const sol_dir = {
-            id: 'solution',
             title: 'solution',
             path: '\\solution',
             isDirectory: true,
-            children: [],
         };
         const res_dir = {
-            id: 'resource',
             title: 'resource',
             path: '\\resource',
             isDirectory: true,
-            children: [],
         };
 
-        fileMap.set('question.md', questionFile);
-        
-        
-        
-        
-        
-        pub_dir.children = mapVirtualFilesToTreeStructure(publicFiles);
-        fileMap.set('public', pub_dir);
+        let fileMap = new Map();
 
-//        let files = [questionFile]
-//            .concat(pub_dir);
+        fileMap.set('\\question.md', questionFile);
+        fileMap.set('\\public', pub_dir);
+        publicFiles.forEach(f => { fileMap.set("\\public" + f.path, f); });
 
         if (exercise.solution_files) {
-            sol_dir.children = mapVirtualFilesToTreeStructure(exercise.solution_files);
-//            files = files.concat(sol_dir);
-            fileMap.set('solution', sol_dir);
-            
+            fileMap.set('\\solution', sol_dir);
+            exercise.solution_files.forEach(f => { fileMap.set("\\solution" + f.path, f); });
         }
         if (exercise.private_files) {
-            priv_dir.children = mapVirtualFilesToTreeStructure(exercise.private_files);
-//            files = files.concat(priv_dir);
-            fileMap.set('private', priv_dir);
+            fileMap.set('\\private', priv_dir);
+            exercise.private_files.forEach(f => { fileMap.set("\\private" + f.path, f); });
         }
         if (exercise.resource_files && exercise.resource_files.length) {
-            res_dir.children = mapVirtualFilesToTreeStructure(exercise.resource_files);
-//            files = files.concat(res_dir);
-            fileMap.set('resource', res_dir);
+            fileMap.set('\\resource', res_dir);
+            exercise.resource_files.forEach(f => { fileMap.set("\\resource" + f.path, f); });
         }
 
-//        const fileExplorerData = files;
-
         const selectedFilePath = sessionStorage.getItem('selectedFile');
-        const selectedFile = this.findByPath(fileMap, selectedFilePath);
+        const {fileIndex, fileStructure} = generateFileStructures(fileMap);
+        const selectedFile = fileIndex.get(selectedFilePath);
+
+        console.log(fileIndex);
+        console.log(fileStructure);
 
         this.setState({
-//            fileExplorerData,
+            fileIndex,
+            fileStructure,
             selectedFile: !!selectedFile ? selectedFile : questionFile,
-            fileMap
         });
-
-        console.log(fileMap);
-        console.log(buildfileStructure(fileMap));
     };
 
     getPublicFiles = () => {
         let type = 'code';
-        const { selectedFile, fileMap } = this.state;
-        const { children: publicFiles } = fileMap
-            .find(folder => folder.id === 'public_files') || { children: [] };
+        const { selectedFile, fileIndex } = this.state;
+        const { children: publicFiles } = fileIndex.get("\\public");
 
         // If selected file is not inside the publicFolder,
         // just take the first file in the public folder as selected file
@@ -127,7 +104,7 @@ class CodeExercise extends PureComponent {
             selectedFileIndex = 0;
         }
 
-        sessionStorage.setItem('selectedFile', selectedFile.path);
+        
         return {
             type: type,
             publicFiles: publicFiles,
@@ -148,7 +125,7 @@ class CodeExercise extends PureComponent {
      * Update workspace if code gets edited by user
      */
     onChange = (newValue) => {
-        const { selectedFile, fileExplorerData } = this.state;
+        const { selectedFile, fileIndex } = this.state;
 
         this.props.setIsDirty(true);
 
@@ -157,27 +134,11 @@ class CodeExercise extends PureComponent {
             content: newValue,
         };
 
-        const updatedExplorerData = fileExplorerData.map(folder => {
-            if (folder.id === 'public_files') {
-                const updatedPublicFiles = folder.children.map(file => {
-                    if (file.id === updatedSelectedFile.id) {
-                        return updatedSelectedFile;
-                    } else {
-                        return file;
-                    }
-                });
-                return {
-                    ...folder,
-                    children: updatedPublicFiles,
-                };
-            } else {
-                return folder;
-            }
-        });
+        fileIndex.set(updatedSelectedFile.path, updatedSelectedFile);        
 
         this.setState({
             selectedFile: updatedSelectedFile,
-            fileExplorerData: updatedExplorerData,
+            fileIndex,
         });
     };
 
@@ -186,81 +147,54 @@ class CodeExercise extends PureComponent {
         //this.setState({ fileExplorerData: data });
         console.log(data);
     };
-    
 
-    nodeClicked = (node) => {
-        console.log(node);
 
-        let newFileMap = {...this.state.fileMap};
-        let selectedFile = this.findByPath(newFileMap, node.path);
-
-        
-
-        /*
-        const fileMap = this.state.fileMap.map(n => {
-            if (n.path === node.path && n.isDirectory) {
-                return {
-                    ...n,
-                    expanded: !n.expanded,
-                };
-            } else if (n.path === node.path) {
-                return {
-                    ...n,
-                    active: true,
-                };
-            }
-            return n;
-        });
-        */
-
-        if (node.isDirectory) {
-            selectedFile.expanded = !selectedFile.expanded;
-
-            this.setState({ fileMap: newFileMap });
-        } else {
-//            const selectedFile = this.searchInFiles(fileExplorerData, node.id);
-            //const selectedFile = this.findByPath(newFileMap, node.path);
-            selectedFile.active = true;
-
-            this.setState({ selectedFile, fileMap: newFileMap });
-        }
-
-        console.log(newFileMap);
-    };
-
-    /*
-    searchInFiles(folder, fileId) {
-        for (let i = 0; i < folder.length; ++i) {
-            if (folder[i].isDirectory) {
-                const ret = this.searchInFiles(folder[i].children, fileId);
-                if (ret !== undefined)
-                    return ret;
-            } else {
-                if (folder[i].id === fileId) {
-                    return folder[i];
+    wahlkHierarchie = (nodes, active) => {
+        return nodes.map(n => {
+            if (n.path === active.path){
+                if(n.isDirectory){
+                    return {
+                        ...n,
+                        expanded: !n.expanded,
+                    }
+                }else{
+                    return {
+                        ...n,
+                        active: true,
+                    };
+                }
+            }else{
+                if(n.isDirectory){
+                    return {
+                        ...n,
+                        children: this.wahlkHierarchie(n.children, active),
+                    };
+                }else{
+                    return {
+                        ...n,
+                        active: false,
+                    };
                 }
             }
-        }
+        })
     }
-    */
+    
 
-    findByPath(map, filePath){
-        if(map === null || filePath === null) return undefined;
-        let parts = filePath.split("\\");
-        parts.shift();
+    nodeClicked = (node) => {     
+        const fileStructure = this.wahlkHierarchie(this.state.fileStructure, node);        
         
-        let tmpDir = map;
-        for(let part of parts){
-            let tmp = tmpDir.get(part);
-            if(tmp !== undefined) tmpDir = tmp.children;
-            else return undefined;
+        if (node.isDirectory) {
+            this.setState({ fileStructure });
+        } else {
+            const selectedFile = this.state.fileIndex.get(node.path);
+            sessionStorage.setItem('selectedFile', selectedFile.path);
+            this.setState({ selectedFile, fileStructure });
         }
-        return tmpDir;
-    }
+    };
 
     render() {
         const { workspace, authorizationHeader } = this.props;
-        const { selectedFile, fileMap } = this.state;
+        const { selectedFile, fileStructure } = this.state;
         const exerciseId = this.props.exercise.id;
 
         if (!selectedFile || !workspace) {
@@ -316,7 +250,7 @@ class CodeExercise extends PureComponent {
                 <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-2">
-                        <FileExplorer data={buildfileStructure(fileMap)} selectedFile={selectedFile}
+                        <FileExplorer data={fileStructure} selectedFile={selectedFile}
                                       onChange={this.onFileExplorerChange}
                                       nodeClicked={this.nodeClicked}/>
 
@@ -378,61 +312,64 @@ class CodeExercise extends PureComponent {
  * @param virtualFiles
  * @returns {*}
  */
-const mapVirtualFilesToTreeStructure = (virtualFiles) => {
-    
-    let map = new Map();
+const generateFileStructures = (flatFileMap) => {
 
-    for(let file of virtualFiles){
-        var dirs = file.path.split('\\');
+    let fileStructure = [];
+    let fileIndex = new Map();
+
+    for(let file of flatFileMap){
+        var dirs = file[0].split('\\');
         dirs.shift();
 
-        let tmp = map;
-        
-        for(let i = 0; i < dirs.length-1; ++i){
-            if(tmp.get(dirs[i]) === undefined){
-                
-                tmp.set(dirs[i], {
-                    id: dirs[i],
-                    title: dirs[i],
-                    path: "\\" + dirs.slice(0,i+1).join("\\"),
-                    isDirectory: true,
-                    children: new Map(),
-                });
+        let step = fileStructure;
+
+        for(let i = 0; i < dirs.length; ++i){
+            let dir = "\\" + dirs.slice(0,i+1).join("\\");
+
+            if(!fileIndex.get(dir)){
+                if(i === (dirs.length-1) && !file[1].isDirectory){
+                    fileIndex.set(file[0], {
+                        id: file[1].id,
+                        path: file[0],
+                        title: file[1].nameWithExtension,
+                        isDirectory: false,
+                        extension: file[1].extension,
+                        content: file[1].content,
+                    });
+            
+                    step.push({
+                        path: file[0],
+                        title: file[1].nameWithExtension,
+                        isDirectory: false,
+                        extension: file[1].extension,
+                    });
+                }else{                
+                    fileIndex.set(dir, {
+                        title: dirs[i],
+                        path: dir,
+                        isDirectory: true,
+                    });
+                    let folder = {
+                        title: dirs[i],
+                        path: dir,
+                        isDirectory: true,
+                        children: [],
+                        expanded: dirs[i] === 'public' ? true : false
+                    }
+
+                    step.push(folder);
+                    step = folder.children;
+                }
+            }else{
+                step = step.find(el => { 
+                    return el.path === dir 
+                }).children;
             }
-
-            tmp = tmp.get(dirs[i]).children;
         }
-
-        tmp.set(dirs[dirs.length-1], {...file, title: `${file.name}.${file.extension}`});
-        
     }
 
-    return map;
+    return {fileIndex, fileStructure};
 };
-
-const buildfileStructure = (map) => {
-    let arr = [];
-
-    for(let item of map){
-        if(item[1].isDirectory){
-            arr.push({
-                path: item[1].path,
-                title: item[1].title,
-                isDirectory: true,
-                children: buildfileStructure(item[1].children),
-            })
-        }else{
-            arr.push({
-                path: item[1].path,
-                title: item[1].title,
-                isDirectory: false,
-                extension: item[1].extension,
-            })
-        }
-    }
-
-    return arr;
-}
 
 
 export default CodeExercise;
