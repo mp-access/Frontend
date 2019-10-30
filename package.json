@@ -1,6 +1,6 @@
 {
   "name": "access-frontend",
-  "version": "0.10.2",
+  "version": "0.10.4",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
@@ -23,7 +23,8 @@
     "react-scripts": "^3.0.1",
     "react-sortable-tree": "^2.6.2",
     "react-sortable-tree-theme-file-explorer": "^2.0.0",
-    "react-syntax-highlighter": "^11.0.2"
+    "react-syntax-highlighter": "^11.0.2",
+    "svgo": "1.3.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -44,7 +45,8 @@
   ],
   "resolutions": {
     "browserslist": "4.6.2",
-    "caniuse-lite": "1.0.30000974"
+    "caniuse-lite": "1.0.30000974",
+    "svgo": "1.3.0"
   },
   "devDependencies": {
     "http-proxy-middleware": "^0.20.0",

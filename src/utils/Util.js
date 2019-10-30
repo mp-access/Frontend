@@ -119,6 +119,10 @@ class Util {
         'h': 'code',
         'java': 'code',
         'txt': 'code',
+        'csv': 'code',
+        'tsv': 'code',
+        'html': 'code',
+        'sh': 'code',
 
         // Image
         'png': 'img',
@@ -126,6 +130,23 @@ class Util {
         'jpeg': 'img',
         'gif': 'img',
         'svg': 'img',
+    };
+
+    static EXTENSION_LANGUAGE_MAP = {
+        'py': 'python',
+        'js': 'javascript',
+        'css': 'css',
+        'json': 'json',
+        'md': 'markdown',
+        'c': 'c',
+        'cpp': 'cpp',
+        'h': 'cpp',
+        'java': 'java',
+        'txt': 'text',
+        'csv': 'text',
+        'tsv': 'text',
+        'html': 'html',
+        'sh': 'shell',
     };
 }
 
