@@ -21,8 +21,7 @@ class AuthProvider extends Component {
 
     componentDidMount() {
         if (!utils.canBypassLogin) {
-            const keycloakJson = utils.isDevelopment ? '/keycloak.json' : '/keycloak-prod.json';
-            const keycloak = Keycloak(keycloakJson);
+            const keycloak = Keycloak('/keycloak.json');
 
             keycloak.onTokenExpired = () => {
                 keycloak
