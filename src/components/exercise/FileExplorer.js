@@ -4,7 +4,9 @@ import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import FileIcons from 'file-icons-js';
 import './FileExplorer.css';
 
-const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
+const noOp = () => {};
+
+const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
     <>
         <div className={'row'}>
             <div className={'col'}>
@@ -17,7 +19,7 @@ const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
         <SortableTree
             className="file-explorer"
             treeData={data}
-            onChange={onChange}
+            onChange={noOp}
             theme={FileExplorerTheme}
             canDrag={false}
             canDrop={() => false}
@@ -42,16 +44,16 @@ const FileExplorer = ({ data, selectedFile, onChange, nodeClicked }) => (
                     ]
                     : [
                         <div className="file-explorer-icon">
-                            <i className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
+                            <span className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
                         </div>,
                     ],
                 title: ({ node }) => {
                     return (
                         <span>
-                            {node.id === selectedFile.id ?
-                                <i>
+                            {node.path === selectedFile.path ?
+                                <strong>
                                     {node.title}
-                                </i>
+                                </strong>
                                 :
                                 (node.title)
                             }
