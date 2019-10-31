@@ -82,10 +82,6 @@ class CodeExercise extends PureComponent {
         const selectedFilePath = sessionStorage.getItem('selectedFile');
         const selectedFile = fileIndex.get(selectedFilePath) || fileIndex.get("/question.md");
 
-        console.log(fileIndex);
-        console.log(fileStructure);
-        console.log(selectedFile);
-
         this.setState({
             fileIndex,
             fileStructure,
@@ -224,21 +220,17 @@ class CodeExercise extends PureComponent {
         }
 
         const buttonCluster = (
-            <div className="row">
-                <div className="col-sm-12">
-                    <div className="code-panel">
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download</button>
-                        <button className="style-btn" disabled={this.state.runButtonState}
-                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                    </div>
-                </div>
+            <div className="code-panel">
+                <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download</button>
+                <button className="style-btn" disabled={this.state.runButtonState}
+                        onClick={this.onCodeSubmit}>{runButtonContent}</button>
             </div>
         );
 
         return (
             <>
                 {buttonCluster}
-                <div className="clearfix"></div>
+                <div style={{clear: "both"}}></div>
                 <div className="row">
                     <div className="col-2">
                         <FileExplorer data={fileStructure} selectedFile={selectedFile}
@@ -266,33 +258,34 @@ class CodeExercise extends PureComponent {
 
     downloadWorkspace = async () => {
         const zip = new JSZip();
-        const { fileStructure, fileIndex } = this.state;
+        const { fileIndex } = this.state;
         const { exercise, authorizationHeader } = this.props;
         const exerciseId = exercise.id;
 
-        const workspace = zip.folder(exercise.assignmentId);
+        let zipMap = new Map();
 
-        
+        zipMap.set("/", zip.folder(exercise.assignmentId));
 
-        let x = this.walkHierarchie(fileStructure, async node =>  {
-            if(node.isDirectory){
-                const folder = workspace.folder(f.title);
-                for (const file of f.children) {
-                    const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
-                    const actualFile = fileIndex.get(file.path);
-                    if (mediaType === 'code') {
-                        folder.file(actualFile.title, actualFile.content);
-                    } else {
-                        const content = await CourseDataService.getExerciseFile(exerciseId, actualFile.id, authorizationHeader);
-                        folder.file(actualFile.title, content);
-                    }
-                }
+        for(let node of fileIndex){
+            const index = node[0].lastIndexOf("/"); 
+            const parentPath = node[0].substring(0, index);
+            const parent = zipMap.get(parentPath === "" ? "/" : parentPath);
+
+            if(node[1].isDirectory){
+                const zipFolder = parent.folder(node[1].title);
+                zipMap.set(node[0], zipFolder);
             }else{
-                const actualFile = fileIndex.get(f.path);
-                workspace.file(actualFile.title, actualFile.content);
+                const mediaType = Util.MEDIA_TYPE_MAP[node[1].extension];
+                let zipFile;
+                if (mediaType === 'code') {
+                    zipFile = parent.file(node[1].title, node[1].content);
+                } else {
+                    const content = await CourseDataService.getExerciseFile(exerciseId, node[1].id, authorizationHeader);
+                    zipFile = parent.file(node[1].title, content);
+                }
+                zipMap.set(node[0], zipFile);
             }
-            return node;
-        });
+        }
 
         zip.generateAsync({ type: 'base64' }).then(function(content) {
             window.location.href = 'data:application/zip;base64,' + content;
