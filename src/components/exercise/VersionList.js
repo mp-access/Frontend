@@ -194,7 +194,7 @@ class VersionList extends Component {
         const templatePart = (
             <li>
                 <div id={-1} className={'submission-item'}>
-                    <strong>{isCodeType ? 'Template Version' : 'Clear Fields'}</strong>
+                    <strong>{isCodeType ? 'Template' : 'Clear Fields'}</strong>
                     <br/>
                     <div className="two-box">
                         <button className="style-btn"
@@ -235,14 +235,14 @@ class VersionList extends Component {
                 {isCodeType ?
                     <Tabs activeKey={this.state.currentTab} id="submit-test-tab" onSelect={this.setCurrentTab}>
                         <Tab eventKey="testruns" title="Testruns">
-                            {runs.length === 0 ? <div className="py-3">No runs</div> : ''}
+                            {runs.length === 0 ? <div className="py-3"><small>No runs</small></div> : ''}
                             <ul className="style-list">
                                 {runs.slice(0, 6).map((item, index) => this.createSubmissionItem(item, (runs.length - index - 1), false))}
                                 {templatePart}
                             </ul>
                         </Tab>
                         <Tab eventKey="submits" title="Submits">
-                            {submissions.length === 0 ? <div className="py-3">No submissions</div> : ''}
+                            {submissions.length === 0 ? <div className="py-3"><small>No submissions</small></div> : ''}
                             <ul className="style-list">
                                 {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true))}
                                 {templatePart}
@@ -252,7 +252,7 @@ class VersionList extends Component {
                     :
                     <>
                         <h4>Submissions</h4>
-                        <p>{submissions.length === 0 ? 'No submissions' : ''}</p>
+                        <p><small>{submissions.length === 0 ? 'No submissions' : ''}</small></p>
                         <ul className="style-list">
                             {submissions.map((item, index) => this.createSubmissionItem(item, (submissions.length - index - 1), true))}
                             {templatePart}

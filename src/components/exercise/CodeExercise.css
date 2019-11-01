@@ -2,6 +2,10 @@
     color: #797979;
 }
 
+.br1{
+    border-right: 1px solid #e9e9ec;
+}
+
 .code-editor-workspace {
     background: #f3f3f3;
 }

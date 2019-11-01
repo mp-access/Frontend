@@ -232,7 +232,7 @@ class CodeExercise extends PureComponent {
                 {buttonCluster}
                 <div style={{clear: "both"}}></div>
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-2 br1">
                         <FileExplorer data={fileStructure} selectedFile={selectedFile}
                                       nodeClicked={this.nodeClicked}/>
 
