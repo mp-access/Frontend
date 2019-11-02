@@ -12,6 +12,7 @@ import { AlertCircle, ExternalLink, X } from 'react-feather';
 import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 import ResultService from '../utils/ResultService';
+import AssistantExport from '../utils/AdminService';
 
 class Exercise extends Component {
 
@@ -27,7 +28,7 @@ class Exercise extends Component {
             showAlert: true,
             isDirty: false,
             showModal: false,
-            targetLocation: ''
+            targetLocation: '',
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -36,8 +37,8 @@ class Exercise extends Component {
         this.fetchAll();
 
         this.unblock = this.props.history.block(targetLocation => {
-            if(this.state.isDirty){
-                this.setState({showModal: true, targetLocation});
+            if (this.state.isDirty) {
+                this.setState({ showModal: true, targetLocation });
                 return false;
             }
         });
@@ -48,8 +49,8 @@ class Exercise extends Component {
             this.fetchUpdate();
 
             this.unblock = this.props.history.block(targetLocation => {
-                if(this.state.isDirty){
-                    this.setState({showModal: true, targetLocation});
+                if (this.state.isDirty) {
+                    this.setState({ showModal: true, targetLocation });
                     return false;
                 }
             });
@@ -66,11 +67,11 @@ class Exercise extends Component {
         this.setState({
             isDirty: false,
             showModal: false,
-            targetLocation: ''
+            targetLocation: '',
         });
 
         this.props.history.push(this.state.targetLocation.pathname);
-    }
+    };
 
 
     fetchUpdate = async () => {
@@ -100,6 +101,13 @@ class Exercise extends Component {
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
+        const courseId = exercise.courseId;
+        let participants = [];
+        if (this.props.context.isCourseAssistant(courseId)) {
+            participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
+            participants = participants.usersFound;
+            console.log(participants);
+        }
 
         this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
 
@@ -108,6 +116,7 @@ class Exercise extends Component {
             exercises: assignment.exercises,
             results,
             workspace,
+            participants: participants,
         });
     };
 
@@ -124,7 +133,7 @@ class Exercise extends Component {
     fetchAssignmentResults = (exercise, authHeader) => {
         return ResultService.getCourseResults(exercise.courseId, authHeader)
             .then(result => {
-                return result.find(r => r.assignmentId === exercise.assignmentId)
+                return result.find(r => r.assignmentId === exercise.assignmentId);
             })
             .catch(err => console.error(err));
     };
@@ -151,41 +160,43 @@ class Exercise extends Component {
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
 
-        this.setState({ workspace});
+        this.setState({ workspace });
     };
 
     onBottomTab = (key) => {
-        this.setState({currBottomTab: key});
-    }
+        this.setState({ currBottomTab: key });
+    };
 
     setShowAlert = (show) => {
-        this.setState({showAlert: show});
-    }
+        this.setState({ showAlert: show });
+    };
 
     onShowLeaveModal = (show) => {
-        this.setState({showModal: show});
-    }
+        this.setState({ showModal: show });
+    };
 
-    setIsDirty = (dirty) =>{
-        if(this.state.isDirty !== dirty){
-            this.setState({isDirty: dirty});
+    setIsDirty = (dirty) => {
+        if (this.state.isDirty !== dirty) {
+            this.setState({ isDirty: dirty });
         }
-    }
+    };
 
     createAlert = () => {
-        return(
+        return (
             <>
-                <Alert variant="danger" show={this.state.showAlert} onClose={this.setShowAlert.bind(this, false)} dismissible>
+                <Alert variant="danger" show={this.state.showAlert} onClose={this.setShowAlert.bind(this, false)}
+                       dismissible>
                     <Alert.Heading>
-                        <AlertCircle className="mr-2" size={25} />
+                        <AlertCircle className="mr-2" size={25}/>
                         <strong className="mr-auto">Outdated Submission!</strong>
                     </Alert.Heading>
                     <span>
                         This task has been updated since your last submission. This might affect your grade, so we allow further submissions. Please reset your code to the template to make sure that you have all up-to-date information. 
-                        <br />
+                        <br/>
                         Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline. 
-                        <br />
-                        You will find more information in the <a target="_blank" rel="noopener noreferrer" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
+                        <br/>
+                        You will find more information in the <a target="_blank" rel="noopener noreferrer"
+                                                                 href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
                     </span>
                 </Alert>
             </>
@@ -193,25 +204,26 @@ class Exercise extends Component {
     };
 
     createLeaveOnDirtyModal() {
-        const { showModal} = this.state;
+        const { showModal } = this.state;
 
         return (
-          <>
-            <Modal centered show={showModal} onHide={this.onShowLeaveModal.bind(this, false)}>
-              <Modal.Header closeButton>
-                <Modal.Title>Unsaved Changes</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>You have unsaved changes in your exercise! Do you want to leave without saving?</Modal.Body>
-              <Modal.Footer>
-                <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
-                  <X size={14} /> Close
-                </button>
-                <button className="style-btn submit" onClick={this.leaveExercise}>
-                  <ExternalLink size={14} /> Leave
-                </button>
-              </Modal.Footer>
-            </Modal>
-          </>
+            <>
+                <Modal centered show={showModal} onHide={this.onShowLeaveModal.bind(this, false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Unsaved Changes</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>You have unsaved changes in your exercise! Do you want to leave without
+                        saving?</Modal.Body>
+                    <Modal.Footer>
+                        <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
+                            <X size={14}/> Close
+                        </button>
+                        <button className="style-btn submit" onClick={this.leaveExercise}>
+                            <ExternalLink size={14}/> Leave
+                        </button>
+                    </Modal.Footer>
+                </Modal>
+            </>
         );
     };
 
@@ -222,14 +234,14 @@ class Exercise extends Component {
         const authorizationHeader = this.props.context.authorizationHeader;
 
         let codeResponse;
-        try{
+        try {
             codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader);
-        }catch(err) {
+        } catch (err) {
             console.error(err);
-            if (callback !== undefined) callback({type: "err", info: err});
+            if (callback !== undefined) callback({ type: 'err', info: err });
             return;
-        };
-
+        }
+        ;
 
 
         let maxTimeout = 20;    //max timeout in seconds
@@ -244,7 +256,7 @@ class Exercise extends Component {
             const intervalId = setInterval(async () => {
                 if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
                     clearInterval(intervalId);
-                    if (callback !== undefined) callback({type: "err", info: "Max Timeout reached"});
+                    if (callback !== undefined) callback({ type: 'err', info: 'Max Timeout reached' });
                     return;
                 }
                 let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvaluation has a .catch statement already
@@ -259,9 +271,9 @@ class Exercise extends Component {
                     this.setState({
                         workspace: newWorkspace,
                         results,
-                        isDirty: false
+                        isDirty: false,
                     });
-                    if (callback !== undefined) callback({type: "ok"});
+                    if (callback !== undefined) callback({ type: 'ok' });
                 }
                 timeoutCounter += 1;
             }, 1000);
@@ -342,8 +354,14 @@ class Exercise extends Component {
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
-                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType} isGraded={workspace.submission ? workspace.submission.graded : false }/>;
+                                         changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}
+                                         isGraded={workspace.submission ? workspace.submission.graded : false}/>;
 
+        const userSelect = (
+            <select>
+                {this.state.participants.map(student => <option key={student.id} value={student.id}>{student.emailAddress}</option>)}
+            </select>
+        );
         return (
             <>
                 {this.state.isDirty && this.createLeaveOnDirtyModal()}
@@ -352,13 +370,15 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList exercises={exercises} selectedId={selectedId} gradedSubmissions={gradedSubmissions} showScore={false}/>
+                            <ExerciseList exercises={exercises} selectedId={selectedId}
+                                          gradedSubmissions={gradedSubmissions} showScore={false}/>
                         </div>
                     </div>
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
+                            {userSelect}
                             {content}
                         </div>
                     </div>
