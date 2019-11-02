@@ -10,7 +10,6 @@ class AdminService {
     static async reEvaluteSubmissions(courseId, assignmentId, authHeader) {
         fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentId + '/reevaluate', authHeader())
     };
-
 }
 
 export default AdminService;

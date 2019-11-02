@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import AdminService from '../../utils/AdminService';
 
@@ -30,7 +30,7 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
 );
 
 function handleClick(assignmentExport, courseId, authorization) {
-    AdminService.reEvaluteSubmissions(courseId, assignmentExport.assignmentId, authorization)
+    AdminService.reEvaluateSubmissions(courseId, assignmentExport.assignmentId, authorization)
         .catch(error => console.log(error));
 }
 
