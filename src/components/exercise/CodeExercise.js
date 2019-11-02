@@ -6,8 +6,8 @@ import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import JSZip from 'jszip';
 import CourseDataService from '../../utils/CourseDataService';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { Play, Download } from 'react-feather';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Download, Play } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
 
@@ -25,7 +25,7 @@ class CodeExercise extends PureComponent {
 
     componentDidMount = async () => {
         const { exercise, workspace } = this.props;
-        
+
         const submission = workspace.submission;
         const publicFiles = (submission ? submission.publicFiles : exercise.public_files) || [];
 
@@ -96,7 +96,7 @@ class CodeExercise extends PureComponent {
         fileIndex.forEach((val, key) => {
             if(key.startsWith("/public") && !val.isDirectory){
                 publicFiles.push({
-                    ...val, 
+                    ...val,
                     path: val.path.replace("/public", ""),
                     name: val.title.replace("." + val.extension, ""),
                 });
@@ -106,7 +106,7 @@ class CodeExercise extends PureComponent {
         // If selected file is not inside the publicFolder,
         // just take the first file in the public folder as selected file
         let selectedPublicFile = publicFiles.find(f => f.id === selectedFile.id);
-        
+
         return {
             type: type,
             publicFiles: publicFiles,
@@ -136,7 +136,7 @@ class CodeExercise extends PureComponent {
             content: newValue,
         };
 
-        fileIndex.set(updatedSelectedFile.path, updatedSelectedFile);        
+        fileIndex.set(updatedSelectedFile.path, updatedSelectedFile);
 
         this.setState({
             selectedFile: updatedSelectedFile,
@@ -144,22 +144,22 @@ class CodeExercise extends PureComponent {
         });
     };
 
-    walkHierarchie = (structure, action) => {
+    walkHierarchy = (structure, action) => {
         return structure.map(n => {
             if(n.isDirectory){
                 return action({
                     ...n,
-                    children: this.walkHierarchie(n.children, action),
+                    children: this.walkHierarchy(n.children, action),
                 });
             }else{
                 return action(n);
             }
         });
-    }
-    
+    };
 
-    nodeClicked = (node) => {     
-        const fileStructure = this.walkHierarchie(this.state.fileStructure, n => {
+
+    nodeClicked = (node) => {
+        const fileStructure = this.walkHierarchy(this.state.fileStructure, n => {
             if(n.isDirectory){
                 return {
                     ...n,
@@ -168,8 +168,8 @@ class CodeExercise extends PureComponent {
             }else{
                 return n;
             }
-        });        
-        
+        });
+
         if (node.isDirectory) {
             this.setState({ fileStructure });
         } else {
@@ -230,7 +230,7 @@ class CodeExercise extends PureComponent {
         return (
             <>
                 {buttonCluster}
-                <div style={{clear: "both"}}></div>
+                <div style={{ clear: 'both' }}/>
                 <div className="row">
                     <div className="col-2 br1">
                         <FileExplorer data={fileStructure} selectedFile={selectedFile}
@@ -246,7 +246,7 @@ class CodeExercise extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <div className="p-4"></div>
+                <div className="p-4"/>
                 <div className="row">
                     <div className="col-12">
                         {userConsole}
@@ -267,7 +267,7 @@ class CodeExercise extends PureComponent {
         zipMap.set("/", zip.folder(exercise.assignmentId));
 
         for(let node of fileIndex){
-            const index = node[0].lastIndexOf("/"); 
+            const index = node[0].lastIndexOf("/");
             const parentPath = node[0].substring(0, index);
             const parent = zipMap.get(parentPath === "" ? "/" : parentPath);
 
@@ -297,7 +297,7 @@ class CodeExercise extends PureComponent {
  * Maps backend virtual files to frontend tree structure.
  *
  * Note: this should be adapted to account for folder structures in future
- * @param virtualFiles
+ * @param flatFileMap
  * @returns {*}
  */
 const generateFileStructures = (flatFileMap) => {
@@ -324,14 +324,14 @@ const generateFileStructures = (flatFileMap) => {
                         extension: file[1].extension,
                         content: file[1].content,
                     });
-            
+
                     step.push({
                         title: file[1].nameWithExtension,
                         path: file[0],
                         isDirectory: false,
                         extension: file[1].extension,
                     });
-                }else{                
+                }else{
                     fileIndex.set(dir, {
                         title: dirs[i],
                         path: dir,
@@ -342,15 +342,15 @@ const generateFileStructures = (flatFileMap) => {
                         path: dir,
                         isDirectory: true,
                         children: [],
-                        expanded: dirs[i] === 'public' ? true : false
-                    }
+                        expanded: dirs[i] === 'public'
+                    };
 
                     step.push(folder);
                     step = folder.children;
                 }
             }else{
-                step = step.find(el => { 
-                    return el.path === dir 
+                step = step.find(el => {
+                    return el.path === dir
                 }).children;
             }
         }
