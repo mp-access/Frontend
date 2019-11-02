@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import SortableTree from 'react-sortable-tree';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import FileIcons from 'file-icons-js';
@@ -15,7 +15,7 @@ const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
                 </small>
             </div>
         </div>
-        
+
         <SortableTree
             className="file-explorer"
             treeData={data}
@@ -65,4 +65,8 @@ const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
     </>
 );
 
-export default FileExplorer;
+const arePropsEqual = (prevProps, nextProps) => {
+    return prevProps.data === nextProps.data && prevProps.selectedFile.id === nextProps.selectedFile.id;
+};
+
+export default memo(FileExplorer, arePropsEqual);
