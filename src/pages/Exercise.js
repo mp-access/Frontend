@@ -53,6 +53,8 @@ class Exercise extends Component {
                     return false;
                 }
             });
+
+            sessionStorage.setItem('selectedFile', null);
         }
     };
 
@@ -217,7 +219,6 @@ class Exercise extends Component {
 
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
-
         const { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
 

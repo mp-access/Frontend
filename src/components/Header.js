@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthAndRouter } from '../auth/AuthProvider';
-import { LogIn, LogOut, User, ChevronRight} from 'react-feather';
+import { ChevronRight, LogIn, LogOut, User } from 'react-feather';
 import { withBreadCrumbsAndAuthAndRouter } from './BreadCrumbProvider';
 
 const Header = ({ history, context, crumbs }) => {
@@ -14,7 +14,7 @@ const Header = ({ history, context, crumbs }) => {
             loadUserInfo().then(userInfo => setUserInfo(userInfo))
                 .catch(error => console.debug(error));
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, loadUserInfo]);
 
     const name = (!!userInfo && userInfo['given_name'] && userInfo['family_name']) ? (userInfo['given_name'] + " " + userInfo['family_name']) : 'My Profile';
     return (
