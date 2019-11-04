@@ -29,6 +29,7 @@ class Exercise extends Component {
             isDirty: false,
             showModal: false,
             targetLocation: '',
+            impersonationUserId: '',
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -143,8 +144,8 @@ class Exercise extends Component {
             .catch(err => console.error(err));
     };
 
-    fetchSubmissionById = (submissionId, authHeader) => {
-        return SubmissionService.getSubmission(submissionId, authHeader)
+    fetchSubmissionById = (submissionId, userId, authHeader) => {
+        return SubmissionService.getSubmission(submissionId, userId, authHeader)
             .catch(err => console.error(err));
     };
 
@@ -155,7 +156,8 @@ class Exercise extends Component {
             submission = undefined;
         } else {
             const authorizationHeader = this.props.context.authorizationHeader;
-            submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+            const userId = this.state.impersonationUserId;
+            submission = await this.fetchSubmissionById(submissionId, userId, authorizationHeader);
         }
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
@@ -241,7 +243,6 @@ class Exercise extends Component {
             if (callback !== undefined) callback({ type: 'err', info: err });
             return;
         }
-        ;
 
 
         let maxTimeout = 20;    //max timeout in seconds
@@ -288,6 +289,7 @@ class Exercise extends Component {
         const key = exercise.id + '-' + workspace.submissionId;
 
         if (exercise.type === 'code') {
+
             content =
                 <CodeExercise
                     key={key}
@@ -337,8 +339,24 @@ class Exercise extends Component {
         return content;
     }
 
+    onUserChange = async (e) => {
+        const userId = e.target.value;
+        if (!userId) {
+            this.setState({ impersonationUserId: '' });
+            this.fetchAll();
+        } else {
+            // Load as user
+            const exerciseId = this.props.match.params.exerciseId;
+            const authorizationHeader = this.props.context.authorizationHeader;
+            const submission = await SubmissionService.getLastSubmission(exerciseId, userId, authorizationHeader);
+
+            const workspace = new Workspace(this.state.exercise, submission);
+            this.setState({ workspace, impersonationUserId: userId });
+        }
+    };
+
     render() {
-        const { exercise, exercises, workspace, results } = this.state;
+        const { exercise, exercises, workspace, results, impersonationUserId } = this.state;
 
         if (!exercise) {
             return null;
@@ -355,11 +373,14 @@ class Exercise extends Component {
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}
-                                         isGraded={workspace.submission ? workspace.submission.graded : false}/>;
+                                         isGraded={workspace.submission ? workspace.submission.graded : false}
+                                         impersonationUserId={impersonationUserId}/>;
 
         const userSelect = (
-            <select>
-                {this.state.participants.map(student => <option key={student.id} value={student.id}>{student.emailAddress}</option>)}
+            <select onChange={this.onUserChange}>
+                <option value={''}>I just wanna be myself!</option>
+                {this.state.participants.map(student => <option key={student.id}
+                                                                value={student.id}>{student.emailAddress}</option>)}
             </select>
         );
         return (
@@ -378,7 +399,9 @@ class Exercise extends Component {
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
-                            {userSelect}
+                            <div style={{ paddingBottom: '20px', float: 'left' }}>
+                                {userSelect}
+                            </div>
                             {content}
                         </div>
                     </div>
