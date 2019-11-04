@@ -34,6 +34,7 @@ class CodeSnippetExercise extends Component {
         return {
             type: 'codeSnippet',
             publicFiles: publicFiles,
+            selectedFileId: -1,
         };
     };
 
@@ -117,7 +118,7 @@ class CodeSnippetExercise extends Component {
         const outputConsole = workspace.submission ? workspace.submission.console : undefined;
 
         const { content, extension } = publicFiles[0];
-        const language = extensionLanguageMap[extension];
+        const language = Util.EXTENSION_LANGUAGE_MAP[extension];
 
         const editorOptions = this.editorOptions(publicFiles.readOnly);
 
@@ -151,11 +152,7 @@ class CodeSnippetExercise extends Component {
             <div className="row">
                 <div className="col-sm-12">
                     <div className="code-panel">
-                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                        </button>*/}
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
-                            Task
-                        </button>
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download</button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
@@ -197,18 +194,5 @@ class CodeSnippetExercise extends Component {
         );
     }
 }
-
-/**
- * For a full list see:
- * https://github.com/microsoft/monaco-languages
- * @type {{css: string, md: string, py: string, js: string, json: string}}
- */
-const extensionLanguageMap = {
-    'py': 'python',
-    'js': 'javascript',
-    'css': 'css',
-    'json': 'json',
-    'md': 'markdown',
-};
 
 export default CodeSnippetExercise;

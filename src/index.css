@@ -266,6 +266,7 @@ code {
 
 
 .code-panel{
+  float: right;
   display: flex;
   justify-content: flex-end;
 }
@@ -365,7 +366,10 @@ code {
 
 .breadcrumbs li{
   float: left;
-  padding: 2px 8px;
+}
+
+.breadcrumbs li a{
+  padding: 2px 20px;
 }
 
 .breadcrumbs li a small{
