@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import AdminService from '../../utils/AdminService';
 
-const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle = 'Assignment' }) => (
+const ExportModal = ({showModal, handleClose, authorization, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
     <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-            <Modal.Title>'{assignmentTitle}' results</Modal.Title>
+            <Modal.Title>{assignmentTitle}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} json/>
@@ -13,6 +14,12 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
             <br/>
             <DownloadButton assignmentExport={assignmentExport} assignmentTitle={assignmentTitle} csv/>
             <br/>
+            <br/>
+            <button variant="primary" className='style-btn warn' onClick={() => {
+                handleClick(assignmentExport, courseId, authorization)
+            }}>
+                Re-Evaluation (CARE!)
+            </button>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -22,7 +29,12 @@ const ExportModal = ({ showModal, handleClose, assignmentExport, assignmentTitle
     </Modal>
 );
 
-const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv = false }) => {
+function handleClick(assignmentExport, courseId, authorization) {
+    AdminService.reEvaluateSubmissions(courseId, assignmentExport.assignmentId, authorization)
+        .catch(error => console.log(error));
+}
+
+const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {
     const filename = encodeURIComponent(assignmentTitle.replace(/ /g, '_'));
     let extension = '';
     let content = '';
@@ -55,7 +67,7 @@ const toCsv = (assignmentExport) => {
     if (!assignmentExport) {
         return;
     }
-    const { exerciseIds, byStudents, totalsByStudent } = assignmentExport;
+    const {exerciseIds, byStudents, totalsByStudent} = assignmentExport;
     let str = `"Student",${exerciseIds.map(id => `"${id}"`)},"total"\n`;
 
     for (let studentEmail of Object.keys(byStudents)) {
@@ -75,4 +87,4 @@ ExportModal.propTypes = {
     assignmentTitle: PropTypes.string.isRequired,
 };
 
-export { ExportModal };
+export {ExportModal};

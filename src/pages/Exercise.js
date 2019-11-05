@@ -8,10 +8,10 @@ import TextExercise from '../components/text/TextExercise';
 import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
-import Spinner from '../components/core/Spinner';
-import { Play, AlertCircle, X, ExternalLink } from 'react-feather';
-import { OverlayTrigger, Tooltip, Alert, Modal } from 'react-bootstrap';
+import { AlertCircle, ExternalLink, X } from 'react-feather';
+import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
+import ResultService from '../utils/ResultService';
 
 class Exercise extends Component {
 
@@ -20,9 +20,9 @@ class Exercise extends Component {
         this.state = {
             exercise: undefined,
             exercises: [],
+            results: [],
             workspace: Workspace,
             runButtonState: false,
-            isDark: false,
             currBottomTab: 'tests',
             showAlert: true,
             isDirty: false,
@@ -45,7 +45,7 @@ class Exercise extends Component {
 
     componentDidUpdate = async (prevProps) => {
         if (prevProps.match.params.exerciseId !== this.props.match.params.exerciseId) {
-            this.fetchAll();
+            this.fetchUpdate();
 
             this.unblock = this.props.history.block(targetLocation => {
                 if(this.state.isDirty){
@@ -53,6 +53,8 @@ class Exercise extends Component {
                     return false;
                 }
             });
+
+            sessionStorage.setItem('selectedFile', null);
         }
     };
 
@@ -73,22 +75,40 @@ class Exercise extends Component {
     }
 
 
+    fetchUpdate = async () => {
+        const exerciseId = this.props.match.params.exerciseId;
+        const authorizationHeader = this.props.context.authorizationHeader;
+
+        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
+        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+        const workspace = new Workspace(exercise, submission);
+
+        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+
+        this.setState({
+            exercise,
+            workspace,
+        });
+    };
+
     fetchAll = async () => {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
         const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
         const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
+        const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
 
         const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
         const workspace = new Workspace(exercise, submission);
 
-        
+
         this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
 
         this.setState({
             exercise,
             exercises: assignment.exercises,
+            results,
             workspace,
         });
     };
@@ -100,6 +120,14 @@ class Exercise extends Component {
 
     fetchExerciseList = (exercise, authHeader) => {
         return CourseDataService.getAssignment(exercise.courseId, exercise.assignmentId, authHeader)
+            .catch(err => console.error(err));
+    };
+
+    fetchAssignmentResults = (exercise, authHeader) => {
+        return ResultService.getCourseResults(exercise.courseId, authHeader)
+            .then(result => {
+                return result.find(r => r.assignmentId === exercise.assignmentId)
+            })
             .catch(err => console.error(err));
     };
 
@@ -126,19 +154,6 @@ class Exercise extends Component {
         const workspace = new Workspace(exercise, submission);
 
         this.setState({ workspace});
-    };
-
-    onCodeSubmit = () => {
-        this.submit(false, this.resetRunButton);
-        this.setState({ runButtonState: true });
-    };
-
-    resetRunButton = () => {
-        this.setState({ runButtonState: false });
-    };
-
-    onIsDark = () => {
-        this.setState({ isDark: !this.state.isDark });
     };
 
     onBottomTab = (key) => {
@@ -172,7 +187,7 @@ class Exercise extends Component {
                         <br />
                         Please note that if you do not provide a new submission yourself, we will automatically re-submit your last (now outdated) submission after the deadline. 
                         <br />
-                        You will find more information in the <a target="_blank" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
+                        You will find more information in the <a target="_blank" rel="noopener noreferrer" href="https://github.com/mp-access/Backend/wiki/Outdated-Submission">documentation</a>.
                     </span>
                 </Alert>
             </>
@@ -181,7 +196,7 @@ class Exercise extends Component {
 
     createLeaveOnDirtyModal() {
         const { showModal} = this.state;
-      
+
         return (
           <>
             <Modal centered show={showModal} onHide={this.onShowLeaveModal.bind(this, false)}>
@@ -204,16 +219,15 @@ class Exercise extends Component {
 
     submit = async (graded, callback) => {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
-
-        let { workspace } = this.state;
+        const { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
-        
+
         let codeResponse;
         try{
             codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader);
         }catch(err) {
             console.error(err);
-            if (callback !== undefined) callback();
+            if (callback !== undefined) callback({type: "err", info: err});
             return;
         };
 
@@ -231,7 +245,7 @@ class Exercise extends Component {
             const intervalId = setInterval(async () => {
                 if (timeoutCounter >= maxTimeout) {         //jump out of loop when we reached max timeout
                     clearInterval(intervalId);
-                    if (callback !== undefined) callback();
+                    if (callback !== undefined) callback({type: "err", info: "Max Timeout reached"});
                     return;
                 }
                 let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvaluation has a .catch statement already
@@ -240,13 +254,15 @@ class Exercise extends Component {
                     clearInterval(intervalId);
 
                     const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
-                    const workspace = new Workspace(this.state.workspace.exercise, submission);
+                    const results = await this.fetchAssignmentResults(workspace.exercise, authorizationHeader);
+                    const newWorkspace = new Workspace(workspace.exercise, submission);
 
                     this.setState({
-                        workspace,
+                        workspace: newWorkspace,
+                        results,
                         isDirty: false
                     });
-                    if (callback !== undefined) callback();
+                    if (callback !== undefined) callback({type: "ok"});
                 }
                 timeoutCounter += 1;
             }, 1000);
@@ -268,10 +284,10 @@ class Exercise extends Component {
                     exercise={exercise}
                     workspace={workspace}
                     authorizationHeader={this.props.context.authorizationHeader}
-                    isDark={this.state.isDark}
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -284,6 +300,7 @@ class Exercise extends Component {
                     onBottomTab={this.onBottomTab}
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
+                    submit={this.submit}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -310,7 +327,7 @@ class Exercise extends Component {
     }
 
     render() {
-        const { exercise, exercises, workspace } = this.state;
+        const { exercise, exercises, workspace, results } = this.state;
 
         if (!exercise) {
             return null;
@@ -320,45 +337,13 @@ class Exercise extends Component {
 
         const selectedId = exercise.id;
         const submissionId = workspace.submissionId;
+        const gradedSubmissions = results.gradedSubmissions ? results.gradedSubmissions : [];
 
         const authorizationHeader = this.props.context.authorizationHeader;
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType} isGraded={workspace.submission ? workspace.submission.graded : false }/>;
-
-
-        let buttonCluster;
-        if (isCodeType) {
-            let runButtonContent;
-            if (this.state.runButtonState) {
-                runButtonContent = <Spinner text={'Processing'}/>;
-            } else {
-                runButtonContent = <>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={
-                        <Tooltip id="testrun-tooltip">
-                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                        </Tooltip>
-                    }
-                    >
-                    <span><Play size={14}/>Test & Run</span>
-                </OverlayTrigger>
-                </>;
-            }
-
-            buttonCluster = (
-                <>
-                    <div className="code-panel float-right">
-                        {/*<button className="style-btn" onClick={this.onIsDark}><FontAwesomeIcon icon="moon"/>
-                        </button>*/}
-                        <button className="style-btn" disabled={this.state.runButtonState}
-                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                    </div>
-                </>
-            );
-        }
 
         return (
             <>
@@ -368,15 +353,13 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList exercises={exercises} selectedId={selectedId} showScore={false}/>
+                            <ExerciseList exercises={exercises} selectedId={selectedId} gradedSubmissions={gradedSubmissions} showScore={false}/>
                         </div>
                     </div>
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
-                            {buttonCluster}
-                            <div className="clearfix"></div>
                             {content}
                         </div>
                     </div>

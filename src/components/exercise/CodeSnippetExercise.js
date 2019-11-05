@@ -3,6 +3,12 @@ import CodeEditor from '../exercise/CodeEditor';
 import UserConsole from './UserConsole.js';
 import './CodeExercise.css';
 import MarkdownViewer from '../MarkdownViewer';
+import Spinner from '../core/Spinner';
+import JSZip from 'jszip';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Download, Play } from 'react-feather';
+import Util from '../../utils/Util';
+import CourseDataService from '../../utils/CourseDataService';
 
 class CodeSnippetExercise extends Component {
 
@@ -10,6 +16,7 @@ class CodeSnippetExercise extends Component {
         super(props);
         this.state = {
             publicFiles: undefined,
+            runButtonState: false,
         };
     }
 
@@ -27,7 +34,17 @@ class CodeSnippetExercise extends Component {
         return {
             type: 'codeSnippet',
             publicFiles: publicFiles,
+            selectedFileId: -1,
         };
+    };
+
+    onCodeSubmit = () => {
+        this.props.submit(false, this.resetRunButton);
+        this.setState({ runButtonState: true });
+    };
+
+    resetRunButton = () => {
+        this.setState({ runButtonState: false });
     };
 
     /**
@@ -66,6 +83,30 @@ class CodeSnippetExercise extends Component {
         };
     };
 
+    downloadWorkspace = async () => {
+        const zip = new JSZip();
+        const { publicFiles } = this.state;
+        const { exercise, authorizationHeader } = this.props;
+        const exerciseId = exercise.id;
+
+        const workspace = zip.folder('workspace');
+        workspace.file('description.md', exercise.question);
+
+        for (const file of publicFiles) {
+            const mediaType = Util.MEDIA_TYPE_MAP[file.extension];
+            if (mediaType === 'code') {
+                workspace.file(file.nameWithExtension, file.content);
+            } else {
+                const content = await CourseDataService.getExerciseFile(exerciseId, file.id, authorizationHeader);
+                workspace.file(file.nameWithExtension, content);
+            }
+        }
+
+        zip.generateAsync({ type: 'base64' }).then(function(content) {
+            window.location.href = 'data:application/zip;base64,' + content;
+        });
+    };
+
     render() {
         const publicFiles = this.state.publicFiles;
         const { workspace, authorizationHeader } = this.props;
@@ -77,7 +118,7 @@ class CodeSnippetExercise extends Component {
         const outputConsole = workspace.submission ? workspace.submission.console : undefined;
 
         const { content, extension } = publicFiles[0];
-        const language = extensionLanguageMap[extension];
+        const language = Util.EXTENSION_LANGUAGE_MAP[extension];
 
         const editorOptions = this.editorOptions(publicFiles.readOnly);
 
@@ -88,8 +129,41 @@ class CodeSnippetExercise extends Component {
             currBottomTab={this.props.currBottomTab}
         />;
 
+        let runButtonContent;
+        if (this.state.runButtonState) {
+            runButtonContent = <Spinner text={'Processing'}/>;
+        } else {
+            runButtonContent = <>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
+                            code
+                        </Tooltip>
+                    }
+                >
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
+            </>;
+        }
+
+        const buttonCluster = (
+            <div className="row">
+                <div className="col-sm-12">
+                    <div className="code-panel">
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download</button>
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <>
+                {buttonCluster}
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
@@ -105,7 +179,8 @@ class CodeSnippetExercise extends Component {
                     <div className="col-12">
                         <div className="media-viewport">
                             <CodeEditor content={content} language={language} options={editorOptions}
-                                        onChange={this.onChange} onRun={this.submitButtonClick} height="300px"/>
+                                        onChange={this.onChange} submitCode={this.onCodeSubmit} height="300px"
+                            />
                         </div>
                     </div>
                 </div>
@@ -119,18 +194,5 @@ class CodeSnippetExercise extends Component {
         );
     }
 }
-
-/**
- * For a full list see:
- * https://github.com/microsoft/monaco-languages
- * @type {{css: string, md: string, py: string, js: string, json: string}}
- */
-const extensionLanguageMap = {
-    'py': 'python',
-    'js': 'javascript',
-    'css': 'css',
-    'json': 'json',
-    'md': 'markdown',
-};
 
 export default CodeSnippetExercise;

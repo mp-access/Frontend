@@ -57,6 +57,7 @@ class TextExercise extends Component {
 
         return (
             <>
+                <div className="clearfix"></div>
                 <div className="row">
                     <div className="col-12">
                         <MarkdownViewer

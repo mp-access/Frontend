@@ -26,7 +26,7 @@ class SubmissionService {
             submissionBody['details'] = {
                 'graded': graded,
                 'publicFiles': submission.publicFiles,
-                'selectedFile': submission.selectedFile,
+                'selectedFileId': submission.selectedFileId,
             };
         } else if (submission.type === 'singleChoice') {
             submissionBody['details'] = {

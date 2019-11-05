@@ -1,30 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Util from '../utils/Util';
 import PropTypes from 'prop-types';
-import { Lock, Clock } from 'react-feather';
+import { Lock } from 'react-feather';
+import { DueDateTime } from './DateTime';
 
 const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
-            const pastDueDate = new Date(assignment.dueDate) < (new Date());
-            const label = <><h5>{assignment.title}</h5></>;
-            const result = results ? results.find(r => r.assignmentId === assignment.id): undefined;
+            const pastDueDate = assignment.pastDueDate;
+            const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
+
             return (
                 <li key={assignment.id} className="h-flex">
-                    <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id} className="flex-grow-1">
-                        <span>Exercise {index + 1} {pastDueDate ? <Lock size={15} /> : ''}</span>
-                        {label}
-                        <small><Clock size={12} /> Due date: {Util.timeFormatter(assignment.dueDate)}</small>
+                    <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
+                          className="flex-grow-1">
+                        <h5>{assignment.title} {pastDueDate ? <Lock size={15}/> : ''}</h5>
+                        <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
-                    <div>
+
                         {isAdmin &&
-                            <button className="style-btn"
-                            onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                        <button className="style-btn"
+                                onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                    <div>
                         {result &&
-                            <div className="score-display">
-                                <span className="p-1"></span>
-                                <span className="style-btn ghost">Score:  {result.studentScore} / {result.maxScore}</span>
-                            </div>
+                        <div className="score-display">
+                            <span className="p-1"></span>
+                            <span className="style-btn ghost">Score: {result.studentScore} / {result.maxScore}</span>
+                        </div>
                         }
                     </div>
                 </li>
