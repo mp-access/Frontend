@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Lock } from 'react-feather';
 import { DueDateTime } from './DateTime';
 
-const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
+const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
             const pastDueDate = assignment.pastDueDate;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
@@ -17,7 +17,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                         <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
 
-                        {isAssistant &&
+                        {isAdmin &&
                         <button className="style-btn"
                                 onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
                     <div>
@@ -43,7 +43,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
 AssignmentList.propTypes = {
     courseId: PropTypes.string.isRequired,
     assignments: PropTypes.array.isRequired,
-    isAssistant: PropTypes.bool.isRequired,
+    isAdmin: PropTypes.bool.isRequired,
     result: PropTypes.array,
 };
 

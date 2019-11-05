@@ -100,27 +100,38 @@ class AuthProvider extends Component {
 
         const groups = {};
         groupStrings.forEach(course => {
-            // does token include author grant?
-            let isAdmin = course[1].includes('authors');
+            // does token include admin grant?
+            let isAdmin = course[1].includes('admins');
+            let isAssistant = course[1].includes('assistants')
 
             // Have we already parsed this course once? Might happen in case a user is both student and author in the same course
             if (!!groups[course[0]]) {
                 isAdmin = isAdmin || groups[course[0]].isAdmin;
+                isAssistant = isAssistant || groups[course[0]].isAssistant;
             }
 
             groups[course[0]] = {
                 group: course[1],
                 isAdmin: isAdmin,
+                isAssistant: isAssistant
             };
         });
 
+        console.warn("Log access grants:");
+        console.warn(groups);
         return groups;
     };
 
     isCourseAssistant = (courseId) => {
         const courseAccess = this.allowedAccessToCourses()[courseId];
+        return !!courseAccess && courseAccess.isAssistant;
+    };
+
+    isCourseAdmin = (courseId) => {
+        const courseAccess = this.allowedAccessToCourses()[courseId];
         return !!courseAccess && courseAccess.isAdmin;
     };
+
 
 
     render() {
@@ -133,6 +144,7 @@ class AuthProvider extends Component {
                     isInitialized: !!keycloak,
                     isAuthenticated: isAuthenticated,
                     isCourseAssistant: this.isCourseAssistant,
+                    isCourseAdmin: this.isCourseAdmin,
                     accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,
