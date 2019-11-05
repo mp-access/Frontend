@@ -366,10 +366,12 @@ class Exercise extends Component {
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
 
         const selectedId = exercise.id;
+        const courseId = exercise.courseId;
         const submissionId = workspace.submissionId;
         const gradedSubmissions = results.gradedSubmissions ? results.gradedSubmissions : [];
 
         const authorizationHeader = this.props.context.authorizationHeader;
+        const isAdmin = this.props.context.isCourseAssistant(courseId);
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
@@ -377,13 +379,6 @@ class Exercise extends Component {
                                          isGraded={workspace.submission ? workspace.submission.graded : false}
                                          impersonationUserId={impersonationUserId}/>;
 
-        const userSelect = (
-            <select onChange={this.onUserChange}>
-                <option value={''}>I just wanna be myself!</option>
-                {this.state.participants.map(student => <option key={student.id}
-                                                                value={student.id}>{student.emailAddress}</option>)}
-            </select>
-        );
         return (
             <>
                 {this.state.isDirty && this.createLeaveOnDirtyModal()}
@@ -400,9 +395,15 @@ class Exercise extends Component {
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
+                            {isAdmin &&
                             <div style={{ paddingBottom: '20px', float: 'left' }}>
-                                {userSelect}
+                                <select onChange={this.onUserChange}>
+                                    <option value={''}>I just wanna be myself!</option>
+                                    {this.state.participants.map(student => <option key={student.id}
+                                                                                    value={student.id}>{student.emailAddress}</option>)}
+                                </select>
                             </div>
+                            }
                             {content}
                         </div>
                     </div>
