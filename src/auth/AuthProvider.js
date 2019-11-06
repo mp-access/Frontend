@@ -102,7 +102,7 @@ class AuthProvider extends Component {
         groupStrings.forEach(course => {
             // does token include admin grant?
             let isAdmin = course[1].includes('admins');
-            let isAssistant = course[1].includes('assistants')
+            let isAssistant = course[1].includes('assistants');
 
             // Have we already parsed this course once? Might happen in case a user is both student and author in the same course
             if (!!groups[course[0]]) {
@@ -117,8 +117,6 @@ class AuthProvider extends Component {
             };
         });
 
-        console.warn("Log access grants:");
-        console.warn(groups);
         return groups;
     };
 
@@ -131,8 +129,6 @@ class AuthProvider extends Component {
         const courseAccess = this.allowedAccessToCourses()[courseId];
         return !!courseAccess && courseAccess.isAdmin;
     };
-
-
 
     render() {
         const { keycloak, isAuthenticated } = this.state;

@@ -106,7 +106,7 @@ class Exercise extends Component {
 
         const courseId = exercise.courseId;
         let participants = [];
-        if (this.props.context.isCourseAssistant(courseId)) {
+        if (this.props.context.isCourseAdmin(courseId)) {
             participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
             participants = participants.usersFound;
         }
@@ -372,7 +372,7 @@ class Exercise extends Component {
         const gradedSubmissions = results.gradedSubmissions ? results.gradedSubmissions : [];
 
         const authorizationHeader = this.props.context.authorizationHeader;
-        const isAdmin = this.props.context.isCourseAssistant(courseId);
+        const isAdmin = this.props.context.isCourseAdmin(courseId);
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
@@ -398,13 +398,12 @@ class Exercise extends Component {
                             {isAdmin &&
                             <div style={{ paddingBottom: '20px', clear: 'both' }}>
                                 <label htmlFor={'userSelect'}>Impersonate user</label><br/>
-                                <select id={'userSelect'} onChange={this.onUserChange}>
-                                    <option value={''} selected={this.state.impersonationUserId === ''}>I just wanna be
-                                        myself!
-                                    </option>
+                                <select id={'userSelect'}
+                                        onChange={this.onUserChange}
+                                        value={impersonationUserId}>
+                                    <option value={''}>I just wanna be myself!</option>
                                     {this.state.participants.map(student => <option
                                         key={student.id}
-                                        selected={this.state.impersonationUserId === student.id}
                                         value={student.id}>{student.emailAddress}</option>)}
                                 </select>
                             </div>
