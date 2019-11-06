@@ -147,7 +147,7 @@ class Exercise extends Component {
     };
 
     fetchSubmissionById = (submissionId, authHeader, userId) => {
-        return SubmissionService.getSubmission(submissionId,  authHeader, userId)
+        return SubmissionService.getSubmission(submissionId, authHeader, userId)
             .catch(err => console.error(err));
     };
 
@@ -274,6 +274,7 @@ class Exercise extends Component {
                         workspace: newWorkspace,
                         results,
                         isDirty: false,
+                        impersonationUserId: '', // go back to own user view
                     });
                     if (callback !== undefined) callback({ type: 'ok' });
                 }
@@ -395,12 +396,16 @@ class Exercise extends Component {
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             {isAdmin &&
-                            <div style={{ paddingBottom: '20px', clear: 'both'}}>
+                            <div style={{ paddingBottom: '20px', clear: 'both' }}>
                                 <label htmlFor={'userSelect'}>Impersonate user</label><br/>
                                 <select id={'userSelect'} onChange={this.onUserChange}>
-                                    <option value={''}>I just wanna be myself!</option>
-                                    {this.state.participants.map(student => <option key={student.id}
-                                                                                    value={student.id}>{student.emailAddress}</option>)}
+                                    <option value={''} selected={this.state.impersonationUserId === ''}>I just wanna be
+                                        myself!
+                                    </option>
+                                    {this.state.participants.map(student => <option
+                                        key={student.id}
+                                        selected={this.state.impersonationUserId === student.id}
+                                        value={student.id}>{student.emailAddress}</option>)}
                                 </select>
                             </div>
                             }
