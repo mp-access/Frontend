@@ -394,16 +394,17 @@ class Exercise extends Component {
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
-                            <h1 className="float-left">{this.state.exercise.longTitle}</h1>
                             {isAdmin &&
-                            <div style={{ paddingBottom: '20px', float: 'left' }}>
-                                <select onChange={this.onUserChange}>
+                            <div style={{ paddingBottom: '20px', clear: 'both'}}>
+                                <label htmlFor={'userSelect'}>Impersonate user</label><br/>
+                                <select id={'userSelect'} onChange={this.onUserChange}>
                                     <option value={''}>I just wanna be myself!</option>
                                     {this.state.participants.map(student => <option key={student.id}
                                                                                     value={student.id}>{student.emailAddress}</option>)}
                                 </select>
                             </div>
                             }
+                            <h1 className="float-left">{this.state.exercise.longTitle}</h1>
                             {content}
                         </div>
                     </div>
