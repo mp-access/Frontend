@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {AlertCircle, CheckCircle, CheckSquare, Code, Lock, Type} from 'react-feather';
+import {AlertCircle, CheckCircle, CheckSquare, Code, Type} from 'react-feather';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class ExerciseList extends Component {

@@ -9,9 +9,6 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
             const pastDueDate = assignment.pastDueDate;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
 
-            console.log("assignment");
-            console.log(assignment);
-
             return (
                 <li key={assignment.id} className="h-flex">
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
