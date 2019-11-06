@@ -109,8 +109,8 @@ class Exercise extends Component {
         if (this.props.context.isCourseAssistant(courseId)) {
             participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
             participants = participants.usersFound;
-            console.log(participants);
         }
+        participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
 
         this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
 
