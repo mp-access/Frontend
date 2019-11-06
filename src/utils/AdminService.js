@@ -7,9 +7,14 @@ class AdminService {
             .then(result => result.json()).catch(error => console.error('Error: ', error));
     }
 
-    static async reEvaluteSubmissions(courseId, assignmentId, authHeader) {
+    static async reEvaluateSubmissions(courseId, assignmentId, authHeader) {
         fetch('/api/admins/courses/' + courseId + '/assignments/' + assignmentId + '/reevaluate', authHeader())
     };
+
+    static async fetchCourseParticipants(courseId, authHeader) {
+        return fetch(`${utils.courseServiceUrl}/admins/courses/${courseId}/participants`, authHeader())
+            .then(result => result.json()).catch(error => console.error('Error: ', error));
+    }
 }
 
 export default AdminService;
