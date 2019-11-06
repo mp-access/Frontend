@@ -62,7 +62,7 @@ class VersionList extends Component {
 
     fetchSubmissions = async (exerciseId) => {
         const { authorizationHeader, impersonationUserId } = this.props;
-        const { submissions, runs, submissionCount, pastDueDate } = await SubmissionService.getSubmissionList(exerciseId, impersonationUserId, authorizationHeader);
+        const { submissions, runs, submissionCount, pastDueDate } = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader, impersonationUserId);
 
         this.setState({
             submissions,

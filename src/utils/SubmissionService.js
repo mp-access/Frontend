@@ -2,7 +2,7 @@ import utils from '../utils';
 
 class SubmissionService {
 
-    static async getLastSubmission(exerciseId, userId, authHeader) {
+    static async getLastSubmission(exerciseId, authHeader, userId) {
         let url;
         if (userId) {
             url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/users/${userId}`;
@@ -76,7 +76,7 @@ class SubmissionService {
             .catch(error => console.error('Error: ', error));
     }
 
-    static async getSubmission(submissionId, userId, authHeader) {
+    static async getSubmission(submissionId, authHeader, userId) {
         let url;
         if (userId) {
             url = `${utils.courseServiceUrl}/submissions/${submissionId}/users/${userId}`;
@@ -94,7 +94,7 @@ class SubmissionService {
             .catch(error => console.error('Error: ', error));
     }
 
-    static async getSubmissionList(exerciseId, userId, authHeader) {
+    static async getSubmissionList(exerciseId, authHeader, userId) {
         let url;
         if (userId) {
             url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/users/${userId}/history`;

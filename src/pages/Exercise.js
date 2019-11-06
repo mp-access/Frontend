@@ -146,8 +146,8 @@ class Exercise extends Component {
             .catch(err => console.error(err));
     };
 
-    fetchSubmissionById = (submissionId, userId, authHeader) => {
-        return SubmissionService.getSubmission(submissionId, userId, authHeader)
+    fetchSubmissionById = (submissionId, authHeader, userId) => {
+        return SubmissionService.getSubmission(submissionId,  authHeader, userId)
             .catch(err => console.error(err));
     };
 
@@ -349,7 +349,7 @@ class Exercise extends Component {
             // Load as user
             const exerciseId = this.props.match.params.exerciseId;
             const authorizationHeader = this.props.context.authorizationHeader;
-            const submission = await SubmissionService.getLastSubmission(exerciseId, userId, authorizationHeader);
+            const submission = await SubmissionService.getLastSubmission(exerciseId, authorizationHeader, userId);
 
             const workspace = new Workspace(this.state.exercise, submission);
             this.setState({ workspace, impersonationUserId: userId });
