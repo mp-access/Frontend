@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, CheckCircle, CheckSquare, Code, Type } from 'react-feather';
+import {AlertCircle, CheckCircle, CheckSquare, Code, Lock, Type} from 'react-feather';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class ExerciseList extends Component {
@@ -42,10 +42,11 @@ class ExerciseList extends Component {
                 <li key={index}
                     className={"h-flex" + (selectedId === e.id ? ' active' : '') + (gradedSub ? '' : ' fresh')}>
                     <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <span>{e.title ? e.title : 'Task ' + (index + 1)}</span>
-                        <p>{!e.isGraded ? ' (Bonus)' : ''}</p>
-                        <small>{this.getIcon(e.type)} {'Task ' + (index + 1)}</small>
-                        {showScore ? '' : <div align="right"><small>{score} / {maxScore}</small></div>}
+                        <span>{'Task ' + (index + 1)}</span>
+                        <span>{!e.isGraded ? ' (Bonus)' : ''}</span>
+                        <h5>{e.title}</h5>
+                        <div><small>{this.getIcon(e.type)} {e.type.charAt(0).toUpperCase() + e.type.slice(1)}</small>
+                            {showScore ? '' : <small  style={{float: "right"}}>{score} / {maxScore}</small>}</div>
                     </Link>
 
                     {(gradedSub && gradedSub.invalid) &&

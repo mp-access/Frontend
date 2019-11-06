@@ -9,11 +9,15 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
             const pastDueDate = assignment.pastDueDate;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
 
+            console.log("assignment");
+            console.log(assignment);
+
             return (
                 <li key={assignment.id} className="h-flex">
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
                           className="flex-grow-1">
-                        <h5>{assignment.title} {pastDueDate ? <Lock size={15}/> : ''}</h5>
+                        <span>Exercise {index + 1} {pastDueDate ? <Lock size={15}/> : ''}</span>
+                        <h5>{assignment.title} </h5>
                         <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
 
