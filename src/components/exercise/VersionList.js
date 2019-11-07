@@ -156,10 +156,10 @@ class VersionList extends Component {
                     <Modal.Body>This is you last submission for this task. Are you sure you want to submit?</Modal.Body>
                     <Modal.Footer>
                         <button className="style-btn" onClick={this.setShowModal.bind(this, false)}>
-                            <X size={14}/> Close
+                            <X size={14}/>Cancel
                         </button>
                         <button className="style-btn submit" onClick={this.confirmSubmit}>
-                            <Send size={14}/> Submit
+                            <Send size={14}/>Submit
                         </button>
                     </Modal.Footer>
                 </Modal>

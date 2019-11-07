@@ -220,10 +220,10 @@ class Exercise extends Component {
                         saving?</Modal.Body>
                     <Modal.Footer>
                         <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
-                            <X size={14}/> Close
+                            <X size={14}/>Stay
                         </button>
                         <button className="style-btn submit" onClick={this.leaveExercise}>
-                            <ExternalLink size={14}/> Leave
+                            <ExternalLink size={14}/>Leave
                         </button>
                     </Modal.Footer>
                 </Modal>

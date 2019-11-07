@@ -6,6 +6,7 @@ import { ExportModal } from '../components/course/AssistantExport';
 import ResultService from '../utils/ResultService';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 import { FromToDateTime } from '../components/DateTime';
+import { Calendar, Home } from 'react-feather';
 
 class Course extends Component {
 
@@ -77,9 +78,14 @@ class Course extends Component {
             <div className="container">
                 <div className="panel">
                     <div className="heading">
-                        <h2>{title}</h2>
-                        <FromToDateTime fromDateTime={startDate} toDateTime={endDate}
+                        <h1>{title}</h1>
+                        <div className="small-list">
+                            <small><Calendar size={12} /> {course.semester}</small>
+                            <small><Home size={12} /> {course.owner}</small>
+                            <br />
+                            <FromToDateTime fromDateTime={startDate} toDateTime={endDate}
                                         toAppend={true}/>
+                        </div>
                     </div>
                     <p>{description}</p>
                     <br/>
