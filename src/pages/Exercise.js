@@ -170,7 +170,7 @@ class Exercise extends Component {
         } else {
             const authorizationHeader = this.props.context.authorizationHeader;
             const userId = this.state.impersonationUserId;
-            submission = await this.fetchSubmissionById(submissionId, userId, authorizationHeader);
+            submission = await this.fetchSubmissionById(submissionId, authorizationHeader, userId);
         }
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
