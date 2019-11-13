@@ -4,7 +4,8 @@ class CourseDataService {
 
     static async getCourses(authHeader) {
         return fetch(utils.courseServiceUrl + '/courses', authHeader())
-            .then(result => result.json()).catch(error => console.error('Error: ', error));
+            .then(result => result.json())
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getAssignment(courseId, assignmentId, authHeader) {
@@ -13,7 +14,8 @@ class CourseDataService {
                 if (result.ok) {
                     return result.json();
                 }
-            }).catch(error => console.error('Error: ', error));
+            })
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getExercise(exerciseId, authHeader) {
@@ -22,7 +24,8 @@ class CourseDataService {
                 if (response.ok) {
                     return response.json();
                 }
-            }).catch(error => console.error('Error: ', error));
+            })
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getExerciseFile(exerciseId, fileId, authHeader) {
@@ -33,7 +36,8 @@ class CourseDataService {
                 } else {
                     console.error('Failed to fetch file', fileId, result);
                 }
-            }).catch(error => console.error('Error: ', error));
+            })
+            .catch(error => console.error('Error: ', error));
     }
 
     static async getExerciseFileByName(exerciseId, name, authHeader) {

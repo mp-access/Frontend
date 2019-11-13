@@ -6,6 +6,7 @@ import { ExportModal } from '../components/course/AssistantExport';
 import ResultService from '../utils/ResultService';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 import { FromToDateTime } from '../components/DateTime';
+import { Calendar, Home } from 'react-feather';
 
 class Course extends Component {
 
@@ -17,6 +18,7 @@ class Course extends Component {
             showModal: false,
             modalAssignmentTitle: '',
             assignmentExport: undefined,
+            isLoadingCourse: true,
         };
     }
 
@@ -27,7 +29,7 @@ class Course extends Component {
         CourseDataService.getCourses(context.authorizationHeader)
             .then(result => {
                 const course = result.find(c => c.id === courseId);
-                this.setState({ course: course });
+                this.setState({ course: course, isLoadingCourse: false });
                 this.props.crumbs.setBreadCrumbs(course.breadCrumbs);
             })
             .catch(err => {
@@ -64,22 +66,31 @@ class Course extends Component {
     closeModal = () => this.setState({ showModal: false });
 
     render() {
-        const { course, assignmentExport, modalAssignmentTitle, showModal, courseResults } = this.state;
+        const { course, assignmentExport, modalAssignmentTitle, showModal, courseResults, isLoadingCourse } = this.state;
         if (!course || !courseResults) {
+            if(!isLoadingCourse && !course){
+                throw new Error("404");
+            }
+
             return null;
         }
 
         const { id: courseId, startDate, endDate, assignments, title, description } = course;
 
         const isCourseAdmin = this.props.context.isCourseAdmin(course.id);
-
+    
         return (
             <div className="container">
                 <div className="panel">
                     <div className="heading">
-                        <h2>{title}</h2>
-                        <FromToDateTime fromDateTime={startDate} toDateTime={endDate}
+                        <h1>{title}</h1>
+                        <div className="small-list">
+                            <small><Calendar size={12} /> {course.semester}</small>
+                            <small><Home size={12} /> {course.owner}</small>
+                            <br />
+                            <FromToDateTime fromDateTime={startDate} toDateTime={endDate}
                                         toAppend={true}/>
+                        </div>
                     </div>
                     <p>{description}</p>
                     <br/>

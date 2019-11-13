@@ -1,21 +1,27 @@
 import React from 'react';
 import { Assignment, Course, Courses, Exercise, Profile } from '../pages/';
-import { Redirect, Route } from 'react-router-dom';
+import { Switch, Redirect, Route } from 'react-router-dom';
 import { withAuth } from '../auth/AuthProvider';
 import Spinner from '../components/core/Spinner';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorPage from '../pages/ErrorPage';
+import PageNotFound from '../pages/PageNotFound';
 
 const AppNavigation = () => (
     <>
-        <SafeRoute exact path="/" render={() => <Redirect to="/courses"/>}/>
-        <PrivateRoute exact path="/courses" component={Courses}/>
-        <PrivateRoute exact path="/courses/:courseId" component={Course}/>
-        <PrivateRoute exact path="/courses/:courseId/assignments/:assignmentId" component={Assignment}/>
-        <PrivateRoute exact path="/exercises/:exerciseId" component={Exercise}/>
-        <PrivateRoute exact path="/profile" component={Profile}/>
+        
+        <Switch>
+            <SafeRoute exact path="/" render={() => <Redirect to="/courses"/>}/>
+            <PrivateRoute exact path="/courses" component={Courses}/>
+            <PrivateRoute exact path="/courses/:courseId" component={Course}/>
+            <PrivateRoute exact path="/courses/:courseId/assignments/:assignmentId" component={Assignment}/>
+            <PrivateRoute exact path="/exercises/:exerciseId" component={Exercise}/>
+            <PrivateRoute exact path="/profile" component={Profile}/>
 
-        <SafeRoute exact path="/error" component={ErrorPage}/>
+            <SafeRoute exact path="/error" component={ErrorPage}/>
+            <SafeRoute component={PageNotFound} />
+        </Switch>
+        
     </>
 );
 

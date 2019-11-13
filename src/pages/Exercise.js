@@ -30,6 +30,7 @@ class Exercise extends Component {
             showModal: false,
             targetLocation: '',
             impersonationUserId: '',
+            isLoadingExercise: true,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -81,15 +82,18 @@ class Exercise extends Component {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
-        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
+        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
+            if(!exercise) return;
 
-        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-
-        this.setState({
-            exercise,
-            workspace,
+            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const workspace = new Workspace(exercise, submission);
+    
+            this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+    
+            this.setState({
+                exercise,
+                workspace,
+            });
         });
     };
 
@@ -97,29 +101,36 @@ class Exercise extends Component {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
-        const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
-        const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
+        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
+            if(!exercise) {
+                this.setState({isLoadingExercise: false});
+                return;
+            }
 
-        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
-
-        const courseId = exercise.courseId;
-        let participants = [];
-        if (this.props.context.isCourseAdmin(courseId)) {
-            participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
-            participants = participants.usersFound;
-        }
-        participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
-
-        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-
-        this.setState({
-            exercise,
-            exercises: assignment.exercises,
-            results,
-            workspace,
-            participants: participants,
+            const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
+            const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
+    
+            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const workspace = new Workspace(exercise, submission);
+    
+            const courseId = exercise.courseId;
+            let participants = [];
+            if (this.props.context.isCourseAdmin(courseId)) {
+                participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
+                participants = participants.usersFound;
+            }
+            participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
+    
+            this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+    
+            this.setState({
+                exercise,
+                exercises: assignment.exercises,
+                results,
+                workspace,
+                participants: participants,
+                isLoadingExercise: false
+            });    
         });
     };
 
@@ -220,10 +231,10 @@ class Exercise extends Component {
                         saving?</Modal.Body>
                     <Modal.Footer>
                         <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
-                            <X size={14}/> Close
+                            <X size={14}/>Stay
                         </button>
                         <button className="style-btn submit" onClick={this.leaveExercise}>
-                            <ExternalLink size={14}/> Leave
+                            <ExternalLink size={14}/>Leave
                         </button>
                     </Modal.Footer>
                 </Modal>
@@ -358,9 +369,14 @@ class Exercise extends Component {
     };
 
     render() {
-        const { exercise, exercises, workspace, results, impersonationUserId } = this.state;
+        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise } = this.state;
 
         if (!exercise) {
+            if(!isLoadingExercise && !exercise){
+                throw new Error("404");
+            }
+
+            // TODO: Loading bar
             return null;
         }
 

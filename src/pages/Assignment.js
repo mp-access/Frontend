@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import CourseDataService from '../utils/CourseDataService';
 import ExerciseList from '../components/ExerciseList';
 import ResultService from '../utils/ResultService';
-import { ErrorRedirect } from './ErrorPage';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 import { FromToDateTime } from '../components/DateTime';
 
@@ -54,7 +53,7 @@ class Assignment extends Component {
 
         if (!assignment || !assignmentScore) {
             if (!isLoadingAssignment && !assignment) {
-                return <ErrorRedirect logs={{ stack: 'No assignment found' }}/>;
+                throw new Error("404");
             }
             return null;
         }
