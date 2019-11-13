@@ -21,8 +21,7 @@ class AuthProvider extends Component {
 
     componentDidMount() {
         if (!utils.canBypassLogin) {
-            const keycloakJson = utils.isDevelopment ? '/keycloak.json' : '/keycloak-prod.json';
-            const keycloak = Keycloak(keycloakJson);
+            const keycloak = Keycloak('/keycloak.json');
 
             keycloak.onTokenExpired = () => {
                 keycloak
@@ -101,17 +100,20 @@ class AuthProvider extends Component {
 
         const groups = {};
         groupStrings.forEach(course => {
-            // does token include author grant?
-            let isAdmin = course[1].includes('authors');
+            // does token include admin grant?
+            let isAdmin = course[1].includes('admins');
+            let isAssistant = course[1].includes('assistants');
 
             // Have we already parsed this course once? Might happen in case a user is both student and author in the same course
             if (!!groups[course[0]]) {
                 isAdmin = isAdmin || groups[course[0]].isAdmin;
+                isAssistant = isAssistant || groups[course[0]].isAssistant;
             }
 
             groups[course[0]] = {
                 group: course[1],
                 isAdmin: isAdmin,
+                isAssistant: isAssistant
             };
         });
 
@@ -120,9 +122,13 @@ class AuthProvider extends Component {
 
     isCourseAssistant = (courseId) => {
         const courseAccess = this.allowedAccessToCourses()[courseId];
-        return !!courseAccess && courseAccess.isAdmin;
+        return !!courseAccess && courseAccess.isAssistant;
     };
 
+    isCourseAdmin = (courseId) => {
+        const courseAccess = this.allowedAccessToCourses()[courseId];
+        return !!courseAccess && courseAccess.isAdmin;
+    };
 
     render() {
         const { keycloak, isAuthenticated } = this.state;
@@ -134,6 +140,7 @@ class AuthProvider extends Component {
                     isInitialized: !!keycloak,
                     isAuthenticated: isAuthenticated,
                     isCourseAssistant: this.isCourseAssistant,
+                    isCourseAdmin: this.isCourseAdmin,
                     accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,

@@ -4,10 +4,9 @@ import PropTypes from 'prop-types';
 import { Lock } from 'react-feather';
 import { DueDateTime } from './DateTime';
 
-const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExportClick, results }) => {
+const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClick, results }) => {
     const listItems = assignments.map((assignment, index) => {
             const pastDueDate = assignment.pastDueDate;
-            const label = <><h5>{assignment.title}</h5></>;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
 
             return (
@@ -15,13 +14,14 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
                           className="flex-grow-1">
                         <span>Exercise {index + 1} {pastDueDate ? <Lock size={15}/> : ''}</span>
-                        {label}
+                        <h5>{assignment.title} </h5>
                         <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
-                    <div>
-                        {isAssistant &&
+
+                        {isAdmin &&
                         <button className="style-btn"
                                 onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                    <div>
                         {result &&
                         <div className="score-display">
                             <span className="p-1"></span>
@@ -44,7 +44,7 @@ const AssignmentList = ({ courseId, assignments, isAssistant, onAssignmentExport
 AssignmentList.propTypes = {
     courseId: PropTypes.string.isRequired,
     assignments: PropTypes.array.isRequired,
-    isAssistant: PropTypes.bool.isRequired,
+    isAdmin: PropTypes.bool.isRequired,
     result: PropTypes.array,
 };
 

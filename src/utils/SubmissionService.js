@@ -2,17 +2,22 @@ import utils from '../utils';
 
 class SubmissionService {
 
-    static async getLastSubmission(exerciseId, authHeader) {
-        const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
+    static async getLastSubmission(exerciseId, authHeader, userId) {
+        let url;
+        if (userId) {
+            url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/users/${userId}`;
+        } else {
+            url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}`;
+        }
         return await fetch(url, authHeader())
             .then(response => {
-                return response.text()
+                return response.text();
             })
             .then((data) => {
                 return (data ? JSON.parse(data) : undefined);
             })
             .catch((error) => {
-                console.error('Error: ', error)
+                console.error('Error: ', error);
             });
     }
 
@@ -26,7 +31,7 @@ class SubmissionService {
             submissionBody['details'] = {
                 'graded': graded,
                 'publicFiles': submission.publicFiles,
-                'selectedFile': submission.selectedFile,
+                'selectedFileId': submission.selectedFileId,
             };
         } else if (submission.type === 'singleChoice') {
             submissionBody['details'] = {
@@ -71,8 +76,13 @@ class SubmissionService {
             .catch(error => console.error('Error: ', error));
     }
 
-    static async getSubmission(submissionId, authHeader) {
-        const url = `${utils.courseServiceUrl}/submissions/${submissionId}`;
+    static async getSubmission(submissionId, authHeader, userId) {
+        let url;
+        if (userId) {
+            url = `${utils.courseServiceUrl}/submissions/${submissionId}/users/${userId}`;
+        } else {
+            url = `${utils.courseServiceUrl}/submissions/${submissionId}`;
+        }
         return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
@@ -84,8 +94,13 @@ class SubmissionService {
             .catch(error => console.error('Error: ', error));
     }
 
-    static async getSubmissionList(exerciseId, authHeader) {
-        const url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
+    static async getSubmissionList(exerciseId, authHeader, userId) {
+        let url;
+        if (userId) {
+            url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/users/${userId}/history`;
+        } else {
+            url = `${utils.courseServiceUrl}/submissions/exercises/${exerciseId}/history`;
+        }
         return await fetch(url, authHeader())
             .then(response => {
                 if (response.ok) {
