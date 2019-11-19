@@ -34,7 +34,7 @@ class CodeExercise extends PureComponent {
             path: '/description.md',
             content: exercise.question,
             extension: 'md',
-            readOnly: true,
+            isDirectory: false,
         };
 
         // folders
@@ -78,7 +78,7 @@ class CodeExercise extends PureComponent {
             exercise.resource_files.forEach(f => { fileMap.set("/resource" + f.path.replace(/\\/g, "/"), f); });
         }
 
-        const {fileIndex, fileStructure} = generateFileStructures(fileMap);
+        const {fileIndex, fileStructure} = this.generateFileStructures(fileMap);
         const selectedFilePath = sessionStorage.getItem('selectedFile');
         const selectedFile = fileIndex.get(selectedFilePath) || fileIndex.get("/question.md");
 
@@ -138,10 +138,32 @@ class CodeExercise extends PureComponent {
 
         fileIndex.set(updatedSelectedFile.path, updatedSelectedFile);
 
-        this.setState({
-            selectedFile: updatedSelectedFile,
-            fileIndex,
+        let structureChanged = false;
+
+        const fileStructure = this.walkHierarchy(this.state.fileStructure, n => {
+            if(n.path === selectedFile.path && !n.isDirectory && !n.isDirty){
+                structureChanged = true;
+                return {
+                    ...n,
+                    isDirty: true
+                }
+            }else{
+                return n;
+            }
         });
+        
+        if(structureChanged){
+            this.setState({
+                selectedFile: updatedSelectedFile,
+                fileIndex,
+                fileStructure,
+            });
+        }else{
+            this.setState({
+                selectedFile: updatedSelectedFile,
+                fileIndex,
+            });
+        }
     };
 
     walkHierarchy = (structure, action) => {
@@ -210,7 +232,7 @@ class CodeExercise extends PureComponent {
                 placement="top"
                 overlay={
                     <Tooltip id="testrun-tooltip">
-                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
+                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code<br/><small>(ctrl + s)</small>
                     </Tooltip>
                 }
                 >
@@ -256,6 +278,89 @@ class CodeExercise extends PureComponent {
         );
     }
 
+    generateFileStructures = (flatFileMap) => {
+
+        let fileStructure = [];
+        let fileIndex = new Map();
+    
+        for(let file of flatFileMap){
+            var dirs = file[0].split('/');
+            dirs.shift();
+    
+            let step = fileStructure;
+    
+            for(let i = 0; i < dirs.length; ++i){
+                let dir = "/" + dirs.slice(0,i+1).join("/");
+    
+                if(!fileIndex.get(dir)){
+                    if(i === (dirs.length-1) && !file[1].isDirectory){
+                        fileIndex.set(file[0], {
+                            id: file[1].id,
+                            title: file[1].nameWithExtension,
+                            path: file[0],
+                            isDirectory: false,
+                            extension: file[1].extension,
+                            content: file[1].content,
+                            readOnly: !file[0].startsWith("/public")
+                        });
+    
+                        step.push({
+                            title: file[1].nameWithExtension,
+                            path: file[0],
+                            isDirectory: false,
+                            extension: file[1].extension,
+                        });
+                    }else{
+                        fileIndex.set(dir, {
+                            title: dirs[i],
+                            path: dir,
+                            isDirectory: true,
+                        });
+                        let folder = {
+                            title: dirs[i],
+                            path: dir,
+                            isDirectory: true,
+                            children: [],
+                            expanded: dirs[i] === 'public'
+                        };
+    
+                        step.push(folder);
+                        step = folder.children;
+                    }
+                }else{
+                    step = step.find(el => {
+                        return el.path === dir
+                    }).children;
+                }
+            }
+        }
+    
+        const sortfunc = (a, b) => {
+            if(b.isDirectory !== a.isDirectory){
+                // a is a directory or b is a directory
+                return b.isDirectory ? 1 : -1;
+            }else{
+                // a and b are both directories or both files
+                return a.path.localeCompare(b.path);
+            }
+        }
+    
+        fileStructure = this.walkHierarchy(fileStructure.sort(sortfunc), n => {
+            if(n.isDirectory){
+                return {
+                    ...n,
+                    children: n.children.sort(sortfunc)
+                }
+            }else{
+                return n;
+            }
+        });
+        
+    
+    
+        return {fileIndex, fileStructure};
+    };
+
     downloadWorkspace = async () => {
         const zip = new JSZip();
         const { fileIndex } = this.state;
@@ -293,71 +398,6 @@ class CodeExercise extends PureComponent {
     };
 }
 
-/**
- * Maps backend virtual files to frontend tree structure.
- *
- * Note: this should be adapted to account for folder structures in future
- * @param flatFileMap
- * @returns {*}
- */
-const generateFileStructures = (flatFileMap) => {
-
-    let fileStructure = [];
-    let fileIndex = new Map();
-
-    for(let file of flatFileMap){
-        var dirs = file[0].split('/');
-        dirs.shift();
-
-        let step = fileStructure;
-
-        for(let i = 0; i < dirs.length; ++i){
-            let dir = "/" + dirs.slice(0,i+1).join("/");
-
-            if(!fileIndex.get(dir)){
-                if(i === (dirs.length-1) && !file[1].isDirectory){
-                    fileIndex.set(file[0], {
-                        id: file[1].id,
-                        title: file[1].nameWithExtension,
-                        path: file[0],
-                        isDirectory: false,
-                        extension: file[1].extension,
-                        content: file[1].content,
-                    });
-
-                    step.push({
-                        title: file[1].nameWithExtension,
-                        path: file[0],
-                        isDirectory: false,
-                        extension: file[1].extension,
-                    });
-                }else{
-                    fileIndex.set(dir, {
-                        title: dirs[i],
-                        path: dir,
-                        isDirectory: true,
-                    });
-                    let folder = {
-                        title: dirs[i],
-                        path: dir,
-                        isDirectory: true,
-                        children: [],
-                        expanded: dirs[i] === 'public'
-                    };
-
-                    step.push(folder);
-                    step = folder.children;
-                }
-            }else{
-                step = step.find(el => {
-                    return el.path === dir
-                }).children;
-            }
-        }
-    }
-
-    return {fileIndex, fileStructure};
-};
 
 
 export default CodeExercise;
