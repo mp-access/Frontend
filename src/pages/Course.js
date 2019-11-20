@@ -7,6 +7,7 @@ import ResultService from '../utils/ResultService';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 import { FromToDateTime } from '../components/DateTime';
 import { Calendar, Home } from 'react-feather';
+import Spinner from '../components/core/Spinner';
 
 class Course extends Component {
 
@@ -72,7 +73,7 @@ class Course extends Component {
                 throw new Error("404");
             }
 
-            return null;
+            return <div className="loading-box"><Spinner text={'Loading Courses...'}/></div>;;
         }
 
         const { id: courseId, startDate, endDate, assignments, title, description } = course;

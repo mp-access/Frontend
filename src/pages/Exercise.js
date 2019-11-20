@@ -13,6 +13,7 @@ import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
+import Spinner from '../components/core/Spinner';
 import Button from "react-bootstrap/Button";
 
 class Exercise extends Component {
@@ -377,8 +378,7 @@ class Exercise extends Component {
                 throw new Error("404");
             }
 
-            // TODO: Loading bar
-            return null;
+            return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;;
         }
 
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
@@ -405,8 +405,11 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList exercises={exercises} selectedId={selectedId}
-                                          gradedSubmissions={gradedSubmissions} showScore={false}/>
+                            <ExerciseList   exercises={exercises} 
+                                            selectedId={selectedId}
+                                            gradedSubmissions={gradedSubmissions} 
+                                            showScore={false}
+                                            pastDueDate={exercise.pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">

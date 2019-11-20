@@ -4,6 +4,7 @@ import ExerciseList from '../components/ExerciseList';
 import ResultService from '../utils/ResultService';
 import { withBreadCrumbsAndAuth } from '../components/BreadCrumbProvider';
 import { FromToDateTime } from '../components/DateTime';
+import Spinner from '../components/core/Spinner';
 
 
 class Assignment extends Component {
@@ -55,7 +56,7 @@ class Assignment extends Component {
             if (!isLoadingAssignment && !assignment) {
                 throw new Error("404");
             }
-            return null;
+            return <div className="loading-box"><Spinner text={'Loading Exercises...'}/></div>;
         }
 
         const gradedSubmissions = assignmentScore.gradedSubmissions ? assignmentScore.gradedSubmissions : [];
@@ -73,8 +74,10 @@ class Assignment extends Component {
                     <br/>
                     <br/>
                     <div>
-                        <ExerciseList exercises={assignment.exercises} gradedSubmissions={gradedSubmissions}
-                                      showScore={true}/>
+                        <ExerciseList   exercises={assignment.exercises} 
+                                        gradedSubmissions={gradedSubmissions}
+                                        showScore={true}
+                                        pastDueDate={assignment.pastDueDate}/>
                     </div>
                 </div>
             </div>
