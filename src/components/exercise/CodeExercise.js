@@ -65,11 +65,11 @@ class CodeExercise extends PureComponent {
         fileMap.set('/public', pub_dir);
         publicFiles.forEach(f => { fileMap.set("/public" + f.path.replace(/\\/g, "/"), f); });
 
-        if (exercise.solution_files) {
+        if (exercise.solution_files && exercise.solution_files.length) {
             fileMap.set('/solution', sol_dir);
             exercise.solution_files.forEach(f => { fileMap.set("/solution" + f.path.replace(/\\/g, "/"), f); });
         }
-        if (exercise.private_files) {
+        if (exercise.private_files && exercise.private_files.length) {
             fileMap.set('/private', priv_dir);
             exercise.private_files.forEach(f => { fileMap.set("/private" + f.path.replace(/\\/g, "/"), f); });
         }
