@@ -36,7 +36,7 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
 
     return (
         <ul className="style-list">
-            {listItems}
+            {listItems.reverse()}
         </ul>
     );
 };
