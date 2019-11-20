@@ -52,10 +52,12 @@ const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
                         <span>
                             {node.path === selectedFile.path ?
                                 <strong>
-                                    {node.title}
+                                    {node.title}{node.isDirty ? '*' : ''}
                                 </strong>
                                 :
-                                (node.title)
+                                <>
+                                    {node.title}{node.isDirty ? '*' : ''}
+                                </>
                             }
                         </span>
                     );

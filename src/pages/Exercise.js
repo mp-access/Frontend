@@ -13,6 +13,8 @@ import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
+import Spinner from '../components/core/Spinner';
+import Button from "react-bootstrap/Button";
 
 class Exercise extends Component {
 
@@ -376,8 +378,7 @@ class Exercise extends Component {
                 throw new Error("404");
             }
 
-            // TODO: Loading bar
-            return null;
+            return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;;
         }
 
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
@@ -404,24 +405,36 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList exercises={exercises} selectedId={selectedId}
-                                          gradedSubmissions={gradedSubmissions} showScore={false}/>
+                            <ExerciseList   exercises={exercises} 
+                                            selectedId={selectedId}
+                                            gradedSubmissions={gradedSubmissions} 
+                                            showScore={false}
+                                            pastDueDate={exercise.pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             {isAdmin &&
-                            <div style={{ paddingBottom: '20px', clear: 'both' }}>
-                                <label htmlFor={'userSelect'}>Impersonate user</label><br/>
+                            <div>
+                                <label htmlFor={'userSelect'}>Impersonation</label>
+                                <br/>
                                 <select id={'userSelect'}
                                         onChange={this.onUserChange}
                                         value={impersonationUserId}>
-                                    <option value={''}>I just wanna be myself!</option>
+                                    <option value={''}>Select User</option>
                                     {this.state.participants.map(student => <option
                                         key={student.id}
                                         value={student.id}>{student.emailAddress}</option>)}
                                 </select>
+                                <br/>
+                                <Button
+                                    className="style-btn"
+                                    size="sm"
+                                    title="Press me"
+                                    onClick={() => this.setState({ workspace, impersonationUserId: '' })}
+                                    style={{ marginTop: '1rem', clear: 'both' }}
+                                >Back to myself</Button>
                             </div>
                             }
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
