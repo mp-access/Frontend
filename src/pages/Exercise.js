@@ -425,13 +425,13 @@ class Exercise extends Component {
                                         value={student.id}>{student.emailAddress}</option>)}
                                 </select>
                                 <br/>
-
-                                <Button size="sm"
+                                <Button
+                                    className="style-btn"
+                                    size="sm"
                                     title="Press me"
                                     onClick={() => this.setState({ workspace, impersonationUserId: '' })}
-                                        style={{ marginTop: '1rem', clear: 'both' }}
+                                    style={{ marginTop: '1rem', clear: 'both' }}
                                 >Back to myself</Button>
-
                             </div>
                             }
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
