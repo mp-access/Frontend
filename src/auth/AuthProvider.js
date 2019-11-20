@@ -26,10 +26,19 @@ class AuthProvider extends Component {
             keycloak.onTokenExpired = () => {
                 keycloak
                     .updateToken(10)
-                    .success();
+                    .success((refreshed) => {
+                        if (refreshed) {
+                            console.debug('Access token refreshed');
+                        } else {
+                            console.debug('No need to refresh token');
+                        }
+                    }).error(() => {
+                    console.debug('Session expired');
+                    keycloak.clearToken();
+                });
             };
 
-            keycloak.init({ onLoad: 'check-sso' })
+            keycloak.init({ onLoad: 'login-required' })
                 .success(authenticated => {
                     this.setState({
                         isAuthenticated: authenticated,
@@ -48,6 +57,13 @@ class AuthProvider extends Component {
 
     logout = () => {
         this.state.keycloak.logout();
+    };
+
+    onLogout = (cb) => {
+        const { keycloak } = this.state;
+        if (keycloak) {
+            keycloak.onAuthLogout = () => cb();
+        }
     };
 
     accountManagement = () => this.state.keycloak.accountManagement();
@@ -113,7 +129,7 @@ class AuthProvider extends Component {
             groups[course[0]] = {
                 group: course[1],
                 isAdmin: isAdmin,
-                isAssistant: isAssistant
+                isAssistant: isAssistant,
             };
         });
 
