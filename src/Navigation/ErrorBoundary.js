@@ -1,6 +1,7 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
-import { ErrorRedirect } from '../pages/ErrorPage';
+import { withRouter, Route } from 'react-router-dom';
+import ErrorPage from '../pages/ErrorPage';
+import PageNotFound from '../pages/PageNotFound';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -27,9 +28,13 @@ class ErrorBoundary extends React.Component {
 
     render() {
         const errInfo = this.state.errorDetails;
-
+        
         if (this.state.hasError) {
-            return <ErrorRedirect logs={errInfo}/>;
+            if(this.state.errorDetails.message === "404"){
+                return <Route render={() => <PageNotFound logs={errInfo} />} />
+            }else{
+                return <Route render={() => <ErrorPage logs={errInfo} />} />
+            }
         }
 
         return this.props.children;

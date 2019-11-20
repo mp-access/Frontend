@@ -10,7 +10,7 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
 
             return (
-                <li key={assignment.id} className="h-flex">
+                <li key={assignment.id} className={"h-flex" + ((result && result.gradedSubmissions.length) || pastDueDate ? '' : ' fresh')}>
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
                           className="flex-grow-1">
                         <span>Exercise {index + 1} {pastDueDate ? <Lock size={15}/> : ''}</span>
@@ -36,7 +36,7 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
 
     return (
         <ul className="style-list">
-            {listItems}
+            {listItems.reverse()}
         </ul>
     );
 };

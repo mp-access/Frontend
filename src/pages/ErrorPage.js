@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Collapse } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
 
 class ErrorPage extends Component {
     constructor(props) {
@@ -15,10 +14,7 @@ class ErrorPage extends Component {
     };
 
     render() {
-        let logs = { stack: 'No details available.' };
-
-        if (this.props.location.state && this.props.location.state.logs)
-            logs = this.props.location.state.logs;
+        const logs = this.props.logs ? this.props.logs : { stack: 'No details available.' };
 
         return (
             <div className="container">
@@ -50,19 +46,4 @@ class ErrorPage extends Component {
     }
 }
 
-const ErrorRedirect = ({ logs }) => {
-    return (
-        <Redirect to={{
-            pathname: '/error',
-            state: {
-                logs: {
-                    stack: logs.stack,
-                    message: logs.message,
-                },
-            },
-        }}/>
-    );
-};
-
-export { ErrorRedirect };
 export default ErrorPage;

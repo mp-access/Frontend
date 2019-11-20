@@ -13,6 +13,8 @@ import { Alert, Modal } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
+import Spinner from '../components/core/Spinner';
+import Button from "react-bootstrap/Button";
 
 class Exercise extends Component {
 
@@ -30,6 +32,7 @@ class Exercise extends Component {
             showModal: false,
             targetLocation: '',
             impersonationUserId: '',
+            isLoadingExercise: true,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -81,15 +84,18 @@ class Exercise extends Component {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
-        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
+        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
+            if(!exercise) return;
 
-        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-
-        this.setState({
-            exercise,
-            workspace,
+            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const workspace = new Workspace(exercise, submission);
+    
+            this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+    
+            this.setState({
+                exercise,
+                workspace,
+            });
         });
     };
 
@@ -97,29 +103,36 @@ class Exercise extends Component {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
 
-        const exercise = await this.fetchExercise(exerciseId, authorizationHeader);
-        const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
-        const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
+        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
+            if(!exercise) {
+                this.setState({isLoadingExercise: false});
+                return;
+            }
 
-        const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-        const workspace = new Workspace(exercise, submission);
-
-        const courseId = exercise.courseId;
-        let participants = [];
-        if (this.props.context.isCourseAdmin(courseId)) {
-            participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
-            participants = participants.usersFound;
-        }
-        participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
-
-        this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-
-        this.setState({
-            exercise,
-            exercises: assignment.exercises,
-            results,
-            workspace,
-            participants: participants,
+            const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
+            const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
+    
+            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const workspace = new Workspace(exercise, submission);
+    
+            const courseId = exercise.courseId;
+            let participants = [];
+            if (this.props.context.isCourseAdmin(courseId)) {
+                participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
+                participants = participants.usersFound;
+            }
+            participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
+    
+            this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+    
+            this.setState({
+                exercise,
+                exercises: assignment.exercises,
+                results,
+                workspace,
+                participants: participants,
+                isLoadingExercise: false
+            });    
         });
     };
 
@@ -220,10 +233,10 @@ class Exercise extends Component {
                         saving?</Modal.Body>
                     <Modal.Footer>
                         <button className="style-btn" onClick={this.onShowLeaveModal.bind(this, false)}>
-                            <X size={14}/> Close
+                            <X size={14}/>Stay
                         </button>
                         <button className="style-btn submit" onClick={this.leaveExercise}>
-                            <ExternalLink size={14}/> Leave
+                            <ExternalLink size={14}/>Leave
                         </button>
                     </Modal.Footer>
                 </Modal>
@@ -358,10 +371,14 @@ class Exercise extends Component {
     };
 
     render() {
-        const { exercise, exercises, workspace, results, impersonationUserId } = this.state;
+        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise } = this.state;
 
         if (!exercise) {
-            return null;
+            if(!isLoadingExercise && !exercise){
+                throw new Error("404");
+            }
+
+            return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;;
         }
 
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
@@ -388,24 +405,36 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList exercises={exercises} selectedId={selectedId}
-                                          gradedSubmissions={gradedSubmissions} showScore={false}/>
+                            <ExerciseList   exercises={exercises} 
+                                            selectedId={selectedId}
+                                            gradedSubmissions={gradedSubmissions} 
+                                            showScore={false}
+                                            pastDueDate={exercise.pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             {isAdmin &&
-                            <div style={{ paddingBottom: '20px', clear: 'both' }}>
-                                <label htmlFor={'userSelect'}>Impersonate user</label><br/>
+                            <div>
+                                <label htmlFor={'userSelect'}>Impersonation</label>
+                                <br/>
                                 <select id={'userSelect'}
                                         onChange={this.onUserChange}
                                         value={impersonationUserId}>
-                                    <option value={''}>I just wanna be myself!</option>
+                                    <option value={''}>Select User</option>
                                     {this.state.participants.map(student => <option
                                         key={student.id}
                                         value={student.id}>{student.emailAddress}</option>)}
                                 </select>
+                                <br/>
+                                <Button
+                                    className="style-btn"
+                                    size="sm"
+                                    title="Press me"
+                                    onClick={() => this.setState({ workspace, impersonationUserId: '' })}
+                                    style={{ marginTop: '1rem', clear: 'both' }}
+                                >Back to myself</Button>
                             </div>
                             }
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
