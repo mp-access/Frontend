@@ -160,6 +160,7 @@ class AuthProvider extends Component {
                     accessToken: this.accessToken,
                     login: this.login,
                     logout: this.logout,
+                    onLogout: this.onLogout,
                     accountManagement: this.accountManagement,
                     loadUserInfo: this.loadUserInfo,
                     authorizationHeader: this.authorizationHeader,

@@ -10,6 +10,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Download, Play } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
+import { withAuth } from '../../auth/AuthProvider';
 
 class CodeExercise extends PureComponent {
 
@@ -24,69 +25,87 @@ class CodeExercise extends PureComponent {
     }
 
     componentDidMount = async () => {
-        const { exercise, workspace } = this.props;
+        const { exercise, workspace, context } = this.props;
 
-        const submission = workspace.submission;
-        const publicFiles = (submission ? submission.publicFiles : exercise.public_files) || [];
+        context.onLogout(() => sessionStorage.setItem('exerciseState', serializeState(this.state)));
 
-        const questionFile = {
-            nameWithExtension: 'description.md',
-            path: '/description.md',
-            content: exercise.question,
-            extension: 'md',
-            readOnly: true,
-        };
+        const exerciseState = sessionStorage.getItem('exerciseState');
+        if (exerciseState) {
+            this.setState({
+                ...deserializeState(exerciseState),
+            });
+            sessionStorage.removeItem('exerciseState');
+        } else {
+            const submission = workspace.submission;
+            const publicFiles = (submission ? submission.publicFiles : exercise.public_files) || [];
 
-        // folders
-        const pub_dir = {
-            title: 'public',
-            path: '/public',
-            isDirectory: true,
-        };
-        const priv_dir = {
-            title: 'private',
-            path: '/private',
-            isDirectory: true,
-        };
-        const sol_dir = {
-            title: 'solution',
-            path: '/solution',
-            isDirectory: true,
-        };
-        const res_dir = {
-            title: 'resource',
-            path: '/resource',
-            isDirectory: true,
-        };
+            const questionFile = {
+                nameWithExtension: 'description.md',
+                path: '/description.md',
+                content: exercise.question,
+                extension: 'md',
+                readOnly: true,
+            };
 
-        let fileMap = new Map();
+            // folders
+            const pub_dir = {
+                title: 'public',
+                path: '/public',
+                isDirectory: true,
+            };
+            const priv_dir = {
+                title: 'private',
+                path: '/private',
+                isDirectory: true,
+            };
+            const sol_dir = {
+                title: 'solution',
+                path: '/solution',
+                isDirectory: true,
+            };
+            const res_dir = {
+                title: 'resource',
+                path: '/resource',
+                isDirectory: true,
+            };
 
-        fileMap.set('/question.md', questionFile);
-        fileMap.set('/public', pub_dir);
-        publicFiles.forEach(f => { fileMap.set("/public" + f.path.replace(/\\/g, "/"), f); });
+            let fileMap = new Map();
 
-        if (exercise.solution_files) {
-            fileMap.set('/solution', sol_dir);
-            exercise.solution_files.forEach(f => { fileMap.set("/solution" + f.path.replace(/\\/g, "/"), f); });
+            fileMap.set('/question.md', questionFile);
+            fileMap.set('/public', pub_dir);
+            publicFiles.forEach(f => {
+                fileMap.set('/public' + f.path.replace(/\\/g, '/'), f);
+            });
+
+            if (exercise.solution_files) {
+                fileMap.set('/solution', sol_dir);
+                exercise.solution_files.forEach(f => {
+                    fileMap.set('/solution' + f.path.replace(/\\/g, '/'), f);
+                });
+            }
+            if (exercise.private_files) {
+                fileMap.set('/private', priv_dir);
+                exercise.private_files.forEach(f => {
+                    fileMap.set('/private' + f.path.replace(/\\/g, '/'), f);
+                });
+            }
+            if (exercise.resource_files && exercise.resource_files.length) {
+                fileMap.set('/resource', res_dir);
+                exercise.resource_files.forEach(f => {
+                    fileMap.set('/resource' + f.path.replace(/\\/g, '/'), f);
+                });
+            }
+
+            const { fileIndex, fileStructure } = generateFileStructures(fileMap);
+            const selectedFilePath = sessionStorage.getItem('selectedFile');
+            const selectedFile = fileIndex.get(selectedFilePath) || fileIndex.get('/question.md');
+
+            this.setState({
+                fileIndex,
+                fileStructure,
+                selectedFile,
+            });
         }
-        if (exercise.private_files) {
-            fileMap.set('/private', priv_dir);
-            exercise.private_files.forEach(f => { fileMap.set("/private" + f.path.replace(/\\/g, "/"), f); });
-        }
-        if (exercise.resource_files && exercise.resource_files.length) {
-            fileMap.set('/resource', res_dir);
-            exercise.resource_files.forEach(f => { fileMap.set("/resource" + f.path.replace(/\\/g, "/"), f); });
-        }
-
-        const {fileIndex, fileStructure} = generateFileStructures(fileMap);
-        const selectedFilePath = sessionStorage.getItem('selectedFile');
-        const selectedFile = fileIndex.get(selectedFilePath) || fileIndex.get("/question.md");
-
-        this.setState({
-            fileIndex,
-            fileStructure,
-            selectedFile,
-        });
     };
 
     getPublicFiles = () => {
@@ -94,11 +113,11 @@ class CodeExercise extends PureComponent {
         const { selectedFile, fileIndex } = this.state;
         let publicFiles = [];
         fileIndex.forEach((val, key) => {
-            if(key.startsWith("/public") && !val.isDirectory){
+            if (key.startsWith('/public') && !val.isDirectory) {
                 publicFiles.push({
                     ...val,
-                    path: val.path.replace("/public", ""),
-                    name: val.title.replace("." + val.extension, ""),
+                    path: val.path.replace('/public', ''),
+                    name: val.title.replace('.' + val.extension, ''),
                 });
             }
         });
@@ -146,12 +165,12 @@ class CodeExercise extends PureComponent {
 
     walkHierarchy = (structure, action) => {
         return structure.map(n => {
-            if(n.isDirectory){
+            if (n.isDirectory) {
                 return action({
                     ...n,
                     children: this.walkHierarchy(n.children, action),
                 });
-            }else{
+            } else {
                 return action(n);
             }
         });
@@ -160,12 +179,12 @@ class CodeExercise extends PureComponent {
 
     nodeClicked = (node) => {
         const fileStructure = this.walkHierarchy(this.state.fileStructure, n => {
-            if(n.isDirectory){
+            if (n.isDirectory) {
                 return {
                     ...n,
                     expanded: n.path === node.path ? !n.expanded : n.expanded,
-                }
-            }else{
+                };
+            } else {
                 return n;
             }
         });
@@ -200,28 +219,29 @@ class CodeExercise extends PureComponent {
         />;
 
 
-
         let runButtonContent;
         if (this.state.runButtonState) {
             runButtonContent = <Spinner text={'Processing'}/>;
         } else {
             runButtonContent = <>
-            <OverlayTrigger
-                placement="top"
-                overlay={
-                    <Tooltip id="testrun-tooltip">
-                        This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your code
-                    </Tooltip>
-                }
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
+                            code
+                        </Tooltip>
+                    }
                 >
-                <span><Play size={14}/>Test & Run</span>
-            </OverlayTrigger>
+                    <span><Play size={14}/>Test & Run</span>
+                </OverlayTrigger>
             </>;
         }
 
         const buttonCluster = (
             <div className="code-panel">
-                <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14} />Download</button>
+                <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
+                </button>
                 <button className="style-btn" disabled={this.state.runButtonState}
                         onClick={this.onCodeSubmit}>{runButtonContent}</button>
             </div>
@@ -264,17 +284,17 @@ class CodeExercise extends PureComponent {
 
         let zipMap = new Map();
 
-        zipMap.set("/", zip.folder(exercise.assignmentId));
+        zipMap.set('/', zip.folder(exercise.assignmentId));
 
-        for(let node of fileIndex){
-            const index = node[0].lastIndexOf("/");
+        for (let node of fileIndex) {
+            const index = node[0].lastIndexOf('/');
             const parentPath = node[0].substring(0, index);
-            const parent = zipMap.get(parentPath === "" ? "/" : parentPath);
+            const parent = zipMap.get(parentPath === '' ? '/' : parentPath);
 
-            if(node[1].isDirectory){
+            if (node[1].isDirectory) {
                 const zipFolder = parent.folder(node[1].title);
                 zipMap.set(node[0], zipFolder);
-            }else{
+            } else {
                 const mediaType = Util.MEDIA_TYPE_MAP[node[1].extension];
                 let zipFile;
                 if (mediaType === 'code') {
@@ -305,17 +325,17 @@ const generateFileStructures = (flatFileMap) => {
     let fileStructure = [];
     let fileIndex = new Map();
 
-    for(let file of flatFileMap){
+    for (let file of flatFileMap) {
         var dirs = file[0].split('/');
         dirs.shift();
 
         let step = fileStructure;
 
-        for(let i = 0; i < dirs.length; ++i){
-            let dir = "/" + dirs.slice(0,i+1).join("/");
+        for (let i = 0; i < dirs.length; ++i) {
+            let dir = '/' + dirs.slice(0, i + 1).join('/');
 
-            if(!fileIndex.get(dir)){
-                if(i === (dirs.length-1) && !file[1].isDirectory){
+            if (!fileIndex.get(dir)) {
+                if (i === (dirs.length - 1) && !file[1].isDirectory) {
                     fileIndex.set(file[0], {
                         id: file[1].id,
                         title: file[1].nameWithExtension,
@@ -331,7 +351,7 @@ const generateFileStructures = (flatFileMap) => {
                         isDirectory: false,
                         extension: file[1].extension,
                     });
-                }else{
+                } else {
                     fileIndex.set(dir, {
                         title: dirs[i],
                         path: dir,
@@ -342,22 +362,46 @@ const generateFileStructures = (flatFileMap) => {
                         path: dir,
                         isDirectory: true,
                         children: [],
-                        expanded: dirs[i] === 'public'
+                        expanded: dirs[i] === 'public',
                     };
 
                     step.push(folder);
                     step = folder.children;
                 }
-            }else{
+            } else {
                 step = step.find(el => {
-                    return el.path === dir
+                    return el.path === dir;
                 }).children;
             }
         }
     }
 
-    return {fileIndex, fileStructure};
+    return { fileIndex, fileStructure };
 };
 
+const serializeState = (state) => {
+    return JSON.stringify(state, (key, value) => {
+        const originalObject = state[key];
+        if (originalObject instanceof Map) {
+            return {
+                dataType: 'Map',
+                value: Array.from(originalObject.entries()),
+            };
+        } else {
+            return value;
+        }
+    });
+};
 
-export default CodeExercise;
+const deserializeState = (state) => {
+    return JSON.parse(state, (key, value) => {
+        if (typeof value === 'object' && value !== null) {
+            if (value.dataType === 'Map') {
+                return new Map(value.value);
+            }
+        }
+        return value;
+    });
+};
+
+export default withAuth(CodeExercise);
