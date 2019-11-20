@@ -14,6 +14,7 @@ import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvide
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
 import Spinner from '../components/core/Spinner';
+import Button from "react-bootstrap/Button";
 
 class Exercise extends Component {
 
@@ -415,16 +416,25 @@ class Exercise extends Component {
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
                             {isAdmin &&
-                            <div style={{ paddingBottom: '20px', clear: 'both' }}>
-                                <label htmlFor={'userSelect'}>Impersonate user</label><br/>
+                            <div>
+                                <label htmlFor={'userSelect'}>Impersonation</label>
+                                <br/>
                                 <select id={'userSelect'}
                                         onChange={this.onUserChange}
                                         value={impersonationUserId}>
-                                    <option value={''}>I just wanna be myself!</option>
+                                    <option value={''}>Select User</option>
                                     {this.state.participants.map(student => <option
                                         key={student.id}
                                         value={student.id}>{student.emailAddress}</option>)}
                                 </select>
+                                <br/>
+                                <Button
+                                    className="style-btn"
+                                    size="sm"
+                                    title="Press me"
+                                    onClick={() => this.setState({ workspace, impersonationUserId: '' })}
+                                    style={{ marginTop: '1rem', clear: 'both' }}
+                                >Back to myself</Button>
                             </div>
                             }
                             <h1 className="float-left">{this.state.exercise.longTitle}</h1>
