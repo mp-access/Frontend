@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import AdminService from '../../utils/AdminService';
 
-const ExportModal = ({showModal, handleClose, authorization, courseId, assignmentExport, assignmentTitle = 'Assignment'}) => (
+const ExportModal = ({ showModal, handleClose, authorization, courseId, assignmentExport, assignmentTitle = 'Assignment' }) => (
     <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
             <Modal.Title>{assignmentTitle}</Modal.Title>
@@ -16,7 +16,7 @@ const ExportModal = ({showModal, handleClose, authorization, courseId, assignmen
             <br/>
             <br/>
             <button variant="primary" className='style-btn warn' onClick={() => {
-                handleClick(assignmentExport, courseId, authorization)
+                handleClick(assignmentExport, courseId, authorization);
             }}>
                 Re-Evaluation (CARE!)
             </button>
@@ -34,7 +34,7 @@ function handleClick(assignmentExport, courseId, authorization) {
         .catch(error => console.log(error));
 }
 
-const DownloadButton = ({assignmentExport, assignmentTitle, json = false, csv = false}) => {
+const DownloadButton = ({ assignmentExport, assignmentTitle, json = false, csv = false }) => {
     const filename = encodeURIComponent(assignmentTitle.replace(/ /g, '_'));
     let extension = '';
     let content = '';
@@ -67,14 +67,19 @@ const toCsv = (assignmentExport) => {
     if (!assignmentExport) {
         return;
     }
-    const {exerciseIds, byStudents, totalsByStudent} = assignmentExport;
+    const { exerciseIds, byStudents, totalsByStudent } = assignmentExport;
     let str = `"Student",${exerciseIds.map(id => `"${id}"`)},"total"\n`;
 
     for (let studentEmail of Object.keys(byStudents)) {
         const submissions = byStudents[studentEmail];
         const totalScore = totalsByStudent[studentEmail];
 
-        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => submission.score).join(',') + `,${totalScore}\n`;
+        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => {
+            if (!submission) {
+                console.debug('submission is null', studentEmail, submissions, submission, totalScore);
+            }
+            return submission ? submission.score : 0;
+        }).join(',') + `,${totalScore}\n`;
     }
 
     return 'data:text/csv,' + encodeURIComponent(str);
@@ -87,4 +92,4 @@ ExportModal.propTypes = {
     assignmentTitle: PropTypes.string.isRequired,
 };
 
-export {ExportModal};
+export { ExportModal };
