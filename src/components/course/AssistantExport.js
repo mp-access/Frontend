@@ -78,7 +78,7 @@ const toCsv = (assignmentExport) => {
             if (!submission) {
                 console.debug('submission is null', studentEmail, submissions, submission, totalScore);
             }
-            return submission ? submission.score : 'N/A';
+            return submission ? submission.score : 0;
         }).join(',') + `,${totalScore}\n`;
     }
 
