@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MarkdownViewer from '../MarkdownViewer';
+import Util from '../../utils/Util';
 
 class ChoiceExercise extends Component {
 
@@ -14,30 +15,41 @@ class ChoiceExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { exercise, workspace } = this.props;
-        try {
-            if (workspace.submission.choice || workspace.submission.choice === 0 || workspace.submission.choice === null) {
-                this.setState({
-                    question: exercise.question,
-                    options: exercise.options,
-                    type: exercise.type,
-                    singleChoiceValue: parseInt(workspace.submission.choice),
-                });
+        const { exercise, workspace, authContext } = this.props;
 
-            } else if (workspace.submission.choices) {
+        authContext.onLogout(() => Util.storeStateInSessionStorage(this.state));
+
+        const exerciseState = Util.loadStateFromSessionStorage();
+        if (exerciseState) {
+            this.setState({
+                ...exerciseState,
+            });
+            sessionStorage.removeItem('exerciseState');
+        } else {
+            try {
+                if (workspace.submission.choice || workspace.submission.choice === 0 || workspace.submission.choice === null) {
+                    this.setState({
+                        question: exercise.question,
+                        options: exercise.options,
+                        type: exercise.type,
+                        singleChoiceValue: parseInt(workspace.submission.choice),
+                    });
+
+                } else if (workspace.submission.choices) {
+                    this.setState({
+                        question: exercise.question,
+                        options: exercise.options,
+                        type: exercise.type,
+                        multipleChoiceValue: workspace.submission.choices.slice(),
+                    });
+                }
+            } catch (e) {
                 this.setState({
                     question: exercise.question,
                     options: exercise.options,
                     type: exercise.type,
-                    multipleChoiceValue: workspace.submission.choices.slice(),
                 });
             }
-        } catch (e) {
-            this.setState({
-                question: exercise.question,
-                options: exercise.options,
-                type: exercise.type,
-            });
         }
     };
 

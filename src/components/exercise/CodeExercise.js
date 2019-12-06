@@ -10,7 +10,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Download, Play } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
-import { withAuth } from '../../auth/AuthProvider';
 
 class CodeExercise extends PureComponent {
 
@@ -25,14 +24,14 @@ class CodeExercise extends PureComponent {
     }
 
     componentDidMount = async () => {
-        const { exercise, workspace, context } = this.props;
+        const { exercise, workspace, authContext } = this.props;
 
-        context.onLogout(() => sessionStorage.setItem('exerciseState', serializeState(this.state)));
+        authContext.onLogout(() => Util.storeStateInSessionStorage(this.state));
 
-        const exerciseState = sessionStorage.getItem('exerciseState');
+        const exerciseState = Util.loadStateFromSessionStorage();
         if (exerciseState) {
             this.setState({
-                ...deserializeState(exerciseState),
+                ...exerciseState,
             });
             sessionStorage.removeItem('exerciseState');
         } else {
@@ -417,30 +416,6 @@ class CodeExercise extends PureComponent {
     };
 }
 
-const serializeState = (state) => {
-    return JSON.stringify(state, (key, value) => {
-        const originalObject = state[key];
-        if (originalObject instanceof Map) {
-            return {
-                dataType: 'Map',
-                value: Array.from(originalObject.entries()),
-            };
-        } else {
-            return value;
-        }
-    });
-};
 
-const deserializeState = (state) => {
-    return JSON.parse(state, (key, value) => {
-        if (typeof value === 'object' && value !== null) {
-            if (value.dataType === 'Map') {
-                return new Map(value.value);
-            }
-        }
-        return value;
-    });
-};
-
-export default withAuth(CodeExercise);
+export default CodeExercise;
 
