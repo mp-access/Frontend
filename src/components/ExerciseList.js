@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {AlertCircle, CheckCircle, CheckSquare, Code, Type, Lock} from 'react-feather';
+import { AlertCircle, CheckCircle, CheckSquare, Code, Lock, Type } from 'react-feather';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Util from '../utils/Util';
 
@@ -10,18 +10,18 @@ class ExerciseList extends Component {
     getIcon(type) {
         let icon;
         switch (type) {
-            case "code":
-            case "codeSnippet":
-                icon = <Code size={12}/>
+            case 'code':
+            case 'codeSnippet':
+                icon = <Code size={12}/>;
                 break;
-            case "text":
-                icon = <Type size={12}/>
+            case 'text':
+                icon = <Type size={12}/>;
                 break;
-            case "singleChoice":
-                icon = <CheckCircle size={12}/>
+            case 'singleChoice':
+                icon = <CheckCircle size={12}/>;
                 break;
-            case "multipleChoice":
-                icon = <CheckSquare size={12}/>
+            case 'multipleChoice':
+                icon = <CheckSquare size={12}/>;
                 break;
             default:
                 break;
@@ -30,24 +30,24 @@ class ExerciseList extends Component {
     }
 
     render() {
-        const {exercises, selectedId, gradedSubmissions, showScore, pastDueDate} = this.props;
+        const { exercises, selectedId, gradedSubmissions, showScore, pastDueDate } = this.props;
 
-        const listItems = exercises.map((e, index) => {
+        const listItems = exercises.map((exercise) => {
 
-            const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === e.id) : undefined;
+            const gradedSub = gradedSubmissions ? gradedSubmissions.find(gs => gs.exerciseId === exercise.id) : undefined;
 
             const score = gradedSub && gradedSub.result ? gradedSub.result.score : 0;
-            const maxScore = e.maxScore ? e.maxScore : 1;
+            const maxScore = exercise.maxScore ? exercise.maxScore : 1;
 
             return (
-                <li key={index}
-                    className={"h-flex" + (selectedId === e.id ? ' active' : '') + (gradedSub || pastDueDate ? '' : ' fresh')}>
-                    <Link to={`/exercises/${e.id}`} className="flex-grow-1">
-                        <span>{'Task ' + (index + 1)} {pastDueDate ? <Lock size={15}/> : ''}</span>
-                        <span>{!e.isGraded ? ' (Bonus)' : ''}</span>
-                        <h5>{e.title}</h5>
-                        <div><small>{this.getIcon(e.type)} {Util.humanize(e.type)}</small>
-                            {showScore ? '' : <small  style={{float: "right"}}>{score} / {maxScore}</small>}</div>
+                <li key={exercise.id}
+                    className={'h-flex' + (selectedId === exercise.id ? ' active' : '') + (gradedSub || pastDueDate ? '' : ' fresh')}>
+                    <Link to={`/exercises/${exercise.id}`} className="flex-grow-1">
+                        <span>{'Task ' + (exercise.index)} {pastDueDate ? <Lock size={15}/> : ''}</span>
+                        <span>{!exercise.isGraded ? ' (Bonus)' : ''}</span>
+                        <h5>{exercise.title}</h5>
+                        <div><small>{this.getIcon(exercise.type)} {Util.humanize(exercise.type)}</small>
+                            {showScore ? '' : <small style={{ float: 'right' }}>{score} / {maxScore}</small>}</div>
                     </Link>
 
                     {(gradedSub && gradedSub.invalid) &&
@@ -62,7 +62,7 @@ class ExerciseList extends Component {
                         >
                             <span className="style-btn warn"><AlertCircle size={14}/></span>
                         </OverlayTrigger>
-                        <span className="p-1"></span>
+                        <span className="p-1"/>
                     </div>
                     }
 

@@ -31,7 +31,7 @@ const Header = ({ history, context, crumbs }) => {
                             <li key={index}>
                                 <Link className="nav-link" to={"/" + item.url}>
                                     <div>{item.title}</div>
-                                    <small>{getBreadCrumbLevel(index)}</small>
+                                    <small>{getBreadCrumbLevel(index, item)} </small>
                                 </Link>
                             </li>
                         ).reduce((prev, curr, index) => [prev, <li key={index * 20}><ChevronRight size={14} /></li>, curr])}
@@ -52,14 +52,14 @@ const Header = ({ history, context, crumbs }) => {
     );
 };
 
-const getBreadCrumbLevel = (index) =>{
+const getBreadCrumbLevel = (index, item) =>{
     switch (index) {
         case 0:
             return "Course";
         case 1:
-            return "Exercise";
+            return "Exercise " + item.index;
         case 2:
-            return "Task";
+            return "Task " + item.index;
         default:
             return "";
     }
