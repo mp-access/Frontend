@@ -107,6 +107,35 @@ class Util {
         return !isDark;
     };
 
+    static storeStateInSessionStorage = (state) => sessionStorage.setItem('exerciseState', Util.serializeState(state));
+
+    static loadStateFromSessionStorage = () => Util.deserializeState(sessionStorage.getItem('exerciseState'));
+
+    static serializeState = (state) => {
+        return JSON.stringify(state, (key, value) => {
+            const originalObject = state[key];
+            if (originalObject instanceof Map) {
+                return {
+                    dataType: 'Map',
+                    value: Array.from(originalObject.entries()),
+                };
+            } else {
+                return value;
+            }
+        });
+    };
+
+    static deserializeState = (state) => {
+        return JSON.parse(state, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (value.dataType === 'Map') {
+                    return new Map(value.value);
+                }
+            }
+            return value;
+        });
+    };
+
     static MEDIA_TYPE_MAP = {
         // Code
         'py': 'code',
