@@ -133,8 +133,8 @@ class Exercise extends Component {
                 workspace,
                 participants: participants,
                 isLoadingExercise: false,
-                pastDueDate: assignment.pastDueDate
-            });    
+                pastDueDate: assignment.pastDueDate,
+            });
         });
     };
 
@@ -417,12 +417,7 @@ class Exercise extends Component {
                                           selectedId={selectedId}
                                           gradedSubmissions={gradedSubmissions}
                                           showScore={false}
-                                          pastDueDate={exercise.pastDueDate}/>
-                            <ExerciseList   exercises={exercises}
-                                            selectedId={selectedId}
-                                            gradedSubmissions={gradedSubmissions}
-                                            showScore={false}
-                                            pastDueDate={pastDueDate}/>
+                                          pastDueDate={pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">
