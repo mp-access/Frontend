@@ -11,7 +11,7 @@ const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClic
 
             return (
                 <li key={assignment.id}
-                    className={'h-flex' + ((result && result.gradedSubmissions.length === assignments.length) || pastDueDate ? '' : ' fresh')}>
+                    className={'h-flex' + ((result && result.gradedSubmissions.length === assignment.exercises.length) || pastDueDate ? '' : ' fresh')}>
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
                           className="flex-grow-1">
                         <span>Exercise {assignment.index} {pastDueDate ? <Lock size={15}/> : ''}</span>

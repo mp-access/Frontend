@@ -150,7 +150,7 @@ class CodeSnippetExercise extends Component {
                     overlay={
                         <Tooltip id="testrun-tooltip">
                             This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
-                            code
+                            code<br/><small>(ctrl + s)</small>
                         </Tooltip>
                     }
                 >
