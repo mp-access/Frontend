@@ -5,26 +5,27 @@ import { Lock } from 'react-feather';
 import { DueDateTime } from './DateTime';
 
 const AssignmentList = ({ courseId, assignments, isAdmin, onAssignmentExportClick, results }) => {
-    const listItems = assignments.map((assignment, index) => {
+    const listItems = assignments.map((assignment) => {
             const pastDueDate = assignment.pastDueDate;
             const result = results ? results.find(r => r.assignmentId === assignment.id) : undefined;
 
             return (
-                <li key={assignment.id} className={"h-flex" + ((result && result.gradedSubmissions.length === assignments.length) || pastDueDate ? '' : ' fresh')}>
+                <li key={assignment.id}
+                    className={'h-flex' + ((result && result.gradedSubmissions.length === assignments.length) || pastDueDate ? '' : ' fresh')}>
                     <Link to={`/courses/${courseId}/assignments/${assignment.id}`} key={assignment.id}
                           className="flex-grow-1">
-                        <span>Exercise {index + 1} {pastDueDate ? <Lock size={15}/> : ''}</span>
+                        <span>Exercise {assignment.index} {pastDueDate ? <Lock size={15}/> : ''}</span>
                         <h5>{assignment.title} </h5>
                         <DueDateTime dueDate={assignment.dueDate}/>
                     </Link>
 
-                        {isAdmin &&
-                        <button className="style-btn"
-                                onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
+                    {isAdmin &&
+                    <button className="style-btn"
+                            onClick={() => onAssignmentExportClick(assignment)}>Export Results</button>}
                     <div>
                         {result &&
                         <div className="score-display">
-                            <span className="p-1"></span>
+                            <span className="p-1"/>
                             <span className="style-btn ghost">Score: {result.studentScore} / {result.maxScore}</span>
                         </div>
                         }

@@ -67,8 +67,8 @@ const toCsv = (assignmentExport) => {
     if (!assignmentExport) {
         return;
     }
-    const { exerciseIds, byStudents, totalsByStudent } = assignmentExport;
-    let str = `"Student",${exerciseIds.map(id => `"${id}"`)},"total"\n`;
+    const { exerciseLabel, byStudents, totalsByStudent } = assignmentExport;
+    let str = `"Student",${exerciseLabel.map(id => `"${id}"`)},"total"\n`;
 
     for (let studentEmail of Object.keys(byStudents)) {
         const submissions = byStudents[studentEmail];
