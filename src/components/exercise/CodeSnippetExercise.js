@@ -167,6 +167,8 @@ class CodeSnippetExercise extends Component {
                         </button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                        <button className="style-btn" disabled={this.state.runButtonState}
+                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@ import './CodeExercise.css';
 import JSZip from 'jszip';
 import CourseDataService from '../../utils/CourseDataService';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { Download, Play } from 'react-feather';
+import { Download, Play, CheckCircle } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
 
@@ -18,6 +18,7 @@ class CodeExercise extends PureComponent {
         this.state = {
             selectedFile: undefined,
             runButtonState: false,
+            testButtonState: false,
             fileIndex: new Map(),
             fileStructure: [],
         };
@@ -132,13 +133,22 @@ class CodeExercise extends PureComponent {
         };
     };
 
-    onCodeSubmit = () => {
-        this.props.submit(false, this.resetRunButton);
-        this.setState({ runButtonState: true });
+    onCodeSubmit = (type) => {
+        if(type === 'run'){
+            this.props.submit(false, this.resetRunButton);
+            this.setState({ runButtonState: true });
+        }else if(type === 'test'){
+            this.props.submit(false, this.resetTestButton);
+            this.setState({ testButtonState: true });
+        }
     };
 
     resetRunButton = () => {
         this.setState({ runButtonState: false });
+    };
+
+    resetTestButton = () => {
+        this.setState({ testButtonState: false });
     };
 
     /**
@@ -249,12 +259,29 @@ class CodeExercise extends PureComponent {
                     placement="top"
                     overlay={
                         <Tooltip id="testrun-tooltip">
-                            This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
-                            code<br/><small>(ctrl + s)</small>
+                            This button will <strong>run</strong> code<br/><small>(ctrl + s)</small>
                         </Tooltip>
                     }
                 >
-                    <span><Play size={14}/>Test & Run</span>
+                    <span><Play size={14}/>Run Code</span>
+                </OverlayTrigger>
+            </>;
+        }
+
+        let testButtonContent;
+        if (this.state.testButtonState) {
+            testButtonContent = <Spinner text={'Processing'}/>;
+        } else {
+            testButtonContent = <>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={
+                        <Tooltip id="testrun-tooltip">
+                            This button will <strong>test</strong> your code<br/><small>(ctrl + t)</small>
+                        </Tooltip>
+                    }
+                >
+                    <span><CheckCircle size={14}/>Test Code</span>
                 </OverlayTrigger>
             </>;
         }
@@ -264,7 +291,9 @@ class CodeExercise extends PureComponent {
                 <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
                 </button>
                 <button className="style-btn" disabled={this.state.runButtonState}
-                        onClick={this.onCodeSubmit}>{runButtonContent}</button>
+                        onClick={() => this.onCodeSubmit('run')}>{runButtonContent}</button>
+                <button className="style-btn" disabled={this.state.testButtonState}
+                        onClick={() => this.onCodeSubmit('test')}>{testButtonContent}</button>
             </div>
         );
 
