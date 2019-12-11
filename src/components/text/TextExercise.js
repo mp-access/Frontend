@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MarkdownViewer from '../MarkdownViewer';
+import Util from '../../utils/Util';
 
 class TextExercise extends Component {
 
@@ -14,17 +15,28 @@ class TextExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { exercise } = this.props;
-        try {
+        const { exercise, authContext } = this.props;
+
+        authContext.onLogout(() => Util.storeStateInSessionStorage(this.state));
+
+        const exerciseState = Util.loadStateFromSessionStorage();
+        if (exerciseState) {
             this.setState({
-                question: exercise.question,
-                value: this.props.workspace.submission.answer,
+                ...exerciseState,
             });
-        } catch (e) {
-            this.setState({
-                question: exercise.question,
-                value: '',
-            });
+            sessionStorage.removeItem('exerciseState');
+        } else {
+            try {
+                this.setState({
+                    question: exercise.question,
+                    value: this.props.workspace.submission.answer,
+                });
+            } catch (e) {
+                this.setState({
+                    question: exercise.question,
+                    value: '',
+                });
+            }
         }
     };
 
@@ -57,7 +69,7 @@ class TextExercise extends Component {
 
         return (
             <>
-                <div className="clearfix"></div>
+                <div className="clearfix"/>
                 <div className="row">
                     <div className="col-12">
                         <MarkdownViewer

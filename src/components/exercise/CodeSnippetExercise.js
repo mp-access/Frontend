@@ -21,12 +21,23 @@ class CodeSnippetExercise extends Component {
     }
 
     componentDidMount = async () => {
-        const { workspace } = this.props;
-        const publicFiles = workspace.publicFiles;
+        const { workspace, authContext } = this.props;
 
-        this.setState({
-            publicFiles,
-        });
+        authContext.onLogout(() => Util.storeStateInSessionStorage(this.state));
+
+        const exerciseState = Util.loadStateFromSessionStorage();
+        if (exerciseState) {
+            this.setState({
+                ...exerciseState,
+            });
+            sessionStorage.removeItem('exerciseState');
+        } else {
+            const publicFiles = workspace.publicFiles;
+
+            this.setState({
+                publicFiles,
+            });
+        }
     };
 
     getPublicFiles = () => {
@@ -139,7 +150,7 @@ class CodeSnippetExercise extends Component {
                     overlay={
                         <Tooltip id="testrun-tooltip">
                             This button will <strong>run</strong>, <strong>test</strong> and <strong>save</strong> your
-                            code
+                            code<br/><small>(ctrl + s)</small>
                         </Tooltip>
                     }
                 >
@@ -152,7 +163,8 @@ class CodeSnippetExercise extends Component {
             <div className="row">
                 <div className="col-sm-12">
                     <div className="code-panel">
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download</button>
+                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
+                        </button>
                         <button className="style-btn" disabled={this.state.runButtonState}
                                 onClick={this.onCodeSubmit}>{runButtonContent}</button>
                     </div>
@@ -163,7 +175,7 @@ class CodeSnippetExercise extends Component {
         return (
             <>
                 {buttonCluster}
-                <div className="clearfix"></div>
+                <div className="clearfix"/>
                 <div className="row">
                     <div className="col-12">
                         <div className="border-secondary">
@@ -184,7 +196,7 @@ class CodeSnippetExercise extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="p-4"></div>
+                <div className="p-4"/>
                 <div className="row">
                     <div className="col-12">
                         {consoleLog}

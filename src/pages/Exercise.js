@@ -14,7 +14,7 @@ import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvide
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
 import Spinner from '../components/core/Spinner';
-import Button from "react-bootstrap/Button";
+import Button from 'react-bootstrap/Button';
 
 class Exercise extends Component {
 
@@ -33,6 +33,7 @@ class Exercise extends Component {
             targetLocation: '',
             impersonationUserId: '',
             isLoadingExercise: true,
+            pastDueDate: false,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -85,13 +86,13 @@ class Exercise extends Component {
         const authorizationHeader = this.props.context.authorizationHeader;
 
         this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
-            if(!exercise) return;
+            if (!exercise) return;
 
             const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
             const workspace = new Workspace(exercise, submission);
-    
+
             this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-    
+
             this.setState({
                 exercise,
                 workspace,
@@ -104,17 +105,17 @@ class Exercise extends Component {
         const authorizationHeader = this.props.context.authorizationHeader;
 
         this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
-            if(!exercise) {
-                this.setState({isLoadingExercise: false});
+            if (!exercise) {
+                this.setState({ isLoadingExercise: false });
                 return;
             }
 
             const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
             const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
-    
+
             const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
             const workspace = new Workspace(exercise, submission);
-    
+
             const courseId = exercise.courseId;
             let participants = [];
             if (this.props.context.isCourseAdmin(courseId)) {
@@ -122,17 +123,18 @@ class Exercise extends Component {
                 participants = participants.usersFound;
             }
             participants.sort((p1, p2) => p1.emailAddress.localeCompare(p2.emailAddress));
-    
+
             this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
-    
+
             this.setState({
                 exercise,
                 exercises: assignment.exercises,
                 results,
                 workspace,
                 participants: participants,
-                isLoadingExercise: false
-            });    
+                isLoadingExercise: false,
+                pastDueDate: assignment.pastDueDate,
+            });
         });
     };
 
@@ -302,6 +304,7 @@ class Exercise extends Component {
         let content = <p>unknown exercise type</p>;
 
         const key = exercise.id + '-' + workspace.submissionId;
+        const { context } = this.props;
 
         if (exercise.type === 'code') {
 
@@ -316,6 +319,7 @@ class Exercise extends Component {
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
                     submit={this.submit}
+                    authContext={context}
                 />;
         } else if (exercise.type === 'codeSnippet') {
             content =
@@ -329,6 +333,7 @@ class Exercise extends Component {
                     currBottomTab={this.state.currBottomTab}
                     setIsDirty={this.setIsDirty}
                     submit={this.submit}
+                    authContext={context}
                 />;
         } else if (exercise.type === 'text') {
             content =
@@ -339,6 +344,7 @@ class Exercise extends Component {
                     setIsDirty={this.setIsDirty}
                     authorizationHeader={this.props.context.authorizationHeader}
                     workspace={workspace}
+                    authContext={context}
                 />;
         } else if (exercise.type === 'multipleChoice' || exercise.type === 'singleChoice') {
             content =
@@ -349,6 +355,7 @@ class Exercise extends Component {
                     workspace={workspace}
                     authorizationHeader={this.props.context.authorizationHeader}
                     setIsDirty={this.setIsDirty}
+                    authContext={context}
                 />;
         }
         return content;
@@ -371,14 +378,15 @@ class Exercise extends Component {
     };
 
     render() {
-        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise } = this.state;
+        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise, pastDueDate } = this.state;
 
         if (!exercise) {
-            if(!isLoadingExercise && !exercise){
-                throw new Error("404");
+            if (!isLoadingExercise && !exercise) {
+                throw new Error('404');
             }
 
-            return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;;
+            return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;
+            ;
         }
 
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
@@ -405,11 +413,11 @@ class Exercise extends Component {
                     <div className="ex-left">
                         <div className={'panel'}>
                             <h4>Task list</h4>
-                            <ExerciseList   exercises={exercises} 
-                                            selectedId={selectedId}
-                                            gradedSubmissions={gradedSubmissions} 
-                                            showScore={false}
-                                            pastDueDate={exercise.pastDueDate}/>
+                            <ExerciseList exercises={exercises}
+                                          selectedId={selectedId}
+                                          gradedSubmissions={gradedSubmissions}
+                                          showScore={false}
+                                          pastDueDate={pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">

@@ -19,6 +19,7 @@ class Course extends Component {
             showModal: false,
             modalAssignmentTitle: '',
             assignmentExport: undefined,
+            isLoadingExport: false,
             isLoadingCourse: true,
         };
     }
@@ -33,16 +34,11 @@ class Course extends Component {
                 this.setState({ course: course, isLoadingCourse: false });
                 this.props.crumbs.setBreadCrumbs(course.breadCrumbs);
             })
-            .catch(err => {
-                console.debug('Error:', err.toString());
-            });
+            .catch(err => console.debug('Error:', err.toString()));
 
         ResultService.getCourseResults(courseId, context.authorizationHeader)
             .then(result => this.setState({ courseResults: result }))
-            //  .then(result => console.warn(result))
-            .catch(err => {
-                console.debug('Error:', err.toString());
-            });
+            .catch(err => console.debug('Error:', err.toString()));
     }
 
     componentWillUnmount() {
@@ -51,7 +47,7 @@ class Course extends Component {
 
     onAssignmentExportClick = (assignment) => {
         this.setState({
-            showModal: true,
+            showModal: false,
             modalAssignmentTitle: assignment.title,
         });
 
@@ -60,7 +56,10 @@ class Course extends Component {
         const { context } = this.props;
 
         AdminService.exportAssignmentResults(courseId, assignmentId, context.authorizationHeader)
-            .then(result => this.setState({ assignmentExport: result }))
+            .then(result => this.setState({
+                showModal: true,
+                assignmentExport: result,
+            }))
             .catch(err => console.error(err));
     };
 
@@ -69,28 +68,29 @@ class Course extends Component {
     render() {
         const { course, assignmentExport, modalAssignmentTitle, showModal, courseResults, isLoadingCourse } = this.state;
         if (!course || !courseResults) {
-            if(!isLoadingCourse && !course){
-                throw new Error("404");
+            if (!isLoadingCourse && !course) {
+                throw new Error('404');
             }
 
-            return <div className="loading-box"><Spinner text={'Loading Courses...'}/></div>;;
+            return <div className="loading-box"><Spinner text={'Loading Courses...'}/></div>;
+            ;
         }
 
         const { id: courseId, startDate, endDate, assignments, title, description } = course;
 
         const isCourseAdmin = this.props.context.isCourseAdmin(course.id);
-    
+
         return (
             <div className="container">
                 <div className="panel">
                     <div className="heading">
                         <h1>{title}</h1>
                         <div className="small-list">
-                            <small><Calendar size={12} /> {course.semester}</small>
-                            <small><Home size={12} /> {course.owner}</small>
-                            <br />
+                            <small><Calendar size={12}/> {course.semester}</small>
+                            <small><Home size={12}/> {course.owner}</small>
+                            <br/>
                             <FromToDateTime fromDateTime={startDate} toDateTime={endDate}
-                                        toAppend={true}/>
+                                            toAppend={true}/>
                         </div>
                     </div>
                     <p>{description}</p>
