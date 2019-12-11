@@ -74,7 +74,12 @@ const toCsv = (assignmentExport) => {
         const submissions = byStudents[studentEmail];
         const totalScore = totalsByStudent[studentEmail];
 
-        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => submission.score).join(',') + `,${totalScore}\n`;
+        str += `"${studentEmail}",` + Object.values(submissions).map((submission) => {
+            if (!submission) {
+                console.debug('submission is null', studentEmail, submissions, submission, totalScore);
+            }
+            return submission ? submission.score : 0;
+        }).join(',') + `,${totalScore}\n`;
     }
 
     return 'data:text/csv,' + encodeURIComponent(str);
