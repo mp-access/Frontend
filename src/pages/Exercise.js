@@ -33,6 +33,7 @@ class Exercise extends Component {
             targetLocation: '',
             impersonationUserId: '',
             isLoadingExercise: true,
+            pastDueDate: false,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -132,7 +133,8 @@ class Exercise extends Component {
                 workspace,
                 participants: participants,
                 isLoadingExercise: false,
-            });
+                pastDueDate: assignment.pastDueDate
+            });    
         });
     };
 
@@ -376,7 +378,7 @@ class Exercise extends Component {
     };
 
     render() {
-        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise } = this.state;
+        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise, pastDueDate } = this.state;
 
         if (!exercise) {
             if (!isLoadingExercise && !exercise) {
@@ -416,6 +418,11 @@ class Exercise extends Component {
                                           gradedSubmissions={gradedSubmissions}
                                           showScore={false}
                                           pastDueDate={exercise.pastDueDate}/>
+                            <ExerciseList   exercises={exercises}
+                                            selectedId={selectedId}
+                                            gradedSubmissions={gradedSubmissions}
+                                            showScore={false}
+                                            pastDueDate={pastDueDate}/>
                         </div>
                     </div>
                     <div className="ex-mid">
