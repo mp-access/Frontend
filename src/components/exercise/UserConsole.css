@@ -1,4 +1,4 @@
-#logger{
+#logger {
     width: 100%;
     font-family: 'Source Code Pro', monospace;
     font-weight: 300;
@@ -11,30 +11,30 @@
     white-space: break-spaces;
 }
 
-#logger.light{
+#logger.light {
     background: transparent;
     color: black;
 }
 
-#logger .logger-section{
+#logger .logger-section {
     word-break: break-all;
     padding: 20px 25px;
     border-bottom: 1px solid #4a4a4a;
 }
 
-#logger .logger-section:last-child{
+#logger .logger-section:last-child {
     border-bottom: none;
 }
 
-#logger p{
+#logger p {
     margin-bottom: 2px;
+    min-height: 12px;
 }
 
-#logger span.log{
+#logger span.log {
     color: #2196f3;
 }
 
-
-pre p{
+pre p {
     margin-bottom: 1px;
 }
