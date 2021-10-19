@@ -52,6 +52,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "fe:b1:c8:73:4c:fd:f9:6f:b9:84:56:6a:bc:ad:03:c8"
+            - "69:5f:1f:0f:de:f9:98:fe:2c:d8:02:cc:37:00:89:74"
       - run:
           name: Push Docker image
           command: |
