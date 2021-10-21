@@ -5,6 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Util from './utils/Util';
+import 'file-icons-js/css/style.css';
 
 Util.fetchServerInfo();
 

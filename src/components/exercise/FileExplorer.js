@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import SortableTree from 'react-sortable-tree';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
-import FileIcons from 'file-icons-js';
+import { getClassWithColor } from 'file-icons-js';
 import './FileExplorer.css';
 
 const noOp = () => {};
@@ -44,7 +44,7 @@ const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
                     ]
                     : [
                         <div className="file-explorer-icon">
-                            <span className={FileIcons.getClassWithColor(rowInfo.node.title)}/>
+                            <span className={getClassWithColor(rowInfo.node.title)}/>
                         </div>,
                     ],
                 title: ({ node }) => {
