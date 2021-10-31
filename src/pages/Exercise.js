@@ -118,7 +118,7 @@ class Exercise extends Component {
 
             const courseId = exercise.courseId;
             let participants = [];
-            if (this.props.context.isCourseAdmin(courseId)) {
+            if (this.props.context.isCourseAdmin(courseId) || this.props.context.isCourseAssistant(courseId)) {
                 participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
                 participants = participants.usersFound;
             }
@@ -397,7 +397,7 @@ class Exercise extends Component {
         const gradedSubmissions = results.gradedSubmissions ? results.gradedSubmissions : [];
 
         const authorizationHeader = this.props.context.authorizationHeader;
-        const isAdmin = this.props.context.isCourseAdmin(courseId);
+        const isPrivileged = this.props.context.isCourseAdmin(courseId) || this.props.context.isCourseAssistant(courseId);;
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
@@ -423,7 +423,7 @@ class Exercise extends Component {
                     <div className="ex-mid">
                         <div className={'panel'}>
                             {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
-                            {isAdmin &&
+                            {isPrivileged &&
                             <div>
                                 <label htmlFor={'userSelect'}>Impersonation</label>
                                 <br/>
