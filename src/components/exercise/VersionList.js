@@ -173,7 +173,7 @@ class VersionList extends Component {
         const runs = this.state.runs || [];
         const { isCodeType, exercise } = this.props;
         const score = submissions.length && submissions[0] && submissions[0].result && submissions[0].result.score ? submissions[0].result.score : 0;
-        const maxScore = exercise.maxScore ? exercise.maxScore : 1;
+        const maxScore = exercise.maxScore;
         const scorePercent = (score / maxScore * 100);
 
         let scoreProgress = 'low';
