@@ -221,7 +221,7 @@ class VersionList extends Component {
                 {!this.state.pastDueDate &&
                 <>
                     <button className="style-btn submit full"
-                            disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0 || this.props.impersonationUserId !== ''}
+                            disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
                             onClick={this.onSubmit}>{submitButtonContent}</button>
                     <div className="text-center mt-1">
                         <small>
