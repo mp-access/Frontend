@@ -6,7 +6,7 @@ module.exports = function override(config, env) {
         config.plugins = [];
     }
     config.plugins.push(
-        new MonacoWebpackPlugin(),
+        new MonacoWebpackPlugin({ features: [ '!gotoSymbol' ] }),
     );
     return config;
 };
