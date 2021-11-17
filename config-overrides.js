@@ -6,7 +6,7 @@ module.exports = function override(config, env) {
         config.plugins = [];
     }
     config.plugins.push(
-        new MonacoWebpackPlugin({ features: [ '!gotoSymbol' ] }),
+        new MonacoWebpackPlugin({ features: [ '!gotoSymbol' ], languages: [ '!cameligo' ] }),
     );
     return config;
 };
