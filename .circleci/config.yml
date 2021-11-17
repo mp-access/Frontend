@@ -82,3 +82,6 @@ workflows:
       - deploy:
           requires:
             - push_to_dockerhub
+          filters:
+            branches:
+              only: dev
