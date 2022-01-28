@@ -15,7 +15,6 @@ class VersionList extends Component {
         submissions: [],
         runs: [],
         submissionState: false,
-        pastDueDate: false,
         submissionCount: {
             submissionsRemaining: 0,
         },
@@ -61,44 +60,27 @@ class VersionList extends Component {
     };
 
     fetchSubmissions = async (exerciseId) => {
-        const { authorizationHeader, impersonationUserId } = this.props;
-        const { submissions, runs, submissionCount, pastDueDate } = await SubmissionService.getSubmissionList(exerciseId, authorizationHeader, impersonationUserId);
+        const { authorizationHeader, userId } = this.props;
+
+        const { submissions, runs, submissionCount } = await SubmissionService.getSubmissionList(exerciseId, userId, authorizationHeader);
 
         this.setState({
             submissions,
             runs,
-            pastDueDate,
             submissionCount: submissionCount,
         });
     };
 
     createPopover(version, result, hints, outdated, triggeredReSubmission) {
-        const hintlist = hints ? (hints.map((hint, index) =>
-            <Alert key={index} variant="warning">
-                <Flag size={14}/> Hint<br/>
-                {hint}
-            </Alert>))[0] : '';
-        const alert = outdated ? <Alert variant="danger">This submission is outdated!</Alert> : '';
-        const triggered = triggeredReSubmission ?
-            <Alert variant="primary">This is an automatically triggered submission by the system</Alert> : '';
-        let score = 'No Score';
-        if (result) {
-            score = <>
-                Your Score: {result.score}
-                <br/>
-                Max Points: {result.maxScore}
-            </>;
-        }
-
         return (
             <Popover id="popover-basic">
-                <Popover.Title>{triggeredReSubmission ? 'Automatic Submission' : 'Submission ' + version}</Popover.Title>
-                <Popover.Content>
-                    {alert}
-                    {triggered}
-                    <pre>{score}</pre>
-                    {hintlist}
-                </Popover.Content>
+                <Popover.Header>{triggeredReSubmission ? 'Automatic Submission' : ('Submission ' + version)}</Popover.Header>
+                <Popover.Body>
+                    {outdated && <Alert variant='danger'>This submission is outdated!</Alert>}
+                    {triggeredReSubmission && <Alert variant='primary'>This is an automatically triggered submission by the system</Alert>}
+                    <pre>{result ? <>Your Score: {result.score}<br/>Max Points: {result.maxScore}</> : 'No Score'}</pre>
+                    {hints && (hints.map((hint, index) => <Alert key={index} variant="warning"><Flag size={14}/> Hint<br/>{hint}</Alert>))[0]}
+                </Popover.Body>
             </Popover>
         );
     }
@@ -123,7 +105,7 @@ class VersionList extends Component {
                             onClick={this.props.changeSubmissionById.bind(this, item.id)}>
                             <RotateCcw size={14}/>Load
                         </button>
-                        <span className="p-1"></span>
+                        <span className="p-1" />
                         {isSubmit &&
                         <OverlayTrigger trigger="click"
                                         rootClose={true}
@@ -218,10 +200,10 @@ class VersionList extends Component {
                     </span>
                 </span>
 
-                {!this.state.pastDueDate &&
+                {!exercise.pastDueDate &&
                 <>
                     <button className="style-btn submit full"
-                            disabled={this.state.submissionState || this.state.submissionCount.submissionsRemaining <= 0}
+                            disabled={this.state.submissionState || (this.state.submissionCount.submissionsRemaining <= 0 && !this.props.isPrivileged)}
                             onClick={this.onSubmit}>{submitButtonContent}</button>
                     <div className="text-center mt-1">
                         <small>

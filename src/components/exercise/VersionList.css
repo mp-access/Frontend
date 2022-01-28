@@ -85,14 +85,3 @@ span.score-board .mid {
 span.score-board .full {
     background-image: linear-gradient(to left bottom, #38ef7d, #26b57e);
 }
-
-.nav.nav-tabs{
-    margin: 0px -25px -1px -25px;
-    position: relative;
-    z-index: 1;
-}
-
-.nav.nav-tabs .nav-item.nav-link{
-    flex-grow: 1;
-    text-align: center;
-}

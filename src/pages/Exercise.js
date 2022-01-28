@@ -9,12 +9,13 @@ import ChoiceExercise from '../components/choice/ChoiceExercise';
 import Workspace from '../models/Workspace';
 import SubmissionService from '../utils/SubmissionService';
 import { AlertCircle, ExternalLink, X } from 'react-feather';
-import { Alert, Modal } from 'react-bootstrap';
+import { Alert, Col, Container, Form, Modal, Row, Stack } from 'react-bootstrap';
 import { withBreadCrumbsAndAuthAndRouter } from '../components/BreadCrumbProvider';
 import ResultService from '../utils/ResultService';
 import AssistantExport from '../utils/AdminService';
 import Spinner from '../components/core/Spinner';
-import Button from 'react-bootstrap/Button';
+import AdminService from '../utils/AdminService';
+import { ToastContainer, toast } from 'react-toastify';
 
 class Exercise extends Component {
 
@@ -31,9 +32,10 @@ class Exercise extends Component {
             isDirty: false,
             showModal: false,
             targetLocation: '',
-            impersonationUserId: '',
+            userId: '',
             isLoadingExercise: true,
             pastDueDate: false,
+            isPrivileged: false,
         };
         this.exerciseComponentRef = React.createRef();
     }
@@ -84,17 +86,17 @@ class Exercise extends Component {
     fetchUpdate = async () => {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
+        const isPrivileged = this.props.context.isCourseAssistant();
 
-        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
-            if (!exercise) return;
+        this.fetchExercise(exerciseId, authorizationHeader, isPrivileged).then(async updatedExercise => {
+            if (!updatedExercise) return;
+            const submission = await this.fetchLastSubmission(updatedExercise.id, this.state.userId, authorizationHeader);
+            const workspace = new Workspace(updatedExercise, submission);
 
-            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
-            const workspace = new Workspace(exercise, submission);
-
-            this.props.crumbs.setBreadCrumbs(exercise.breadCrumbs);
+            this.props.crumbs.setBreadCrumbs(updatedExercise.breadCrumbs);
 
             this.setState({
-                exercise,
+                exercise: updatedExercise,
                 workspace,
             });
         });
@@ -103,8 +105,10 @@ class Exercise extends Component {
     fetchAll = async () => {
         const exerciseId = this.props.match.params.exerciseId;
         const authorizationHeader = this.props.context.authorizationHeader;
+        const isPrivileged = this.props.context.isCourseAssistant();
+        const userId = this.props.context.userId();
 
-        this.fetchExercise(exerciseId, authorizationHeader).then(async exercise => {
+        this.fetchExercise(exerciseId, authorizationHeader, isPrivileged).then(async exercise => {
             if (!exercise) {
                 this.setState({ isLoadingExercise: false });
                 return;
@@ -113,12 +117,11 @@ class Exercise extends Component {
             const assignment = await this.fetchExerciseList(exercise, authorizationHeader);
             const results = await this.fetchAssignmentResults(exercise, authorizationHeader);
 
-            const submission = await this.fetchLastSubmission(exerciseId, authorizationHeader);
+            const submission = await this.fetchLastSubmission(exerciseId, userId, authorizationHeader);
             const workspace = new Workspace(exercise, submission);
 
-            const courseId = exercise.courseId;
             let participants = [];
-            if (this.props.context.isCourseAdmin(courseId) || this.props.context.isCourseAssistant(courseId)) {
+            if (isPrivileged) {
                 participants = await AssistantExport.fetchCourseParticipants(exercise.courseId, authorizationHeader);
                 participants = participants.usersFound;
             }
@@ -132,14 +135,16 @@ class Exercise extends Component {
                 results,
                 workspace,
                 participants: participants,
+                userId: userId,
                 isLoadingExercise: false,
                 pastDueDate: assignment.pastDueDate,
+                isPrivileged: isPrivileged,
             });
         });
     };
 
-    fetchExercise = (exerciseId, authHeader) => {
-        return CourseDataService.getExercise(exerciseId, authHeader)
+    fetchExercise = (exerciseId, authHeader, isPrivileged) => {
+        return CourseDataService.getExercise(exerciseId, authHeader, isPrivileged)
             .catch(err => console.error(err));
     };
 
@@ -156,13 +161,13 @@ class Exercise extends Component {
             .catch(err => console.error(err));
     };
 
-    fetchLastSubmission = (exerciseId, authHeader) => {
-        return SubmissionService.getLastSubmission(exerciseId, authHeader)
+    fetchLastSubmission = (exerciseId, userId, authHeader) => {
+        return SubmissionService.getLastSubmission(exerciseId, userId, authHeader)
             .catch(err => console.error(err));
     };
 
-    fetchSubmissionById = (submissionId, authHeader, userId) => {
-        return SubmissionService.getSubmission(submissionId, authHeader, userId)
+    fetchSubmissionById = (exerciseId, submissionId, authHeader) => {
+        return SubmissionService.getSubmission(exerciseId, submissionId, authHeader)
             .catch(err => console.error(err));
     };
 
@@ -172,9 +177,9 @@ class Exercise extends Component {
         if (submissionId === -1) {
             submission = undefined;
         } else {
+            const exerciseId = this.state.exerciseId;
             const authorizationHeader = this.props.context.authorizationHeader;
-            const userId = this.state.impersonationUserId;
-            submission = await this.fetchSubmissionById(submissionId, authorizationHeader, userId);
+            submission = await this.fetchSubmissionById(exerciseId, submissionId, authorizationHeader);
         }
         const exercise = this.state.exercise;
         const workspace = new Workspace(exercise, submission);
@@ -250,10 +255,11 @@ class Exercise extends Component {
         const toSubmit = this.exerciseComponentRef.current.getPublicFiles();
         const { workspace } = this.state;
         const authorizationHeader = this.props.context.authorizationHeader;
+        const userId = this.props.context.userId();
 
         let codeResponse;
         try {
-            codeResponse = await SubmissionService.submit(workspace.exerciseId, toSubmit, graded, authorizationHeader);
+            codeResponse = await SubmissionService.submit(workspace.exercise.courseId, workspace.exerciseId, userId, toSubmit, graded, authorizationHeader);
         } catch (err) {
             console.error(err);
             if (callback !== undefined) callback({ type: 'err', info: err });
@@ -276,12 +282,13 @@ class Exercise extends Component {
                     if (callback !== undefined) callback({ type: 'err', info: 'Max Timeout reached' });
                     return;
                 }
-                let evalResponse = await SubmissionService.checkEvaluation(codeResponse.evalId, authorizationHeader);   //checkEvaluation has a .catch statement already
+                //checkEvaluation has a .catch statement already
+                let evalResponse = await SubmissionService.checkEvaluation(workspace.exerciseId, codeResponse.evalId, authorizationHeader);
                 if ('ok' === evalResponse.status) {
                     const submissionId = evalResponse.submission;
                     clearInterval(intervalId);
 
-                    const submission = await this.fetchSubmissionById(submissionId, authorizationHeader);
+                    const submission = await this.fetchSubmissionById(workspace.exerciseId, submissionId, authorizationHeader);
                     const results = await this.fetchAssignmentResults(workspace.exercise, authorizationHeader);
                     const newWorkspace = new Workspace(workspace.exercise, submission);
 
@@ -289,7 +296,7 @@ class Exercise extends Component {
                         workspace: newWorkspace,
                         results,
                         isDirty: false,
-                        impersonationUserId: '', // go back to own user view
+                        userId: userId, // go back to own user view
                     });
                     if (callback !== undefined) callback({ type: 'ok' });
                 }
@@ -362,23 +369,32 @@ class Exercise extends Component {
     }
 
     onUserChange = async (e) => {
-        const userId = e.target.value;
-        if (!userId) {
-            this.setState({ impersonationUserId: '' });
-            this.fetchAll();
-        } else {
-            // Load as user
-            const exerciseId = this.props.match.params.exerciseId;
-            const authorizationHeader = this.props.context.authorizationHeader;
-            const submission = await SubmissionService.getLastSubmission(exerciseId, authorizationHeader, userId);
+        // Load as user
+        const exerciseId = this.props.match.params.exerciseId;
+        const authorizationHeader = this.props.context.authorizationHeader;
+        const userId = e.target.value || this.props.context.userId();
+        const submission = await SubmissionService.getLastSubmission(exerciseId, userId, authorizationHeader);
 
-            const workspace = new Workspace(this.state.exercise, submission);
-            this.setState({ workspace, impersonationUserId: userId });
-        }
-    };
+        const workspace = new Workspace(this.state.exercise, submission);
+        this.setState({ workspace, userId: userId });
+    }
+
+    resetSubmissionCount = async () => {
+        // Load as user
+        const { exercise } = this.state
+        const authorizationHeader = this.props.context.authorizationHeader
+        const userId = this.state.userId
+        const status = await AdminService.resetSubmissionsCount(exercise.courseId, exercise.id, userId, authorizationHeader)
+        console.log(status);
+        const toastOptions = { position: 'top-center' }
+        if (status)
+            toast.success('Successfully reset submission count', toastOptions)
+        else
+            toast.error(`Failed to reset submission count, try again later`, toastOptions)
+    }
 
     render() {
-        const { exercise, exercises, workspace, results, impersonationUserId, isLoadingExercise, pastDueDate } = this.state;
+        const { exercise, exercises, workspace, results, userId, isLoadingExercise, pastDueDate, isPrivileged } = this.state;
 
         if (!exercise) {
             if (!isLoadingExercise && !exercise) {
@@ -386,28 +402,26 @@ class Exercise extends Component {
             }
 
             return <div className="loading-box"><Spinner text={'Loading Tasks...'}/></div>;
-            ;
         }
 
         const isCodeType = exercise.type === 'code' || exercise.type === 'codeSnippet';
 
         const selectedId = exercise.id;
-        const courseId = exercise.courseId;
         const submissionId = workspace.submissionId;
         const gradedSubmissions = results.gradedSubmissions ? results.gradedSubmissions : [];
 
         const authorizationHeader = this.props.context.authorizationHeader;
-        const isPrivileged = this.props.context.isCourseAdmin(courseId) || this.props.context.isCourseAssistant(courseId);;
         const content = this.renderMainExerciseArea(exercise, workspace);
         const versionList = <VersionList exercise={exercise} authorizationHeader={authorizationHeader}
                                          submit={this.submit} selectedSubmissionId={submissionId}
                                          changeSubmissionById={this.loadSubmissionById} isCodeType={isCodeType}
                                          isGraded={workspace.submission ? workspace.submission.graded : false}
-                                         impersonationUserId={impersonationUserId}/>;
+                                         userId={userId} isPrivileged={isPrivileged} />;
 
         return (
             <>
                 {this.state.isDirty && this.createLeaveOnDirtyModal()}
+                {workspace.submission && workspace.submission.invalid && this.createAlert()}
 
                 <div className="exercise-layout">
                     <div className="ex-left">
@@ -420,35 +434,37 @@ class Exercise extends Component {
                                           pastDueDate={pastDueDate}/>
                         </div>
                     </div>
-                    <div className="ex-mid">
-                        <div className={'panel'}>
-                            {(workspace.submission && workspace.submission.invalid) && this.createAlert()}
-                            {isPrivileged &&
-                            <div>
-                                <label htmlFor={'userSelect'}>Impersonation</label>
-                                <br/>
-                                <select id={'userSelect'}
-                                        onChange={this.onUserChange}
-                                        value={impersonationUserId}>
-                                    <option value={''}>Select User</option>
-                                    {this.state.participants.map(student => <option
-                                        key={student.id}
-                                        value={student.id}>{student.emailAddress}</option>)}
-                                </select>
-                                <br/>
-                                <Button
-                                    className="style-btn"
-                                    size="sm"
-                                    title="Press me"
-                                    onClick={() => this.setState({ workspace, impersonationUserId: '' })}
-                                    style={{ marginTop: '1rem', clear: 'both' }}
-                                >Back to myself</Button>
-                            </div>
-                            }
-                            <h1 className="float-left">{this.state.exercise.longTitle}</h1>
+                    <Stack gap='3' className="ex-mid">
+                        {isPrivileged &&
+                            <Container className='panel-background'>
+                                <Form as={Row} className='justify-content-center'>
+                                    <Col xs='auto'><h3>Control Panel</h3></Col>
+                                    <Col xs='auto'>
+                                        <Form.Select onChange={this.onUserChange} value={this.state.userId}>
+                                            <option value=''>Select Student to Impersonate...</option>
+                                            {this.state.participants.map(student =>
+                                                <option key={student.id} value={student.id}>{student.emailAddress}</option>)}
+                                        </Form.Select>
+                                    </Col>
+                                    <Col xs='auto'>
+                                        <button className='style-btn' onClick={this.onUserChange}>
+                                            Back to myself
+                                        </button>
+                                    </Col>
+                                    <Col xs='auto'>
+                                        <button className='style-btn warn' onClick={this.resetSubmissionCount}>
+                                            Reset Submission Count
+                                        </button>
+                                    </Col>
+                                    <ToastContainer />
+                                </Form>
+                            </Container>
+                        }
+                        <div className='panel'>
+                            {!isCodeType && <h1>{this.state.exercise.longTitle}</h1>}
                             {content}
                         </div>
-                    </div>
+                    </Stack>
                     <div className="ex-right">
                         <div className={'panel'}>
                             {versionList}

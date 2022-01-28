@@ -5,7 +5,7 @@ import './CodeExercise.css';
 import MarkdownViewer from '../MarkdownViewer';
 import Spinner from '../core/Spinner';
 import JSZip from 'jszip';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { Download, Play } from 'react-feather';
 import Util from '../../utils/Util';
 import CourseDataService from '../../utils/CourseDataService';
@@ -160,16 +160,12 @@ class CodeSnippetExercise extends Component {
         }
 
         const buttonCluster = (
-            <div className="row">
-                <div className="col-sm-12">
-                    <div className="code-panel">
-                        <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
-                        </button>
-                        <button className="style-btn" disabled={this.state.runButtonState}
-                                onClick={this.onCodeSubmit}>{runButtonContent}</button>
-                    </div>
-                </div>
-            </div>
+            <Row>
+                <Col><h1>{this.props.exercise.longTitle}</h1></Col>
+                <Col xs='auto'><button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download</button></Col>
+                <Col xs='auto'><button className="style-btn" disabled={this.state.runButtonState}
+                             onClick={this.onCodeSubmit}>{runButtonContent}</button></Col>
+            </Row>
         );
 
         return (

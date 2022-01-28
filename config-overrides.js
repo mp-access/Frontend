@@ -1,12 +1,12 @@
 /* config-overrides.js */
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
-module.exports = function override(config, env) {
+module.exports = function override(config) {
     if (!config.plugins) {
         config.plugins = [];
     }
     config.plugins.push(
-        new MonacoWebpackPlugin({ features: [ '!gotoSymbol' ], languages: [ '!cameligo' ] }),
+        new MonacoWebpackPlugin()
     );
     return config;
 };

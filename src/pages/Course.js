@@ -28,9 +28,8 @@ class Course extends Component {
         const courseId = this.props.match.params.courseId;
         const { context } = this.props;
 
-        CourseDataService.getCourses(context.authorizationHeader)
-            .then(result => {
-                const course = result.find(c => c.id === courseId);
+        CourseDataService.getCourse(courseId, context.authorizationHeader)
+            .then(course => {
                 this.setState({ course: course, isLoadingCourse: false });
                 this.props.crumbs.setBreadCrumbs(course.breadCrumbs);
             })
@@ -52,7 +51,7 @@ class Course extends Component {
         });
 
         const assignmentId = assignment.id;
-        const courseId = this.state.course.id;
+        const courseId = this.state.course.roleName;
         const { context } = this.props;
 
         AdminService.exportAssignmentResults(courseId, assignmentId, context.authorizationHeader)
@@ -73,12 +72,11 @@ class Course extends Component {
             }
 
             return <div className="loading-box"><Spinner text={'Loading Courses...'}/></div>;
-            ;
         }
 
-        const { id: courseId, startDate, endDate, assignments, title, description } = course;
+        const { roleName, startDate, endDate, title, description } = course;
 
-        const isCourseAdmin = this.props.context.isCourseAdmin(course.id);
+        const isCourseAdmin = this.props.context.isCourseAdmin();
 
         return (
             <div className="container">
@@ -97,15 +95,16 @@ class Course extends Component {
                     <br/>
                     <br/>
                     <div>
-                        <AssignmentList courseId={courseId} assignments={assignments}
+                        <AssignmentList courseId={roleName}
                                         isAdmin={isCourseAdmin}
                                         onAssignmentExportClick={this.onAssignmentExportClick}
-                                        results={courseResults}
+                                        courseResults={courseResults}
+                                        authorization={this.props.context.authorizationHeader}
                         />
                     </div>
 
                     {assignmentExport && <ExportModal assignmentTitle={modalAssignmentTitle}
-                                                      courseId={courseId}
+                                                      courseId={roleName}
                                                       assignmentExport={assignmentExport}
                                                       showModal={showModal && !!assignmentExport}
                                                       authorization={this.props.context.authorizationHeader}

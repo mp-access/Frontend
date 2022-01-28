@@ -4,6 +4,7 @@
 
 .br1{
     border-right: 1px solid #e9e9ec;
+    padding: 0 0 0 5px !important;
 }
 
 .code-editor-workspace {

@@ -8,6 +8,22 @@ class CourseDataService {
             .catch(error => console.error('Error: ', error));
     }
 
+    static async getCourse(courseId, authHeader) {
+        return fetch(utils.courseServiceUrl + '/courses/' + courseId, authHeader())
+            .then(result => result.json())
+            .catch(error => console.error('Error: ', error));
+    }
+
+    static async getAssignments(courseId, authHeader) {
+        return fetch(utils.courseServiceUrl + '/courses/' + courseId + '/assignments', authHeader())
+            .then(result => {
+                if (result.ok) {
+                    return result.json();
+                }
+            })
+            .catch(error => console.error('Error: ', error));
+    }
+
     static async getAssignment(courseId, assignmentId, authHeader) {
         return fetch(utils.courseServiceUrl + '/courses/' + courseId + '/assignments/' + assignmentId, authHeader())
             .then(result => {
@@ -18,8 +34,8 @@ class CourseDataService {
             .catch(error => console.error('Error: ', error));
     }
 
-    static async getExercise(exerciseId, authHeader) {
-        return fetch(`${utils.courseServiceUrl}/exercises/${exerciseId}`, authHeader())
+    static async getExercise(exerciseId, authHeader, isPrivileged) {
+        return fetch(`${utils.courseServiceUrl}/exercises/${exerciseId}` + (isPrivileged ? '/solutions' : ''), authHeader())
             .then(response => {
                 if (response.ok) {
                     return response.json();

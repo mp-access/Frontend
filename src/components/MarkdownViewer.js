@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
-
+import gfm from 'remark-gfm';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneLight as codeBlockStyle } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import CourseDataService from '../utils/CourseDataService';
@@ -35,7 +35,8 @@ class MarkdownViewer extends Component {
 
     cacheImageIntoState = (filename) => {
         const { exerciseId, authHeader } = this.props;
-        CourseDataService.getExerciseFileByName(exerciseId, filename, authHeader)
+        const shortFilename = (filename.split('/').pop()).split('.')[0];
+        CourseDataService.getExerciseFile(exerciseId, shortFilename, authHeader)
             .then(result => this.setState({
                 imagesInMarkdown: {
                     ...this.state.imagesInMarkdown,
@@ -54,9 +55,10 @@ class MarkdownViewer extends Component {
     render() {
         const { markdown } = this.props;
         return (
-            <ReactMarkdown source={markdown}
-                           renderers={{
-                               image: this.imageRenderer,
+            <ReactMarkdown children={markdown}
+                           remarkPlugins={[gfm]}
+                           components={{
+                               img: this.imageRenderer,
                                code: CodeBlock,
                            }}
             />
@@ -67,13 +69,10 @@ class MarkdownViewer extends Component {
 class CodeBlock extends React.PureComponent {
 
     render() {
-        const { language, value } = this.props;
-
-        return (
-            <SyntaxHighlighter language={language} style={codeBlockStyle}>
-                {value}
-            </SyntaxHighlighter>
-        );
+        const { language, children, inline } = this.props;
+        if (inline)
+            return <code>{children}</code>
+        return <SyntaxHighlighter children={children} language={language} style={codeBlockStyle} />;
     }
 }
 

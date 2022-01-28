@@ -6,7 +6,7 @@ import 'file-icons-js/css/style.css';
 import './CodeExercise.css';
 import JSZip from 'jszip';
 import CourseDataService from '../../utils/CourseDataService';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Col, OverlayTrigger, Row, Stack, Tooltip } from 'react-bootstrap';
 import { Download, Play } from 'react-feather';
 import Spinner from '../core/Spinner';
 import Util from '../../utils/Util';
@@ -260,20 +260,20 @@ class CodeExercise extends PureComponent {
         }
 
         const buttonCluster = (
-            <div className="code-panel">
-                <button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download
-                </button>
-                <button className="style-btn" disabled={this.state.runButtonState}
-                        onClick={this.onCodeSubmit}>{runButtonContent}</button>
-            </div>
+            <Row className='align-items-center'>
+                <Col><h1>{this.props.exercise.longTitle}</h1></Col>
+                <Col xs='auto'><button className="style-btn ghost" onClick={this.downloadWorkspace}><Download size={14}/>Download</button></Col>
+                <Col xs='auto'><button className="style-btn" disabled={this.state.runButtonState}
+                             onClick={this.onCodeSubmit}>{runButtonContent}</button></Col>
+            </Row>
         );
 
         return (
-            <>
+            <Stack gap='4'>
                 {buttonCluster}
-                <div style={{ clear: 'both' }}/>
                 <div className="row">
                     <div className="col-2 br1">
+                        <small className="explorer-label">File Explorer</small>
                         <FileExplorer data={fileStructure} selectedFile={selectedFile}
                                       nodeClicked={this.nodeClicked}/>
 
@@ -287,13 +287,12 @@ class CodeExercise extends PureComponent {
                         </div>
                     </div>
                 </div>
-                <div className="p-4"/>
                 <div className="row">
                     <div className="col-12">
                         {userConsole}
                     </div>
                 </div>
-            </>
+            </Stack>
         );
     }
 
@@ -303,7 +302,7 @@ class CodeExercise extends PureComponent {
         let fileIndex = new Map();
 
         for (let file of flatFileMap) {
-            var dirs = file[0].split('/');
+            let dirs = file[0].split('/');
             dirs.shift();
 
             let step = fileStructure;

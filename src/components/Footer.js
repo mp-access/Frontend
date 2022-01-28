@@ -1,5 +1,5 @@
 import React from 'react';
-import {version} from '../../package.json';
+import info from '../../package.json';
 import Util from '../utils/Util';
 
 const Footer = () => (
@@ -13,7 +13,7 @@ const Footer = () => (
                 </div>
                 <div className="col-6">
                     <div className="float-right">
-                        <div><small>Frontend: <strong>{version}</strong></small></div>
+                        <div><small>Frontend: <strong>{info.version}</strong></small></div>
                         <div><small>Backend: <strong>{Util.serverInfo().version}</strong></small></div>
                     </div>
                 </div>

@@ -20,7 +20,7 @@ class CourseBanner extends Component {
                         <p>{course.description}</p>
                     </div>
                     <div className="col-md-3 col-12 h-flex">
-                        <Link className="style-btn full" to={`/courses/${course.id}`}>Take Course</Link>
+                        <Link className="style-btn full" to={`/courses/${course.roleName}`}>Take Course</Link>
                     </div>
                 </div>
             </div>

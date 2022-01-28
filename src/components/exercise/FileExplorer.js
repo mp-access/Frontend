@@ -1,27 +1,18 @@
 import React, { memo } from 'react';
-import SortableTree from 'react-sortable-tree';
-import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
+import SortableTree from '@nosferatu500/react-sortable-tree';
+import FileExplorerTheme from '@nosferatu500/theme-file-explorer';
 import { getClassWithColor } from 'file-icons-js';
 import './FileExplorer.css';
 
 const noOp = () => {};
 
 const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
-    <>
-        <div className={'row'}>
-            <div className={'col'}>
-                <small className="explorer-label">
-                    File Explorer
-                </small>
-            </div>
-        </div>
-
         <SortableTree
             className="file-explorer"
             treeData={data}
             onChange={noOp}
             theme={FileExplorerTheme}
-            canDrag={false}
+            canDrag={() => false}
             canDrop={() => false}
             generateNodeProps={rowInfo => ({
                 onClick: () => nodeClicked(rowInfo.node),
@@ -64,7 +55,6 @@ const FileExplorer = ({ data, selectedFile, nodeClicked }) => (
                 },
             })}
         />
-    </>
 );
 
 const arePropsEqual = (prevProps, nextProps) => {

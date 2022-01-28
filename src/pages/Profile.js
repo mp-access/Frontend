@@ -14,8 +14,7 @@ class Profile extends Component {
                         <div className="heading">
                             <h2>My Profile</h2>
                         </div>
-                        <UserInfo loadUserInfo={context.loadUserInfo} accessToken={context.accessToken}
-                                accountManagement={context.accountManagement}/>
+                        <UserInfo loadUserInfo={context.loadUserInfo} accountManagement={context.accountManagement}/>
                     </div>
                 </div>
             );

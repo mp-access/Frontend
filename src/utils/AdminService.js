@@ -15,6 +15,11 @@ class AdminService {
         return fetch(`${utils.courseServiceUrl}/admins/courses/${courseId}/participants`, authHeader())
             .then(result => result.json()).catch(error => console.error('Error: ', error));
     }
+
+    static async resetSubmissionsCount(courseId, exerciseId, userId, authHeader) {
+        return fetch(`${utils.courseServiceUrl}/admins/courses/${courseId}/exercises/${exerciseId}/users/${userId}/reset`, authHeader())
+            .then(response => response.ok).catch(error => console.error('Error: ', error));
+    }
 }
 
 export default AdminService;
