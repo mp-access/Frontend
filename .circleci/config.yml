@@ -9,6 +9,7 @@ jobs:
     working_directory: ~/frontend
     steps:
       - checkout
+      - node/install
       - node/install-packages
 
 workflows:
@@ -18,4 +19,4 @@ workflows:
       - docker/publish:
           docker-username: DOCKER_SEAL_LOGIN
           docker-password: DOCKER_SEAL_PWD
-          image: sealuzh/access-frontend:updates
+          image: sealuzh/access-frontend
