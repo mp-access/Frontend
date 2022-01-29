@@ -12,13 +12,16 @@ jobs:
       - node/install
       - node/install-packages
   push-to-dockerhub:
-    docker:
-      - image: cimg/base:2022.01
+    executor: docker/docker
     steps:
-      - docker/push:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: sealuzh/access-frontend
+      - docker/push:          
           image: sealuzh/access-frontend
           tag: updates
-          registry: hub.docker.com
 
 workflows:
   access-frontend-workflow:
