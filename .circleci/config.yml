@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   docker: circleci/docker@2.0.1
   node: circleci/node@5.0.0
+
 jobs:
   install-dependencies:
     docker:
@@ -10,13 +11,17 @@ jobs:
       - checkout
       - node/install
       - node/install-packages
+  push-to-dockerhub:
+    docker:
+      - image: cimg/base:2022.01
+    steps:
+      - docker/push:
+          image: sealuzh/access-frontend
+          tag: updates
+          registry: hub.docker.com
 
 workflows:
   access-frontend-workflow:
     jobs:
       - install-dependencies
-      - docker/publish:
-          image: sealuzh/access-frontend
-          tag: updates
-          registry: hub.docker.com
-          use-remote-docker: true
+      - push-to-dockerhub
