@@ -3,10 +3,9 @@ orbs:
   docker: circleci/docker@2.0.1
   node: circleci/node@5.0.0
 jobs:
-  access-frontend-job:
+  install-dependencies:
     docker:
       - image: cimg/base:2022.01
-    working_directory: ~/frontend
     steps:
       - checkout
       - node/install
@@ -15,8 +14,7 @@ jobs:
 workflows:
   access-frontend-workflow:
     jobs:
-      - access-frontend-job
+      - install-dependencies
       - docker/publish:
           image: sealuzh/access-frontend
-          tag: $CIRCLE_BRANCH
-          use-remote-docker: true
+          tag: updates
