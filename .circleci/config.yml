@@ -16,5 +16,6 @@ workflows:
     jobs:
       - install-dependencies
       - docker/publish:
+          registry: hub.docker.com
           image: sealuzh/access-frontend
           tag: updates
