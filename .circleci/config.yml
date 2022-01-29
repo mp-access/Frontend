@@ -17,6 +17,6 @@ workflows:
     jobs:
       - access-frontend-job
       - docker/publish:
-          docker-username: DOCKER_SEAL_LOGIN
-          docker-password: DOCKER_SEAL_PWD
           image: sealuzh/access-frontend
+          tag: $CIRCLE_BRANCH
+          use-remote-docker: true
