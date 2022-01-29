@@ -1,30 +1,24 @@
 version: 2.1
+
+# CircleCI Packages
 orbs:
-  docker: circleci/docker@2.0.1
-  node: circleci/node@5.0.0
+  docker: circleci/docker@2.0.1   # Pre-configured Docker jobs, see circleci.com/developer/orbs/orb/circleci/docker
+  node: circleci/node@5.0.0       # Pre-configured npm jobs, see circleci.com/developer/orbs/orb/circleci/node
 
 jobs:
-  install-dependencies:
+  install-dependencies:   
     docker:
-      - image: cimg/base:2022.01
+      - image: cimg/base:stable
     steps:
       - checkout
-      - node/install
-      - node/install-packages
-  push-to-dockerhub:
-    executor: docker/docker
-    steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - docker/build:
-          image: sealuzh/access-frontend
-      - docker/push:          
-          image: sealuzh/access-frontend
-          tag: updates
+      - node/install            # Install Node.js and npm, includes caching (circleci/node command)
+      - node/install-packages   # Install dependencies, includes caching (circleci/node command)
 
 workflows:
   access-frontend-workflow:
     jobs:
-      - install-dependencies
-      - push-to-dockerhub
+      - install-dependencies    # Install and cache the frontend dependencies
+      - docker/publish:         # Build and push the frontend image to Docker Hub (circleci/docker job)
+          image: sealuzh/access-frontend
+          tag: updates
+          # See the Frontend project env variables DOCKER_LOGIN, DOCKER_PASSWORD for credentials
