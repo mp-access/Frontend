@@ -257,9 +257,9 @@ class Exercise extends Component {
         const authorizationHeader = this.props.context.authorizationHeader;
         const userId = this.props.context.userId();
 
-        let codeResponse;
+        let evalId;
         try {
-            codeResponse = await SubmissionService.submit(workspace.exercise.courseId, workspace.exerciseId, userId, toSubmit, graded, authorizationHeader);
+            evalId = await SubmissionService.submit(workspace.exercise.courseId, workspace.exerciseId, userId, toSubmit, graded, authorizationHeader);
         } catch (err) {
             console.error(err);
             if (callback !== undefined) callback({ type: 'err', info: err });
@@ -283,7 +283,7 @@ class Exercise extends Component {
                     return;
                 }
                 //checkEvaluation has a .catch statement already
-                let evalResponse = await SubmissionService.checkEvaluation(workspace.exerciseId, codeResponse.evalId, authorizationHeader);
+                let evalResponse = await SubmissionService.checkEvaluation(workspace.exerciseId, evalId, authorizationHeader);
                 if ('ok' === evalResponse.status) {
                     const submissionId = evalResponse.submission;
                     clearInterval(intervalId);

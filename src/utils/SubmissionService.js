@@ -37,7 +37,7 @@ class SubmissionService {
             body: JSON.stringify(submissionBody),
         }).then(response => {
             if (response.ok) {
-                return response.json();
+                return response.text();
             } else {
                 throw new Error('SubmissionService.js Error submit' + response);
             }
